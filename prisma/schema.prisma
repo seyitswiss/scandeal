@@ -38,15 +38,18 @@ model Business {
 }
 
 model Deal {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   title        String
   description  String?
   discountText String?
   category     String?
   subCategory  String?
-  isPremium    Boolean  @default(false)
+  isPremium    Boolean   @default(false)
+  isActive     Boolean   @default(true)
+  startDate    DateTime?
+  endDate      DateTime?
   businessId   String
-  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }

@@ -13,11 +13,34 @@ interface DealWithBusiness {
   category: string | null
   subCategory: string | null
   isPremium: boolean
+  isActive: boolean
+  startDate: string | null
+  endDate: string | null
   business: {
     id: string
     name: string
     slug: string
   }
+}
+
+function getDealStatus(deal: DealWithBusiness): { label: string; color: string } {
+  const now = new Date()
+  
+  // Check if inactive
+  if (!deal.isActive) {
+    return { label: 'Inactive', color: 'bg-gray-200 text-gray-700' }
+  }
+  
+  // Check date range
+  if (deal.startDate && new Date(deal.startDate) > now) {
+    return { label: 'Scheduled', color: 'bg-blue-200 text-blue-700' }
+  }
+  
+  if (deal.endDate && new Date(deal.endDate) < now) {
+    return { label: 'Expired', color: 'bg-red-200 text-red-700' }
+  }
+  
+  return { label: 'Active', color: 'bg-green-200 text-green-700' }
 }
 
 export default function DealsTable({ deals }: { deals: DealWithBusiness[] }) {
@@ -77,6 +100,7 @@ export default function DealsTable({ deals }: { deals: DealWithBusiness[] }) {
               <th className="text-left p-3 border">Category</th>
               <th className="text-left p-3 border">SubCategory</th>
               <th className="text-left p-3 border">Premium</th>
+              <th className="text-left p-3 border">Status</th>
               <th className="text-left p-3 border">Actions</th>
             </tr>
           </thead>
@@ -88,6 +112,11 @@ export default function DealsTable({ deals }: { deals: DealWithBusiness[] }) {
                 <td className="p-3 border">{deal.category || '-'}</td>
                 <td className="p-3 border">{deal.subCategory || '-'}</td>
                 <td className="p-3 border">{deal.isPremium ? 'Yes' : 'No'}</td>
+                <td className="p-3 border">
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getDealStatus(deal).color}`}>
+                    {getDealStatus(deal).label}
+                  </span>
+                </td>
                 <td className="p-3 border">
                   <div className="flex gap-2">
                     <Link

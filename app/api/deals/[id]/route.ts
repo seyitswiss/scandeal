@@ -31,22 +31,30 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
-  const body = await request.json()
+  try {
+    const { id } = await params
+    const body = await request.json()
 
-  const deal = await prisma.deal.update({
-    where: { id },
-    data: {
-      title: body.title,
-      description: body.description || null,
-      discountText: body.discountText || null,
-      category: body.category || null,
-      subCategory: body.subCategory || null,
-      isPremium: body.isPremium || false,
-    },
-  })
+    const deal = await prisma.deal.update({
+      where: { id },
+      data: {
+        title: body.title,
+        description: body.description || null,
+        discountText: body.discountText || null,
+        category: body.category || null,
+        subCategory: body.subCategory || null,
+        isPremium: Boolean(body.isPremium),
+        isActive: Boolean(body.isActive),
+        startDate: body.startDate ? new Date(body.startDate) : null,
+        endDate: body.endDate ? new Date(body.endDate) : null,
+      },
+    })
 
-  return NextResponse.json(deal)
+    return NextResponse.json(deal)
+  } catch (error) {
+    console.error('Error updating deal:', error)
+    return NextResponse.json({ error: 'Failed to update deal' }, { status: 500 })
+  }
 }
 
 export async function DELETE(

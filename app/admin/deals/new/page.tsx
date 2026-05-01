@@ -23,6 +23,9 @@ export default function NewDealPage() {
     category: '',
     subCategory: '',
     isPremium: false,
+    isActive: true,
+    startDate: '',
+    endDate: '',
     businessId: '',
   })
 
@@ -124,6 +127,37 @@ export default function NewDealPage() {
             />
             {' '}Premium
           </label>
+        </div>
+
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={formData.isActive}
+              onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+            />
+            {' '}Active
+          </label>
+        </div>
+
+        <div>
+          <label>Start Date (optional)</label>
+          <input
+            type="datetime-local"
+            value={formData.startDate}
+            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+            style={{ display: 'block', width: '100%', padding: '8px' }}
+          />
+        </div>
+
+        <div>
+          <label>End Date (optional)</label>
+          <input
+            type="datetime-local"
+            value={formData.endDate}
+            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+            style={{ display: 'block', width: '100%', padding: '8px' }}
+          />
         </div>
 
         <div>

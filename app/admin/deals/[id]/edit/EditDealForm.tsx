@@ -12,6 +12,9 @@ interface DealData {
   category: string | null
   subCategory: string | null
   isPremium: boolean
+  isActive: boolean
+  startDate: string | null
+  endDate: string | null
   business: {
     id: string
     name: string
@@ -29,7 +32,10 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
     discountText: deal.discountText || '',
     category: deal.category || '',
     subCategory: deal.subCategory || '',
-    isPremium: deal.isPremium,
+    isPremium: deal.isPremium ?? false,
+    isActive: deal.isActive ?? false,
+    startDate: deal.startDate ? deal.startDate.slice(0, 16) : '',
+    endDate: deal.endDate ? deal.endDate.slice(0, 16) : '',
   })
 
   async function handleSubmit(e: React.FormEvent) {
@@ -129,6 +135,37 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
                 />
                 <span className="text-sm font-medium">Premium Deal</span>
               </label>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={formData.isActive}
+                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                />
+                <span className="text-sm font-medium">Active</span>
+              </label>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Start Date (optional)</label>
+              <input
+                type="datetime-local"
+                value={formData.startDate}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">End Date (optional)</label>
+              <input
+                type="datetime-local"
+                value={formData.endDate}
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                className="w-full p-2 border rounded"
+              />
             </div>
           </div>
         </div>

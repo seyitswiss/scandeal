@@ -12,6 +12,9 @@ export async function POST(request: Request) {
       category: body.category || null,
       subCategory: body.subCategory || null,
       isPremium: body.isPremium || false,
+      isActive: body.isActive !== false,
+      startDate: body.startDate ? new Date(body.startDate) : null,
+      endDate: body.endDate ? new Date(body.endDate) : null,
       businessId: body.businessId,
     },
   })

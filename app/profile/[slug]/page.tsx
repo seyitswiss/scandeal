@@ -139,12 +139,22 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     include: { business: { select: { name: true, slug: true } } }
   })
 
-  // 2. HARD FILTERS: exclude same business and same subCategory
+  // Helper: check if deal is active (not inactive and not expired)
+  function isDealActive(deal: any) {
+    const now = new Date()
+    if (!deal.isActive) return false
+    if (deal.startDate && new Date(deal.startDate) > now) return false
+    if (deal.endDate && new Date(deal.endDate) < now) return false
+    return true
+  }
+
+  // 2. HARD FILTERS: exclude same business, same subCategory, and inactive/expired deals
   const filteredDeals = allDeals.filter(
     (deal: typeof allDeals[0]) =>
       deal.businessId !== business.id &&
       deal.subCategory !== business.subCategory &&
-      (!ourDeal || deal.id !== ourDeal.id) // Exclude OUR_DEAL from normal list
+      (!ourDeal || deal.id !== ourDeal.id) && // Exclude OUR_DEAL from normal list
+      isDealActive(deal) // Only show active deals
   )
 
   // 3. RELEVANCE SCORING: add score to each deal
@@ -157,16 +167,26 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const premiumDeals = scoredDeals.filter((d: typeof scoredDeals[0]) => d.isPremium)
   const normalDeals = scoredDeals.filter((d: typeof scoredDeals[0]) => !d.isPremium)
 
-  // 5. Sort both by relevance score (high to low)
-  premiumDeals.sort((a: typeof scoredDeals[0], b: typeof scoredDeals[0]) => b.relevanceScore - a.relevanceScore)
-  normalDeals.sort((a: typeof scoredDeals[0], b: typeof scoredDeals[0]) => b.relevanceScore - a.relevanceScore)
+  // Helper: shuffle array randomly
+  function shuffle<T>(array: T[]): T[] {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
 
-  // 6. DIVERSITY + FINAL SELECTION
+  // 5. Randomize both arrays
+  const randomPremiumDeals = shuffle(premiumDeals)
+  const randomNormalDeals = shuffle(normalDeals)
+
+  // 6. DIVERSITY + FINAL SELECTION (random)
   const selectedDeals: typeof scoredDeals = []
   const usedSubCategories = new Set<string>()
 
-  // Take max 1 premium deal (first one with unique subCategory)
-  for (const deal of premiumDeals) {
+  // Take max 1 random premium deal with unique subCategory
+  for (const deal of randomPremiumDeals) {
     if (!usedSubCategories.has(deal.subCategory || '')) {
       selectedDeals.push(deal)
       usedSubCategories.add(deal.subCategory || '')
@@ -174,9 +194,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     }
   }
 
-  // Take max 4 normal deals with unique subCategories
-  for (const deal of normalDeals) {
-    if (selectedDeals.length >= 5) break
+  // Take max 3 random normal deals with unique subCategories
+  for (const deal of randomNormalDeals) {
+    if (selectedDeals.length >= 4) break
     if (!usedSubCategories.has(deal.subCategory || '')) {
       selectedDeals.push(deal)
       usedSubCategories.add(deal.subCategory || '')
