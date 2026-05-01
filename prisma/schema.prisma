@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Business {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  phone           String?
+  website         String?
+  category        String?
+  subCategory     String?
+  logoUrl         String?
+  // Location
+  address         String?
+  postalCode      String?
+  googleMapsUrl   String?
+  googleReviewUrl String?
+  // Social
+  instagram       String?
+  linkedin        String?
+  tripadvisor     String?
+  whatsapp        String?
+  email           String?
+  tiktok          String?
+  facebook        String?
+  // Custom links (JSON string)
+  customLinks     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deals           Deal[]
+}
+
+model Deal {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  discountText String?
+  category     String?
+  subCategory  String?
+  isPremium    Boolean  @default(false)
+  businessId   String
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
