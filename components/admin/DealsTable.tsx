@@ -3,6 +3,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface DealWithBusiness {
   id: string
@@ -20,9 +21,12 @@ interface DealWithBusiness {
 }
 
 export default function DealsTable({ deals }: { deals: DealWithBusiness[] }) {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
+  const [dealsList, setDealsList] = useState(deals)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const filteredDeals = deals.filter((deal) => {
+  const filteredDeals = dealsList.filter((deal) => {
     const query = searchQuery.toLowerCase()
     return (
       deal.title.toLowerCase().includes(query) ||
@@ -31,6 +35,24 @@ export default function DealsTable({ deals }: { deals: DealWithBusiness[] }) {
       (deal.subCategory?.toLowerCase().includes(query) ?? false)
     )
   })
+
+  async function handleDelete(id: string) {
+    if (!confirm('Are you sure you want to delete this deal?')) {
+      return
+    }
+
+    setDeletingId(id)
+
+    const res = await fetch(`/api/deals/${id}`, {
+      method: 'DELETE',
+    })
+
+    if (res.ok) {
+      setDealsList(dealsList.filter(d => d.id !== id))
+    }
+
+    setDeletingId(null)
+  }
 
   return (
     <div>
@@ -81,6 +103,13 @@ export default function DealsTable({ deals }: { deals: DealWithBusiness[] }) {
                     >
                       Edit
                     </Link>
+                    <button
+                      onClick={() => handleDelete(deal.id)}
+                      disabled={deletingId === deal.id}
+                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm disabled:opacity-50"
+                    >
+                      {deletingId === deal.id ? '...' : 'Delete'}
+                    </button>
                   </div>
                 </td>
               </tr>
