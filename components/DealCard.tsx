@@ -5,6 +5,21 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
+// Premium hover styles (injected into page)
+const premiumHoverStyles = `
+  @keyframes premiumGlow {
+    0%, 100% { box-shadow: 0 2px 8px rgba(245, 200, 66, 0.3); }
+    50% { box-shadow: 0 4px 16px rgba(245, 200, 66, 0.5); }
+  }
+  .premium-deal-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .premium-deal-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 16px rgba(245, 200, 66, 0.5);
+  }
+`
+
 interface DealCardProps {
   deal: {
     id: string
@@ -46,6 +61,18 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
         color: 'inherit',
         position: 'relative',
       }
+    : deal.isPremium
+    ? {
+        display: 'flex',
+        background: '#fff',
+        border: '2px solid #f5c842',
+        borderRadius: '12px',
+        marginBottom: '0.75rem',
+        overflow: 'hidden',
+        textDecoration: 'none',
+        color: 'inherit',
+        boxShadow: '0 2px 8px rgba(245, 200, 66, 0.3)',
+      }
     : {
         display: 'flex',
         background: '#fff',
@@ -56,6 +83,9 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
         textDecoration: 'none',
         color: 'inherit',
       }
+
+  // Add premium class for hover effects
+  const cardClass = deal.isPremium && !isOurDeal ? 'premium-deal-card' : ''
 
   // Handle close button click
   const handleClose = (e: React.MouseEvent) => {
@@ -74,7 +104,12 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   }
 
   return (
-    <Link href={linkHref} style={cardStyle}>
+    <>
+      {/* Inject premium styles */}
+      {deal.isPremium && !isOurDeal && (
+        <style dangerouslySetInnerHTML={{ __html: premiumHoverStyles }} />
+      )}
+      <Link href={linkHref} style={cardStyle} className={cardClass}>
       {/* Close button for OUR DEAL */}
       {isOurDeal && (
         <button
@@ -103,7 +138,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
 
       {/* Card content */}
       <div style={{ display: 'flex' }}>
-        {/* Left: Deal Image */}
+        {/* Left: Deal Image or Video for Premium */}
         <div style={{ 
           width: isOurDeal ? '90px' : '100px', 
           height: isOurDeal ? '90px' : '100px', 
@@ -112,18 +147,46 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          borderRadius: isOurDeal ? '8px 0 0 8px' : '0'
+          borderRadius: isOurDeal ? '8px 0 0 8px' : '0',
+          overflow: 'hidden'
         }}>
-          <span style={{ fontSize: '0.7rem', color: '#999' }}>Deal</span>
+          {deal.isPremium ? (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+              src="/videos/deal1.mp4"
+              onError={(e) => {
+                // Fallback to text if video fails
+                const target = e.target as HTMLVideoElement
+                target.style.display = 'none'
+              }}
+            />
+          ) : (
+            <span style={{ fontSize: '0.7rem', color: '#999' }}>Deal</span>
+          )}
         </div>
 
         {/* Right: Content */}
         <div style={{ flex: 1, padding: '0.75rem', display: 'flex', flexDirection: 'column' }}>
           {/* Top: Business name + Badge */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem', paddingRight: '1.5rem' }}>
-            {deal.business?.name && (
-              <span style={{ fontSize: '0.7rem', color: '#666' }}>{deal.business.name}</span>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {deal.business?.name && (
+                <span style={{ fontSize: '0.7rem', color: '#666' }}>{deal.business.name}</span>
+              )}
+              {deal.isPremium && (
+                <span style={{ background: '#f5c842', color: '#000', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 'bold' }}>
+                  Premium Deal
+                </span>
+              )}
+            </div>
             {deal.discountText && (
               <span style={{ background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
                 {deal.discountText}
@@ -178,5 +241,6 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
         </div>
       )}
     </Link>
-  )
+  </>
+)
 }
