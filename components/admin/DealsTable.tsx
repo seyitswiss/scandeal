@@ -14,8 +14,8 @@ interface DealWithBusiness {
   subCategory: string | null
   isPremium: boolean
   isActive: boolean
-  startDate: string | null
-  endDate: string | null
+ startDate: Date | null
+ endDate: Date | null
   business: {
     id: string
     name: string

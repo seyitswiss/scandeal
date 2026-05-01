@@ -1,6 +1,6 @@
 // filepath: app/admin/deals/[id]/edit/page.tsx
 import { prisma } from '@/lib/prisma'
-import EditDealForm from './EditDealForm'
+import EditDealForm from '@/components/admin/EditDealForm'
 
 export default async function EditDealPage({ 
   params 
@@ -11,7 +11,18 @@ export default async function EditDealPage({
   
   const deal = await prisma.deal.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      discountText: true,
+      category: true,
+      subCategory: true,
+      isPremium: true,
+      isActive: true,
+      startDate: true,
+      endDate: true,
+      businessId: true,
       business: {
         select: {
           id: true,
@@ -29,5 +40,11 @@ export default async function EditDealPage({
     )
   }
 
-  return <EditDealForm deal={deal} />
+  const normalizedDeal = {
+    ...deal,
+    startDate: deal.startDate ? String(deal.startDate) : null,
+    endDate: deal.endDate ? String(deal.endDate) : null,
+  }
+
+  return <EditDealForm deal={normalizedDeal} />
 }

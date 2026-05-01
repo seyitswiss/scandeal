@@ -7,19 +7,15 @@ import { useRouter } from 'next/navigation'
 
 // Premium hover styles (injected into page)
 const premiumHoverStyles = `
-  @keyframes premiumGlow {
-    0%, 100% { box-shadow: 0 2px 8px rgba(245, 200, 66, 0.3); }
-    50% { box-shadow: 0 4px 16px rgba(245, 200, 66, 0.5); }
-  }
   .premium-deal-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.24s ease, box-shadow 0.24s ease;
+    will-change: transform, box-shadow;
   }
   .premium-deal-card:hover {
     transform: scale(1.03);
-    box-shadow: 0 4px 16px rgba(245, 200, 66, 0.5);
+    box-shadow: 0 6px 24px rgba(245, 200, 66, 0.22);
   }
 `
-
 interface DealCardProps {
   deal: {
     id: string
@@ -196,7 +192,10 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
 
           {/* Middle: Title + Description */}
           <div style={{ flex: 1 }}>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: '0 0 0.25rem 0', lineHeight: 1.3 }}>{deal.title}</h4>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: '0 0 0.25rem 0', lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              {deal.isPremium && <span aria-hidden="true">🔥</span>}
+              {deal.title}
+            </h4>
             {deal.description && (
               <p style={{ fontSize: '0.75rem', color: '#666', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', lineHeight: 1.4 }}>
                 {deal.description}

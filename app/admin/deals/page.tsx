@@ -3,9 +3,20 @@ import { prisma } from '@/lib/prisma'
 import DealsTable from '@/components/admin/DealsTable'
 
 export default async function DealsPage() {
-  // Load all deals with business relation
+  // Load all deals with business relation and required status fields
   const deals = await prisma.deal.findMany({
-    include: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      discountText: true,
+      category: true,
+      subCategory: true,
+      isPremium: true,
+      isActive: true,
+      startDate: true,
+      endDate: true,
+      businessId: true,
       business: {
         select: {
           id: true,
