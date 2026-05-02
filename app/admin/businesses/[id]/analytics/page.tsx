@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import ExpandableAnalyticsCard from '@/components/ExpandableAnalyticsCard'
 
 export default async function BusinessAnalyticsPage({
   params,
@@ -54,6 +55,33 @@ export default async function BusinessAnalyticsPage({
   const dealViews = dealStats.filter((s) => s.type === 'view').length
   const dealClicks = dealStats.filter((s) => s.type === 'click').length
 
+  const formatDay = (createdAt: Date | string) => {
+    const date = new Date(createdAt)
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}.${month}.${year}`
+  }
+
+  const groupByDay = (items: { createdAt: Date | string }[]) => {
+    const counts: Record<string, number> = {}
+    items.forEach((item) => {
+      const day = formatDay(item.createdAt)
+      counts[day] = (counts[day] || 0) + 1
+    })
+    return Object.entries(counts)
+      .map(([day, count]) => ({ day, count }))
+      .sort((a, b) => {
+        const [aDay, aMonth, aYear] = a.day.split('.')
+        const [bDay, bMonth, bYear] = b.day.split('.')
+        return new Date(`${aYear}-${aMonth}-${aDay}`).getTime() - new Date(`${bYear}-${bMonth}-${bDay}`).getTime()
+      })
+  }
+
+  const profileViewsByDay = groupByDay(businessStats.filter((s) => s.type === 'profile_view'))
+  const linkClicksByDay = groupByDay(businessStats.filter((s) => s.type === 'link_click'))
+  const dealViewsByDay = groupByDay(dealStats.filter((s) => s.type === 'view'))
+
   // Fetch all deals for this business to show per-deal analytics
   const businessDeals = await prisma.deal.findMany({
     where: { businessId: id },
@@ -90,18 +118,9 @@ export default async function BusinessAnalyticsPage({
       </div>
 
       <div className="grid gap-6 md:grid-cols-3 mb-10">
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Profile Views</div>
-          <div className="mt-4 text-3xl font-bold text-blue-600">{profileViews}</div>
-        </div>
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Link Clicks</div>
-          <div className="mt-4 text-3xl font-bold text-green-600">{linkClicks}</div>
-        </div>
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">AI Usage</div>
-          <div className="mt-4 text-3xl font-bold text-purple-600">{aiUsage}</div>
-        </div>
+        <ExpandableAnalyticsCard title="Profile Views" value={profileViews} details={profileViewsByDay} />
+        <ExpandableAnalyticsCard title="Link Clicks" value={linkClicks} details={linkClicksByDay} />
+        <ExpandableAnalyticsCard title="Deal Views" value={dealViews} details={dealViewsByDay} />
       </div>
       <div className="grid gap-6 md:grid-cols-3 mb-10">
         <div className="border rounded-lg p-6 bg-white shadow-sm">
