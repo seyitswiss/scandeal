@@ -8,6 +8,7 @@ interface GoogleReviewBoxProps {
   googleReviewUrl: string | null
   whatsappUrl?: string | null
   emailUrl?: string | null
+  businessId?: string
 }
 
 // Normalize Google Review URL
@@ -30,7 +31,7 @@ function normalizeGoogleReviewUrl(url: string | null): string | null {
   return trimmed
 }
 
-export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsappUrl, emailUrl }: GoogleReviewBoxProps) {
+export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsappUrl, emailUrl, businessId }: GoogleReviewBoxProps) {
   const [rating, setRating] = useState<number | null>(null)
   const [feedback, setFeedback] = useState('')
   const [copied, setCopied] = useState(false)
@@ -40,10 +41,28 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
 
   if (!googleReviewUrl) return null
 
-  const handleStarClick = (value: number) => {
+  const handleStarClick = async (value: number) => {
     setRating(value)
     setIsOpen(true)
     setCopied(false)
+    
+    // Track box open
+    if (businessId) {
+      try {
+        await fetch('/api/business-stats', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            businessId,
+            type: 'google_box_open',
+          }),
+        })
+      } catch (error) {
+        console.error('Tracking failed:', error)
+      }
+    }
   }
 
   const handleClose = (e: React.MouseEvent) => {
@@ -59,15 +78,61 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
     setCopied(true)
   }
 
-  const handleGoogleRedirect = () => {
+  const handleGoogleRedirect = async () => {
     if (normalizedGoogleUrl) {
+      // Track Google review click
+      if (businessId) {
+        try {
+          // Use sendBeacon for better reliability on page navigation
+          const data = JSON.stringify({
+            businessId,
+            type: 'link_click',
+            source: 'google',
+          })
+
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon('/api/business-stats', data)
+          } else {
+            // Fallback to fetch with keepalive
+            await fetch('/api/business-stats', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: data,
+              keepalive: true,
+            })
+          }
+        } catch (error) {
+          console.error('Tracking failed:', error)
+        }
+      }
+
       window.open(normalizedGoogleUrl, '_blank')
     }
   }
 
-  const handleFeedbackSend = () => {
+  const handleFeedbackSend = async () => {
     const message = `Hallo, ich möchte Feedback zu ${businessName} geben: ${feedback}`
     const encodedMessage = encodeURIComponent(message)
+    
+    // Track internal feedback
+    if (businessId) {
+      try {
+        await fetch('/api/business-stats', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            businessId,
+            type: 'internal_feedback',
+          }),
+        })
+      } catch (error) {
+        console.error('Tracking failed:', error)
+      }
+    }
     
     if (whatsappUrl) {
       window.open(`${whatsappUrl}?text=${encodedMessage}`, '_blank')

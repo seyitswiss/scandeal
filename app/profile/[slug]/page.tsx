@@ -4,6 +4,7 @@ import DealCard from '@/components/DealCard'
 import IconRow from '@/components/IconRow'
 import GoogleReviewBox from '@/components/GoogleReviewBox'
 import ProfileTracker from '@/components/ProfileTracker'
+import TrackedLink from '@/components/TrackedLink'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -299,7 +300,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
         {/* Quick icon row with expand */}
         <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
-          <IconRow icons={iconItems} />
+          <IconRow icons={iconItems} businessId={business.id} />
         </div>
       </div>
 
@@ -316,14 +317,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         googleReviewUrl={googleReviewUrl}
         whatsappUrl={whatsappUrl}
         emailUrl={emailUrl}
+        businessId={business.id}
       />
 
       {/* 3. MAIN ACTION BUTTONS */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
-        {websiteUrl && <a href={websiteUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', background: '#34a853', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Website</a>}
-        {instagramUrl && !buttonLinks.instagram && <a href={instagramUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', background: '#e1306c', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Instagram</a>}
-        {googleMapsUrl && <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', background: '#4285f4', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Route</a>}
-        {whatsappUrl && <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', background: '#25d366', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>WhatsApp</a>}
+        {websiteUrl && <TrackedLink href={websiteUrl} businessId={business.id} source="website" style={{ display: 'block', textAlign: 'center', background: '#34a853', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Website</TrackedLink>}
+        {instagramUrl && !buttonLinks.instagram && <TrackedLink href={instagramUrl} businessId={business.id} source="instagram" style={{ display: 'block', textAlign: 'center', background: '#e1306c', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Instagram</TrackedLink>}
+        {googleMapsUrl && <TrackedLink href={googleMapsUrl} businessId={business.id} source="google" style={{ display: 'block', textAlign: 'center', background: '#4285f4', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Route</TrackedLink>}
+        {whatsappUrl && <TrackedLink href={whatsappUrl} businessId={business.id} source="whatsapp" style={{ display: 'block', textAlign: 'center', background: '#25d366', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>WhatsApp</TrackedLink>}
       </div>
 
       {/* 4. CUSTOM LINKS */}
@@ -333,15 +335,15 @@ export default async function ProfilePage({ params, searchParams }: Props) {
             const normalized = normalizeUrl(link.url)
             if (!normalized) return null
             return (
-              <a
+              <TrackedLink
                 key={index}
                 href={normalized}
-                target="_blank"
-                rel="noopener noreferrer"
+                businessId={business.id}
+                source="website"
                 style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '0.5rem', textDecoration: 'none', color: '#333', fontSize: '0.9rem' }}
               >
                 {link.label}
-              </a>
+              </TrackedLink>
             )
           })}
         </div>

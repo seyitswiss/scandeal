@@ -11,9 +11,10 @@ interface IconItem {
 
 interface Props {
   icons: IconItem[]
+  businessId?: string
 }
 
-export default function IconRow({ icons }: Props) {
+export default function IconRow({ icons, businessId }: Props) {
   const [expanded, setExpanded] = useState(false)
 
   // Filter to only icons with URLs
@@ -27,6 +28,36 @@ export default function IconRow({ icons }: Props) {
   const secondRowIcons = availableIcons.slice(3)
   const remainingCount = secondRowIcons.length
 
+  const handleIconClick = async (url: string, label: string) => {
+    if (!businessId) return
+
+    // Map label to source
+    let source = label.toLowerCase()
+    if (source === 'phone') source = 'phone'
+    else if (source === 'route') source = 'google'
+    else if (source === 'instagram') source = 'instagram'
+    else if (source === 'whatsapp') source = 'whatsapp'
+    else if (source === 'website') source = 'website'
+    else source = 'website' // fallback
+
+    try {
+      await fetch('/api/business-stats', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          businessId,
+          type: 'link_click',
+          source,
+        }),
+      })
+    } catch (error) {
+      // Silently fail - don't block navigation
+      console.error('Tracking failed:', error)
+    }
+  }
+
   return (
     <div>
       {/* First Row - always shows first 3 icons */}
@@ -38,6 +69,7 @@ export default function IconRow({ icons }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0.5rem', textDecoration: 'none', color: '#333' }}
+            onClick={() => handleIconClick(icon.url!, icon.label)}
           >
             <img src={icon.icon} alt={icon.label} style={{ width: '28px', height: '28px', marginBottom: '0.25rem' }} />
             <span style={{ fontSize: '0.7rem' }}>{icon.label}</span>
@@ -68,6 +100,7 @@ export default function IconRow({ icons }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0.5rem', textDecoration: 'none', color: '#333' }}
+              onClick={() => handleIconClick(icon.url!, icon.label)}
             >
               <img src={icon.icon} alt={icon.label} style={{ width: '28px', height: '28px', marginBottom: '0.25rem' }} />
               <span style={{ fontSize: '0.7rem' }}>{icon.label}</span>
