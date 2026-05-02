@@ -306,7 +306,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
       {/* OUR DEAL - only if valid dealId and belongs to this business */}
       {ourDeal && (
-        <div style={{ marginBottom: '1rem' }}>
+        <div style={{ marginBottom: '1rem', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
           <DealCard deal={ourDeal} mode="ourDeal" />
         </div>
       )}
@@ -353,9 +353,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       {selectedDeals.length > 0 && (
         <div style={{ marginTop: '1.5rem' }}>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.75rem', textAlign: 'center' }}>Weitere Deals</h2>
-          {selectedDeals.map((deal: typeof scoredDeals[0]) => (
-            <DealCard key={deal.id} deal={deal} />
-          ))}
+          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+            {selectedDeals.map((deal: typeof scoredDeals[0]) => (
+              <DealCard key={deal.id} deal={deal} />
+            ))}
+          </div>
         </div>
       )}
     </div>
