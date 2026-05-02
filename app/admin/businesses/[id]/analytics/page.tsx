@@ -64,11 +64,13 @@ export default async function BusinessAnalyticsPage({
   const perDealStats = businessDeals.map((deal) => {
     const dealViews = dealStats.filter((s) => s.dealId === deal.id && s.type === 'view').length
     const dealClicks = dealStats.filter((s) => s.dealId === deal.id && s.type === 'click').length
+    const clickRate = dealViews === 0 ? 0 : Math.round((dealClicks / dealViews) * 100)
     return {
       id: deal.id,
       title: deal.title,
       views: dealViews,
       clicks: dealClicks,
+      clickRate,
     }
   }).sort((a, b) => b.views - a.views)
 
@@ -136,7 +138,7 @@ export default async function BusinessAnalyticsPage({
                 <div>
                   <div className="font-medium text-gray-900">{deal.title}</div>
                   <div className="text-sm text-gray-600">
-                    Views: {deal.views} • Clicks: {deal.clicks}
+                    Views: {deal.views} • Clicks: {deal.clicks} • Click Rate: {deal.clickRate}%
                   </div>
                 </div>
                 <div className="text-right">
