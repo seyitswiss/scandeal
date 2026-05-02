@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import DealCard from '@/components/DealCard'
 import IconRow from '@/components/IconRow'
 import GoogleReviewBox from '@/components/GoogleReviewBox'
+import ProfileTracker from '@/components/ProfileTracker'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -271,7 +272,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   })
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem' }}>
+    <ProfileTracker businessId={business.id}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem' }}>
       {/* 1. MAIN OP HEADER CARD */}
       <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
@@ -355,5 +357,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         </div>
       )}
     </div>
+    </ProfileTracker>
   )
 }

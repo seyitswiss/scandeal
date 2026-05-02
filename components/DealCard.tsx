@@ -1,7 +1,7 @@
 // filepath: components/DealCard.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -38,6 +38,44 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   const businessSlug = deal.business?.slug
 
   const isOurDeal = mode === 'ourDeal'
+
+  // Track deal view on mount
+  useEffect(() => {
+    async function trackDealView() {
+      try {
+        await fetch('/api/deal-stats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dealId: deal.id,
+            businessId: deal.businessId,
+            type: 'view',
+          }),
+        })
+      } catch (error) {
+        console.error('Failed to track deal view:', error)
+      }
+    }
+
+    trackDealView()
+  }, [deal.id, deal.businessId])
+
+  // Track deal click
+  const handleDealClick = async () => {
+    try {
+      await fetch('/api/deal-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId: deal.id,
+          businessId: deal.businessId,
+          type: 'click',
+        }),
+      })
+    } catch (error) {
+      console.error('Failed to track deal click:', error)
+    }
+  }
 
   // Build link with dealId for normal mode
   const linkHref = isOurDeal 
@@ -105,7 +143,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
       {deal.isPremium && !isOurDeal && (
         <style dangerouslySetInnerHTML={{ __html: premiumHoverStyles }} />
       )}
-      <Link href={linkHref} style={cardStyle} className={cardClass}>
+      <Link href={linkHref} style={cardStyle} className={cardClass} onClick={handleDealClick}>
       {/* Close button for OUR DEAL */}
       {isOurDeal && (
         <button

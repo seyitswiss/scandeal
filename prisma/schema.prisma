@@ -35,6 +35,7 @@ model Business {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   deals           Deal[]
+  stats           BusinessStat[]
 }
 
 model Deal {
@@ -52,4 +53,23 @@ model Deal {
   business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  stats        DealStat[]
+}
+
+model BusinessStat {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  type       String   // "profile_view", "link_click", "ai_usage"
+  source     String?  // "qr", "instagram", "google", "deal_generator", etc.
+  createdAt  DateTime @default(now())
+}
+
+model DealStat {
+  id         String   @id @default(cuid())
+  dealId     String
+  deal       Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  businessId String
+  type       String   // "view", "click"
+  createdAt  DateTime @default(now())
 }
