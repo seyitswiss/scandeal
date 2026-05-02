@@ -176,6 +176,14 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
     e.preventDefault()
     e.stopPropagation()
 
+    const redeemedKey = `redeemed_${deal.id}`
+
+    // Check if already redeemed
+    if (localStorage.getItem(redeemedKey)) {
+      alert("Deal bereits eingelöst")
+      return
+    }
+
     if (deal.id && deal.businessId) {
       fetch('/api/deal-stats', {
         method: 'POST',
@@ -189,6 +197,9 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
       }).catch((error) => {
         console.error('Failed to track redeem action:', error)
       })
+
+      // Mark as redeemed in localStorage
+      localStorage.setItem(redeemedKey, "true")
     }
 
     setIsExpanded(!isExpanded)

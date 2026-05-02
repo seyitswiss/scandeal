@@ -99,6 +99,20 @@ export default async function BusinessAnalyticsPage({
     const dealClicks = dealStats.filter((s) => s.dealId === deal.id && s.type === 'click').length
     const dealRedeems = dealStats.filter((s) => s.dealId === deal.id && s.type === 'redeem').length
     const clickRate = dealViews === 0 ? 0 : Math.round((dealClicks / dealViews) * 100)
+    const redeemRate = dealClicks === 0 ? 0 : Math.round((dealRedeems / dealClicks) * 100)
+
+    // Generate recommendation
+    let recommendation = ''
+    if (clickRate < 20) {
+      recommendation = 'Low click rate – improve title or image'
+    } else if (clickRate >= 20 && redeemRate < 30) {
+      recommendation = 'Users click but do not redeem – improve offer'
+    } else if (redeemRate >= 50) {
+      recommendation = 'Strong performance – consider increasing visibility'
+    } else {
+      recommendation = 'Needs improvement – review deal strategy'
+    }
+
     return {
       id: deal.id,
       title: deal.title,
@@ -106,6 +120,8 @@ export default async function BusinessAnalyticsPage({
       clicks: dealClicks,
       redeems: dealRedeems,
       clickRate,
+      redeemRate,
+      recommendation,
     }
   }).sort((a, b) => b.views - a.views)
 
@@ -186,7 +202,10 @@ export default async function BusinessAnalyticsPage({
                 <div>
                   <div className="font-medium text-gray-900">{deal.title}</div>
                   <div className="text-sm text-gray-600">
-                    Views: {deal.views} • Clicks: {deal.clicks} • Redeems: {deal.redeems} • Click Rate: {deal.clickRate}%
+                    Views: {deal.views} • Clicks: {deal.clicks} • Redeems: {deal.redeems} • Click Rate: {deal.clickRate}% • Redeem Rate: {deal.redeemRate}%
+                  </div>
+                  <div className="text-sm text-blue-600 mt-1">
+                    Recommendation: {deal.recommendation}
                   </div>
                 </div>
                 <div className="text-right">
