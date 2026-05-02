@@ -43,18 +43,22 @@ export default async function AnalyticsPage() {
   // Calculate deal stats totals
   const dealViews = dealStats.filter((s) => s.type === 'view').length
   const dealClicks = dealStats.filter((s) => s.type === 'click').length
+  const redeems = dealStats.filter((s) => s.type === 'redeem').length
+  const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').length
 
   // Group deal stats by deal title
-  const dealStatsByTitle: Record<string, { views: number; clicks: number }> = {}
+  const dealStatsByTitle: Record<string, { views: number; clicks: number; redeems: number }> = {}
   dealStats.forEach((s) => {
     const title = s.deal.title || 'Unknown Deal'
     if (!dealStatsByTitle[title]) {
-      dealStatsByTitle[title] = { views: 0, clicks: 0 }
+      dealStatsByTitle[title] = { views: 0, clicks: 0, redeems: 0 }
     }
     if (s.type === 'view') {
       dealStatsByTitle[title].views += 1
     } else if (s.type === 'click') {
       dealStatsByTitle[title].clicks += 1
+    } else if (s.type === 'redeem') {
+      dealStatsByTitle[title].redeems += 1
     }
   })
 
@@ -131,7 +135,7 @@ export default async function AnalyticsPage() {
       {/* Deal Stats Section */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold mb-6">Deal Stats</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-4">
           {/* Deal Views Card */}
           <div className="border rounded-lg p-6 bg-white">
             <div className="text-sm font-medium text-gray-600 mb-2">Deal Views</div>
@@ -145,6 +149,20 @@ export default async function AnalyticsPage() {
             <div className="text-3xl font-bold text-green-600">{dealClicks}</div>
             <div className="text-xs text-gray-500 mt-2">Deal interactions</div>
           </div>
+
+          {/* Redeems Card */}
+          <div className="border rounded-lg p-6 bg-white">
+            <div className="text-sm font-medium text-gray-600 mb-2">Redeems</div>
+            <div className="text-3xl font-bold text-purple-600">{redeems}</div>
+            <div className="text-xs text-gray-500 mt-2">Deal redemptions</div>
+          </div>
+
+          {/* Our Deal Closed Card */}
+          <div className="border rounded-lg p-6 bg-white">
+            <div className="text-sm font-medium text-gray-600 mb-2">Our Deal Closed</div>
+            <div className="text-3xl font-bold text-red-600">{ourDealClosed}</div>
+            <div className="text-xs text-gray-500 mt-2">Our Deal modal closed</div>
+          </div>
         </div>
 
         {/* Top Deals */}
@@ -157,7 +175,7 @@ export default async function AnalyticsPage() {
                   <div>
                     <div className="font-medium text-gray-900">{title}</div>
                     <div className="text-sm text-gray-500">
-                      {stats.views} views • {stats.clicks} clicks
+                      {stats.views} views • {stats.clicks} clicks • {stats.redeems} redeems
                     </div>
                   </div>
                   <div className="text-right">
