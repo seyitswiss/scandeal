@@ -38,6 +38,9 @@ export default async function BusinessAnalyticsPage({
 
   const profileViews = businessStats.filter((s) => s.type === 'profile_view').length
   const linkClicks = businessStats.filter((s) => s.type === 'link_click').length
+  const googleReviewClicks = businessStats.filter((s) => s.type === 'link_click' && s.source === 'google').length
+  const googleBoxOpen = businessStats.filter((s) => s.type === 'google_box_open').length
+  const internalFeedback = businessStats.filter((s) => s.type === 'internal_feedback').length
   const aiUsage = businessStats.filter((s) => s.type === 'ai_usage').length
 
   const linkClicksBySource: Record<string, number> = {}
@@ -98,6 +101,20 @@ export default async function BusinessAnalyticsPage({
         <div className="border rounded-lg p-6 bg-white shadow-sm">
           <div className="text-sm font-medium text-gray-500">AI Usage</div>
           <div className="mt-4 text-3xl font-bold text-purple-600">{aiUsage}</div>
+        </div>
+      </div>
+      <div className="grid gap-6 md:grid-cols-3 mb-10">
+        <div className="border rounded-lg p-6 bg-white shadow-sm">
+          <div className="text-sm font-medium text-gray-500">Google Box Opens</div>
+          <div className="mt-4 text-3xl font-bold text-indigo-600">{googleBoxOpen}</div>
+        </div>
+        <div className="border rounded-lg p-6 bg-white shadow-sm">
+          <div className="text-sm font-medium text-gray-500">Internal Feedback</div>
+          <div className="mt-4 text-3xl font-bold text-teal-600">{internalFeedback}</div>
+        </div>
+        <div className="border rounded-lg p-6 bg-white shadow-sm">
+          <div className="text-sm font-medium text-gray-500">Google Review Clicks</div>
+          <div className="mt-4 text-3xl font-bold text-blue-600">{googleReviewClicks}</div>
         </div>
       </div>
 

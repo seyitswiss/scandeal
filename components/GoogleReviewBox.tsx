@@ -41,15 +41,16 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
 
   if (!googleReviewUrl) return null
 
-  const handleStarClick = async (value: number) => {
+  const handleStarClick = (value: number) => {
+    const shouldTrackOpen = !isOpen && businessId
+
     setRating(value)
     setIsOpen(true)
     setCopied(false)
-    
-    // Track box open
-    if (businessId) {
+
+    if (shouldTrackOpen) {
       try {
-        await fetch('/api/business-stats', {
+        fetch('/api/business-stats', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -58,6 +59,9 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
             businessId,
             type: 'google_box_open',
           }),
+          keepalive: true,
+        }).catch((error) => {
+          console.error('Tracking failed:', error)
         })
       } catch (error) {
         console.error('Tracking failed:', error)
@@ -119,7 +123,7 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
     // Track internal feedback
     if (businessId) {
       try {
-        await fetch('/api/business-stats', {
+        fetch('/api/business-stats', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -128,6 +132,9 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
             businessId,
             type: 'internal_feedback',
           }),
+          keepalive: true,
+        }).catch((error) => {
+          console.error('Tracking failed:', error)
         })
       } catch (error) {
         console.error('Tracking failed:', error)

@@ -26,6 +26,9 @@ export default async function AnalyticsPage() {
   // Calculate business stats totals
   const profileViews = businessStats.filter((s) => s.type === 'profile_view').length
   const linkClicks = businessStats.filter((s) => s.type === 'link_click').length
+  const googleReviewClicks = businessStats.filter((s) => s.type === 'link_click' && s.source === 'google').length
+  const googleBoxOpen = businessStats.filter((s) => s.type === 'google_box_open').length
+  const internalFeedback = businessStats.filter((s) => s.type === 'internal_feedback').length
   const aiUsage = businessStats.filter((s) => s.type === 'ai_usage').length
 
   // Group link clicks by source
@@ -87,6 +90,23 @@ export default async function AnalyticsPage() {
             <div className="text-sm font-medium text-gray-600 mb-2">AI Usage</div>
             <div className="text-3xl font-bold text-purple-600">{aiUsage}</div>
             <div className="text-xs text-gray-500 mt-2">AI features used</div>
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3 mt-6">
+          <div className="border rounded-lg p-6 bg-white">
+            <div className="text-sm font-medium text-gray-600 mb-2">Google Box Opens</div>
+            <div className="text-3xl font-bold text-indigo-600">{googleBoxOpen}</div>
+            <div className="text-xs text-gray-500 mt-2">Google review prompt shown</div>
+          </div>
+          <div className="border rounded-lg p-6 bg-white">
+            <div className="text-sm font-medium text-gray-600 mb-2">Internal Feedback</div>
+            <div className="text-3xl font-bold text-teal-600">{internalFeedback}</div>
+            <div className="text-xs text-gray-500 mt-2">Feedback button clicks</div>
+          </div>
+          <div className="border rounded-lg p-6 bg-white">
+            <div className="text-sm font-medium text-gray-600 mb-2">Google Review Clicks</div>
+            <div className="text-3xl font-bold text-blue-600">{googleReviewClicks}</div>
+            <div className="text-xs text-gray-500 mt-2">Google review button clicks</div>
           </div>
         </div>
 
