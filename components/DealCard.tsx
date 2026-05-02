@@ -52,13 +52,25 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
             type: 'view',
           }),
         })
+
+        if (isOurDeal) {
+          await fetch('/api/deal-stats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              dealId: deal.id,
+              businessId: deal.businessId,
+              type: 'our_deal_view',
+            }),
+          })
+        }
       } catch (error) {
         console.error('Failed to track deal view:', error)
       }
     }
 
     trackDealView()
-  }, [deal.id, deal.businessId])
+  }, [deal.id, deal.businessId, isOurDeal])
 
   // Track deal click
   const handleDealClick = async () => {
@@ -72,6 +84,18 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           type: 'click',
         }),
       })
+
+      if (isOurDeal) {
+        await fetch('/api/deal-stats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dealId: deal.id,
+            businessId: deal.businessId,
+            type: 'our_deal_click',
+          }),
+        })
+      }
     } catch (error) {
       console.error('Failed to track deal click:', error)
     }
@@ -125,6 +149,23 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   const handleClose = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    // Track Our Deal close
+    if (deal.id && deal.businessId) {
+      fetch('/api/deal-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId: deal.id,
+          businessId: deal.businessId,
+          type: 'our_deal_close',
+        }),
+        keepalive: true,
+      }).catch((error) => {
+        console.error('Failed to track our_deal_close:', error)
+      })
+    }
+
     // Remove dealId from URL and stay on same page
     const currentPath = window.location.pathname
     router.push(currentPath)
@@ -134,6 +175,22 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   const handleRedeem = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    if (deal.id && deal.businessId) {
+      fetch('/api/deal-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId: deal.id,
+          businessId: deal.businessId,
+          type: 'redeem',
+        }),
+        keepalive: true,
+      }).catch((error) => {
+        console.error('Failed to track redeem action:', error)
+      })
+    }
+
     setIsExpanded(!isExpanded)
   }
 
