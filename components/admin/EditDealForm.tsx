@@ -8,6 +8,7 @@ interface DealData {
   title: string
   description: string | null
   discountText: string | null
+  highlight: string | null
   category: string | null
   subCategory: string | null
   isPremium: boolean
@@ -28,6 +29,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
     title: deal.title,
     description: deal.description || '',
     discountText: deal.discountText || '',
+    highlight: deal.highlight || '',
     category: deal.category || '',
     subCategory: deal.subCategory || '',
     isPremium: deal.isPremium,
@@ -91,6 +93,17 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
               type="text"
               value={formData.discountText}
               onChange={(e) => setFormData({ ...formData, discountText: e.target.value })}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Highlight</label>
+            <input
+              type="text"
+              placeholder="z.B. Coffee + pastry combo / Gratis Dessert bei Hauptgang"
+              value={formData.highlight}
+              onChange={(e) => setFormData({ ...formData, highlight: e.target.value })}
               className="w-full p-2 border rounded"
             />
           </div>

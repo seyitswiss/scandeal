@@ -43,6 +43,7 @@ model Deal {
   title        String
   description  String?
   discountText String?
+  highlight    String?
   category     String?
   subCategory  String?
   isPremium    Boolean   @default(false)

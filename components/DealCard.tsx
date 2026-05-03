@@ -37,6 +37,7 @@ interface DealCardProps {
     badge?: string | null
     discount?: string | null
     type?: string | null
+    highlight?: string | null
     logo?: string | null
     image?: string | null
     video?: string | null
@@ -136,20 +137,22 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   const cardStyle: React.CSSProperties = {
     display: 'flex',
     width: '100%',
-    maxWidth: '640px',
+    maxWidth: '760px',
+    margin: '0 auto',
     minWidth: 0,
-    minHeight: !isOurDeal && !isPreviewOpen ? '100px' : undefined,
+    minHeight: !isOurDeal && !isPreviewOpen ? '150px' : undefined,
     boxSizing: 'border-box',
     position: 'relative',
     overflow: 'hidden',
     textDecoration: 'none',
     color: 'inherit',
-    borderRadius: isOurDeal || deal.isPremium ? '12px' : '8px',
-    background: isOurDeal ? '#fff9e6' : '#fff',
+    borderRadius: isOurDeal || deal.isPremium ? '12px' : '16px',
+    background: '#fff',
     border: isOurDeal || deal.isPremium ? '2px solid #f5c842' : undefined,
-    boxShadow: isOurDeal ? undefined : deal.isPremium ? '0 2px 8px rgba(245, 200, 66, 0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
+    boxShadow: isOurDeal ? undefined : '0 4px 10px rgba(0,0,0,0.05)',
     flexDirection: 'column',
     alignSelf: 'stretch',
+    padding: '12px',
   }
 
   // Add premium class for hover effects
@@ -388,14 +391,14 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
-            width: '100px', 
-            height: '100px', 
+            width: '190px', 
+            height: '150px', 
             flexShrink: 0, 
             background: '#f5f5f5', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            borderRadius: '8px',
+            borderRadius: '14px',
             overflow: 'hidden'
           }}>
             {deal.isPremium ? (
@@ -431,11 +434,27 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                 </span>
               </h4>
               {badgeLabel && (
-                <span style={{ background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 'bold', whiteSpace: 'nowrap', flex: '0 0 auto' }}>
+                <span style={{ background: '#2e7d32', color: '#fff', padding: '2px 6px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 'bold', whiteSpace: 'nowrap', flex: '0 0 auto' }}>
                   {badgeLabel}
                 </span>
               )}
             </div>
+
+            {deal.highlight && (
+              <div style={{
+                background: '#e8f5e9',
+                color: '#2e7d32',
+                padding: '4px 10px',
+                borderRadius: '10px',
+                fontSize: '0.75rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                width: 'fit-content',
+              }}>
+                ✔ {deal.highlight}
+              </div>
+            )}
 
             {(isOurDeal || isPreviewOpen) && (isOurDeal ? fullDescription : previewText) && (
               <div style={{
@@ -464,7 +483,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                   fontWeight: '600',
                   background: '#f5c842',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '10px',
                   padding: '0.5rem 0.75rem',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -527,7 +546,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
               }}
               title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
             >
-              {isSaved ? '❤️' : '🤍'}
+              <span style={{color: isSaved ? '#2e7d32' : '#bbb'}}>{isSaved ? '❤️' : '🤍'}</span>
             </button>
             <button
               onClick={(e) => {
@@ -572,21 +591,21 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
             }}
             title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
           >
-            {isSaved ? '❤️' : '🤍'}
+            <span style={{color: isSaved ? '#2e7d32' : '#bbb'}}>{isSaved ? '❤️' : '🤍'}</span>
           </button>
         )}
         {/* Card content for normal mode */}
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: isPreviewOpen ? 'flex-start' : 'center' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: isPreviewOpen ? 'flex-start' : 'center' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
-            width: '100px', 
-            height: '100px', 
+            width: '190px', 
+            height: '150px', 
             flexShrink: 0, 
             background: '#f5f5f5', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            borderRadius: '8px',
+            borderRadius: '14px',
             overflow: 'hidden',
           }}>
             {deal.isPremium ? (
@@ -612,31 +631,159 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, minWidth: 0, padding: isPreviewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.75rem 3rem 0.75rem 0', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', gap: '0.25rem', position: 'relative', overflow: 'hidden' }}>
-            {/* Top row: Title + Badge */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 0, paddingRight: '48px' }}>
-              <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
-                {deal.isPremium && <span aria-hidden="true">🔥</span>}
-                {deal.title}
-              </div>
+          <div style={{ flex: 1, minWidth: 0, padding: isPreviewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.75rem 3rem 0.75rem 0', display: 'flex', flexDirection: 'column', justifyContent: isPreviewOpen ? 'flex-start' : 'center', gap: isPreviewOpen ? '0.25rem' : '6px', position: 'relative', overflow: 'hidden' }}>
+            {isPreviewOpen ? (
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0, width: '100%' }}>
+                  {/* Top row: Title + Badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px' }}>
+                    <div style={{ minWidth: 0, flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      {deal.isPremium && <span aria-hidden="true">🔥</span>}
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.15rem', fontWeight: '600', color: '#111' }}>
+                        {deal.title}
+                      </span>
+                    </div>
 
-              {badgeLabel && (
-                <span style={{ marginLeft: '8px', flexShrink: 0, whiteSpace: 'nowrap', background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center' }}>
-                  {badgeLabel}
-                </span>
-              )}
-            </div>
+                    {badgeLabel && (
+                      <span style={{ minWidth: '64px', height: '24px', flexShrink: 0, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#2e7d32', color: '#fff', padding: '5px 12px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: '600', marginLeft: 'auto' }}>
+                        {badgeLabel}
+                      </span>
+                    )}
+                  </div>
 
-            {deal.business?.name && (
-              <div style={{
-                fontSize: '0.75rem',
-                color: '#666',
-                marginBottom: '0.15rem',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}>
-                {deal.business.name}
+                  {deal.business?.name && (
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#666',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {deal.business.name}
+                    </div>
+                  )}
+
+                  {(formattedEndDate || distanceValue !== null && distanceValue !== undefined) && (
+                    <div style={{ fontSize: '0.75rem', color: '#888', display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                      {distanceValue !== null && distanceValue !== undefined && (
+                        <span><span style={{color: '#888'}}>📍</span> {distanceValue.toFixed(1)} km</span>
+                      )}
+                      {formattedEndDate && <span><span style={{color: '#2e7d32', opacity: 0.75}}>📅</span> {formattedEndDate}</span>}
+                    </div>
+                  )}
+
+                  {deal.highlight && (
+                    <div style={{
+                      background: '#e8f5e9',
+                      color: '#1b5e20',
+                      padding: '5px 12px',
+                      borderRadius: '10px',
+                      fontSize: '0.78rem',
+                      fontWeight: '600',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      width: 'fit-content',
+                    }}>
+                      <span style={{
+                        width: '16px',
+                        height: '16px',
+                        background: 'transparent',
+                        border: '1.5px solid #2e7d32',
+                        color: '#2e7d32',
+                        borderRadius: '50%',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.65rem',
+                        flexShrink: 0,
+                      }}>
+                        ✔
+                      </span>
+                      {deal.highlight}
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '3px', minWidth: 0, width: '100%', minHeight: '72px' }}>
+                {/* Top row: Title + Badge */}
+                <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px' }}>
+                  <div style={{ minWidth: 0, flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    {deal.isPremium && <span aria-hidden="true">🔥</span>}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.15rem', fontWeight: '600', color: '#111' }}>
+                      {deal.title}
+                    </span>
+                  </div>
+
+                  {badgeLabel && (
+                    <span style={{ minWidth: '64px', height: '24px', flexShrink: 0, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#2e7d32', color: '#fff', padding: '5px 12px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600', marginLeft: 'auto' }}>
+                      {badgeLabel}
+                    </span>
+                  )}
+                </div>
+
+                {deal.business?.name && (
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#666',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {deal.business.name}
+                  </div>
+                )}
+
+                {deal.highlight && (
+                  <div style={{
+                    background: '#ecf6ea',
+                    color: '#388e3c',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    fontSize: '0.8rem',
+                    fontWeight: '600',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    width: 'fit-content',
+                  }}>
+                    <span style={{
+                      width: '14px',
+                      height: '14px',
+                      background: 'transparent',
+                      border: '1.5px solid #388e3c',
+                      color: '#388e3c',
+                      borderRadius: '50%',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.80rem',
+                      flexShrink: 0,
+                    }}>
+                      ✔
+                    </span>
+                    {deal.highlight}
+                  </div>
+                )}
+
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: '#777',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  minHeight: '16px',
+                  marginTop: '8px',
+                  visibility: (formattedEndDate || distanceValue !== null && distanceValue !== undefined) ? 'visible' : 'hidden',
+                }}>
+                  {distanceValue !== null && distanceValue !== undefined && (
+                    <span><span style={{color: '#2e7d32', opacity: 0.75}}>📍</span> {distanceValue.toFixed(1)} km</span>
+                  )}
+                  {formattedEndDate && <span><span style={{color: '#2e7d32', opacity: 0.75}}>📅</span> {formattedEndDate}</span>}
+                </div>
               </div>
             )}
 
@@ -667,7 +814,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                     fontWeight: '600',
                     background: '#4caf50',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '10px',
                     padding: '0.5rem 0.75rem',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
@@ -675,16 +822,6 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                 >
                   Zum Deal →
                 </button>
-              </div>
-            )}
-
-            {(formattedEndDate || distanceValue !== null && distanceValue !== undefined) && (
-              <div style={{ fontSize: '0.7rem', color: '#999', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                {formattedEndDate && <span>📅 {formattedEndDate}</span>}
-                {formattedEndDate && distanceValue !== null && distanceValue !== undefined && <span>·</span>}
-                {distanceValue !== null && distanceValue !== undefined && (
-                  <span>📍 {distanceValue.toFixed(1)} km</span>
-                )}
               </div>
             )}
           </div>

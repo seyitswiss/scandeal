@@ -20,6 +20,7 @@ export default function NewDealPage() {
     title: '',
     description: '',
     discountText: '',
+    highlight: '',
     category: '',
     subCategory: '',
     isPremium: false,
@@ -104,6 +105,17 @@ export default function NewDealPage() {
             type="text"
             value={formData.discountText}
             onChange={(e) => setFormData({ ...formData, discountText: e.target.value })}
+            style={{ display: 'block', width: '100%', padding: '8px' }}
+          />
+        </div>
+
+        <div>
+          <label>Highlight</label>
+          <input
+            type="text"
+            placeholder="z.B. Coffee + pastry combo / Gratis Dessert bei Hauptgang"
+            value={formData.highlight}
+            onChange={(e) => setFormData({ ...formData, highlight: e.target.value })}
             style={{ display: 'block', width: '100%', padding: '8px' }}
           />
         </div>

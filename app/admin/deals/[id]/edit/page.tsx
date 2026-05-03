@@ -16,6 +16,7 @@ export default async function EditDealPage({
       title: true,
       description: true,
       discountText: true,
+      highlight: true,
       category: true,
       subCategory: true,
       isPremium: true,

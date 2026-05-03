@@ -41,6 +41,7 @@ export async function PUT(
         title: body.title,
         description: body.description || null,
         discountText: body.discountText || null,
+        highlight: body.highlight || null,
         category: body.category || null,
         subCategory: body.subCategory || null,
         isPremium: Boolean(body.isPremium),
