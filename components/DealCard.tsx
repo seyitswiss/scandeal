@@ -139,7 +139,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   const cardStyle: React.CSSProperties = {
     display: 'flex',
     width: '100%',
-    maxWidth: '760px',
+    maxWidth: isPreviewOpen ? '820px' : '760px',
     margin: '0 auto',
     minWidth: 0,
     minHeight: !isOurDeal && !isPreviewOpen ? '150px' : undefined,
@@ -151,7 +151,10 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
     borderRadius: isOurDeal || deal.isPremium ? '12px' : '16px',
     background: '#fff',
     border: isOurDeal || deal.isPremium ? '2px solid #f5c842' : undefined,
-    boxShadow: isOurDeal ? undefined : '0 4px 10px rgba(0,0,0,0.05)',
+    boxShadow: isPreviewOpen ? '0 20px 60px rgba(0,0,0,0.18)' : (isOurDeal ? undefined : '0 4px 10px rgba(0,0,0,0.05)'),
+    transform: isPreviewOpen ? 'translateY(-4px) scale(1.025)' : undefined,
+    zIndex: isPreviewOpen ? 30 : undefined,
+    transition: isPreviewOpen ? 'all 0.18s ease' : undefined,
     flexDirection: 'column',
     alignSelf: 'stretch',
     padding: '12px',
@@ -672,98 +675,78 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                       {deal.title}
                     </span>
                   </div>
-
-                  {badgeLabel && (
-                    <span style={{ minWidth: '64px', height: '24px', flexShrink: 0, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: '#2e7d32', color: '#fff', padding: '5px 12px', borderRadius: '10px', fontSize: '0.8rem', fontWeight: '600', marginLeft: 'auto' }}>
-                      {badgeLabel}
-                    </span>
-                  )}
                 </div>
-
-                {deal.business?.name && (
-                  <div style={{
-                    fontSize: '0.9rem',
-                    color: '#666',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {deal.business.name}
-                  </div>
-                )}
 
                 {deal.highlight && (
                   <div style={{
-                    background: '#e8f5e9',
                     color: '#1b5e20',
-                    padding: '5px 12px',
-                    borderRadius: '10px',
-                    border: '1.5px solid #c8e6c9',
-                    fontSize: '0.8rem',
-                    fontWeight: '550',
+                    padding: '2px 0',
+                    fontSize: '0.88rem',
+                    fontWeight: 600,
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    width: 'fit-content',
                   }}>
                     <span style={{
-                      width: '16px',
-                      height: '16px',
-                      background: 'transparent',
-                      border: '1.5px solid #2e7d32',
-                      color: '#2e7d32',
+                      width: '14px',
+                      height: '14px',
+                      border: '1.5px solid #388e3c',
                       borderRadius: '50%',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.65rem',
+                      fontSize: '0.7rem',
+                      color: '#388e3c',
+                      background: 'transparent',
                       flexShrink: 0,
                     }}>
                       ✔
                     </span>
-                    {deal.highlight}
+                    <span>{deal.highlight}</span>
                   </div>
                 )}
 
-                {previewTeaser && (
+                {previewText && (
                   <div style={{
-                    padding: '8px 10px',
-                    background: '#fafafa',
-                    borderRadius: '8px',
                     fontSize: '0.85rem',
                     color: '#444',
-                    lineHeight: 1.35,
+                    lineHeight: 1.45,
                     maxWidth: '100%',
-                    maxHeight: '38px',
                     overflow: 'hidden',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    textOverflow: 'ellipsis',
+                    padding: 0,
+                    margin: 0,
                   }}>
-                    <div style={{ paddingRight: '1rem' }}>
-                      {previewTeaser}
-                    </div>
+                    {previewText}
                   </div>
                 )}
 
-                {(formattedEndDate || distanceValue !== null && distanceValue !== undefined) && (
-                  <div style={{
-                    fontSize: '0.75rem',
-                    color: '#777',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    marginTop: 0,
-                  }}>
-                    {distanceValue !== null && distanceValue !== undefined && (
-                      <span><span style={{color: '#888'}}>📍</span> {distanceValue.toFixed(1)} km</span>
-                    )}
-                    {formattedEndDate && <span><span style={{color: '#2e7d32', opacity: 0.75}}>📅</span> {formattedEndDate}</span>}
-                  </div>
-                )}
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: '#777',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  minHeight: '16px',
+                  marginTop: 0,
+                  flexWrap: 'wrap',
+                  visibility: (formattedEndDate || distanceValue !== null && distanceValue !== undefined || deal.business?.name) ? 'visible' : 'hidden',
+                }}>
+                  {distanceValue !== null && distanceValue !== undefined && (
+                    <>
+                      <span><span style={{color: '#2e7d32', opacity: 0.75}}>📍</span> {distanceValue.toFixed(1)} km</span>
+                      {(formattedEndDate || deal.business?.name) && <span>·</span>}
+                    </>
+                  )}
+                  {formattedEndDate && (
+                    <>
+                      <span><span style={{color: '#2e7d32', opacity: 0.75}}>📅</span> {formattedEndDate}</span>
+                      {deal.business?.name && <span>·</span>}
+                    </>
+                  )}
+                  {deal.business?.name && <span style={{ color: '#666' }}>{deal.business.name}</span>}
+                </div>
 
                 <div style={{ display: 'flex', gap: '0.25rem', marginTop: 0 }}>
                   <button
