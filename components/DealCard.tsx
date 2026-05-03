@@ -29,7 +29,18 @@ interface DealCardProps {
       slug: string
     } | null
     validUntil?: string | Date | null
+    endDate?: string | Date | null
     distance?: number | null
+    distanceKm?: number | null
+    previewText?: string | null
+    fullDescription?: string | null
+    badge?: string | null
+    discount?: string | null
+    type?: string | null
+    logo?: string | null
+    image?: string | null
+    video?: string | null
+    mp4?: string | null
   }
   mode?: 'normal' | 'ourDeal'
 }
@@ -42,6 +53,12 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   const businessSlug = deal.business?.slug
 
   const isOurDeal = mode === 'ourDeal'
+  const previewText = deal.previewText ?? deal.description
+  const fullDescription = deal.fullDescription ?? deal.description
+  const badgeLabel = deal.discountText ?? deal.badge ?? deal.discount ?? deal.type
+  const endDateValue = deal.validUntil ?? deal.endDate
+  const distanceValue = deal.distanceKm ?? deal.distance
+  const formattedEndDate = formatDate(endDateValue)
 
   // Load bookmark state from localStorage on mount
   useEffect(() => {
@@ -121,6 +138,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
     width: '100%',
     maxWidth: '640px',
     minWidth: 0,
+    minHeight: !isOurDeal && !isPreviewOpen ? '100px' : undefined,
     boxSizing: 'border-box',
     position: 'relative',
     overflow: 'hidden',
@@ -296,7 +314,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   }
 
   // Format date if it exists
-  const formatDate = (date: string | Date | null | undefined) => {
+  function formatDate(date: string | Date | null | undefined) {
     if (!date) return null
     try {
       const d = new Date(date)
@@ -329,21 +347,6 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           gap: '8px',
           zIndex: 20,
         }}>
-          {deal.discountText && (
-            <span style={{
-              background: '#ff6b6b',
-              color: '#fff',
-              padding: '4px 8px',
-              borderRadius: '6px',
-              fontSize: '0.65rem',
-              fontWeight: 'bold',
-              whiteSpace: 'nowrap',
-              display: 'inline-flex',
-              alignItems: 'center',
-            }}>
-              {deal.discountText}
-            </span>
-          )}
           <button
             onClick={handleBookmarkClick}
             style={{
@@ -420,35 +423,21 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           {/* Right: Content */}
           <div style={{ flex: 1, minWidth: 0, padding: '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
             {/* Top row: Title + Badge */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem', gap: '0.5rem', minWidth: 0, overflow: 'hidden' }}>
-              {/* Title */}
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: '1 1 auto', minWidth: 0, overflow: 'hidden' }}>
                 {deal.isPremium && <span aria-hidden="true">🔥</span>}
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minWidth: 0 }}>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block' }}>
                   {deal.title}
                 </span>
               </h4>
+              {badgeLabel && (
+                <span style={{ background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 'bold', whiteSpace: 'nowrap', flex: '0 0 auto' }}>
+                  {badgeLabel}
+                </span>
+              )}
             </div>
 
-            {/* Description (max 2 lines) */}
-            {deal.description && (
-              <p style={{ 
-                fontSize: '0.75rem', 
-                color: '#666', 
-                margin: '0 0 0.5rem 0', 
-                overflow: 'hidden', 
-                textOverflow: 'ellipsis', 
-                display: '-webkit-box', 
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical', 
-                lineHeight: 1.4,
-              }}>
-                {deal.description}
-              </p>
-            )}
-
-            {/* Preview box (expanded) */}
-            {isPreviewOpen && deal.description && (
+            {(isOurDeal || isPreviewOpen) && (isOurDeal ? fullDescription : previewText) && (
               <div style={{
                 marginBottom: '0.5rem',
                 padding: '0.5rem',
@@ -458,37 +447,9 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                 fontSize: '0.75rem',
                 color: '#555',
                 lineHeight: 1.5,
-                position: 'relative',
               }}>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    setIsPreviewOpen(false)
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: '0.25rem',
-                    right: '0.25rem',
-                    width: '16px',
-                    height: '16px',
-                    border: 'none',
-                    background: 'rgba(0,0,0,0.1)',
-                    borderRadius: '50%',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '10px',
-                    lineHeight: 1,
-                    color: '#666',
-                    padding: '0',
-                  }}
-                >
-                  ×
-                </button>
                 <div style={{ paddingRight: '1rem' }}>
-                  {deal.description}
+                  {isOurDeal ? fullDescription : previewText}
                 </div>
               </div>
             )}
@@ -509,26 +470,16 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                   whiteSpace: 'nowrap',
                 }}
               >
-                Deal einlösen
+                Jetzt unverbindlich einlösen
               </button>
             </div>
 
-            {/* Footer: Business · Date · Distance */}
+            {/* Footer: Date · Distance */}
             <div style={{ fontSize: '0.7rem', color: '#999', display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
-              {deal.business?.name && (
-                <>
-                  <span>{deal.business.name}</span>
-                  {(deal.validUntil || (deal.distance !== null && deal.distance !== undefined)) && <span>·</span>}
-                </>
-              )}
-              {deal.validUntil && (
-                <>
-                  <span>📅 {formatDate(deal.validUntil)}</span>
-                  {deal.distance !== null && deal.distance !== undefined && <span>·</span>}
-                </>
-              )}
-              {deal.distance !== null && deal.distance !== undefined && (
-                <span>📍 {deal.distance.toFixed(1)} km</span>
+              {formattedEndDate && <span>📅 {formattedEndDate}</span>}
+              {formattedEndDate && distanceValue !== null && distanceValue !== undefined && <span>·</span>}
+              {distanceValue !== null && distanceValue !== undefined && (
+                <span>📍 {distanceValue.toFixed(1)} km</span>
               )}
             </div>
           </div>
@@ -551,7 +502,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           className={cardClass}
           onClick={handleCardTap}
         >
-        {isPreviewOpen && (
+        {isPreviewOpen ? (
           <div style={{
             position: 'absolute',
             top: '10px',
@@ -561,21 +512,6 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
             gap: '8px',
             zIndex: 20,
           }}>
-            {deal.discountText && (
-              <span style={{
-                background: '#ff6b6b',
-                color: '#fff',
-                padding: '4px 8px',
-                borderRadius: '6px',
-                fontSize: '0.65rem',
-                fontWeight: 'bold',
-                whiteSpace: 'nowrap',
-                display: 'inline-flex',
-                alignItems: 'center',
-              }}>
-                {deal.discountText}
-              </span>
-            )}
             <button
               onClick={handleBookmarkClick}
               style={{
@@ -616,9 +552,31 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
               ×
             </button>
           </div>
+        ) : (
+          <button
+            onClick={handleBookmarkClick}
+            style={{
+              position: 'absolute',
+              top: '12px',
+              right: '12px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1rem',
+              padding: '0',
+              lineHeight: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 20,
+            }}
+            title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
+          >
+            {isSaved ? '❤️' : '🤍'}
+          </button>
         )}
         {/* Card content for normal mode */}
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: isPreviewOpen ? 'flex-start' : 'center' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
             width: '100px', 
@@ -629,7 +587,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
             alignItems: 'center', 
             justifyContent: 'center',
             borderRadius: '8px',
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}>
             {deal.isPremium ? (
               <video
@@ -654,73 +612,35 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, minWidth: 0, padding: isPreviewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: isPreviewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.75rem 3rem 0.75rem 0', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', gap: '0.25rem', position: 'relative', overflow: 'hidden' }}>
             {/* Top row: Title + Badge */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem', gap: '0.5rem', minWidth: 0, overflow: 'hidden' }}>
-              {/* Title */}
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 0, paddingRight: '48px' }}>
+              <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
                 {deal.isPremium && <span aria-hidden="true">🔥</span>}
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minWidth: 0 }}>
-                  {deal.title}
-                </span>
-              </h4>
+                {deal.title}
+              </div>
 
-              {/* Badge (top right for compact normal mode) */}
-              {!isPreviewOpen && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
-                  {deal.discountText && (
-                    <span style={{ background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                      {deal.discountText}
-                    </span>
-                  )}
-                </div>
+              {badgeLabel && (
+                <span style={{ marginLeft: '8px', flexShrink: 0, whiteSpace: 'nowrap', background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center' }}>
+                  {badgeLabel}
+                </span>
               )}
             </div>
 
-            {/* Bookmark icon (compact normal mode only) */}
-            {!isPreviewOpen && (
-              <button
-                onClick={handleBookmarkClick}
-                style={{
-                  position: 'absolute',
-                  top: '10px',
-                  right: '10px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  padding: '0',
-                  lineHeight: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 10,
-                }}
-                title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
-              >
-                {isSaved ? '❤️' : '🤍'}
-              </button>
-            )}
-
-            {/* Description (max 2 lines) */}
-            {deal.description && (
-              <p style={{ 
-                fontSize: '0.75rem', 
-                color: '#666', 
-                margin: '0 0 0.5rem 0', 
-                overflow: 'hidden', 
-                textOverflow: 'ellipsis', 
-                display: '-webkit-box', 
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical', 
-                lineHeight: 1.4,
+            {deal.business?.name && (
+              <div style={{
+                fontSize: '0.75rem',
+                color: '#666',
+                marginBottom: '0.15rem',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}>
-                {deal.description}
-              </p>
+                {deal.business.name}
+              </div>
             )}
 
-            {/* Preview box (expanded) */}
-            {isPreviewOpen && deal.description && (
+            {isPreviewOpen && previewText && (
               <div style={{
                 marginBottom: '0.5rem',
                 padding: '0.5rem',
@@ -730,46 +650,43 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                 fontSize: '0.75rem',
                 color: '#555',
                 lineHeight: 1.5,
-                position: 'relative',
               }}>
                 <div style={{ paddingRight: '1rem' }}>
-                  {deal.description}
+                  {previewText}
                 </div>
               </div>
             )}
 
-            {/* Button row */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
-              <button
-                onClick={isPreviewOpen ? handlePreviewNavigate : handleCardTap}
-                style={{ 
-                  fontSize: '0.8rem', 
-                  color: '#fff', 
-                  fontWeight: '600',
-                  background: isPreviewOpen ? '#4caf50' : '#4285f4',
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '0.5rem 0.75rem',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {isPreviewOpen ? 'Zum Deal →' : 'Mehr'}
-              </button>
-            </div>
+            {isPreviewOpen && (
+              <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                <button
+                  onClick={handlePreviewNavigate}
+                  style={{ 
+                    fontSize: '0.8rem', 
+                    color: '#fff', 
+                    fontWeight: '600',
+                    background: '#4caf50',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '0.5rem 0.75rem',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Zum Deal →
+                </button>
+              </div>
+            )}
 
-            {/* Footer: Business · Distance (NO date in normal mode) */}
-            <div style={{ fontSize: '0.7rem', color: '#999', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-              {deal.business?.name && (
-                <>
-                  <span>{deal.business.name}</span>
-                  {deal.distance !== null && deal.distance !== undefined && <span>·</span>}
-                </>
-              )}
-              {deal.distance !== null && deal.distance !== undefined && (
-                <span>📍 {deal.distance.toFixed(1)} km</span>
-              )}
-            </div>
+            {(formattedEndDate || distanceValue !== null && distanceValue !== undefined) && (
+              <div style={{ fontSize: '0.7rem', color: '#999', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                {formattedEndDate && <span>📅 {formattedEndDate}</span>}
+                {formattedEndDate && distanceValue !== null && distanceValue !== undefined && <span>·</span>}
+                {distanceValue !== null && distanceValue !== undefined && (
+                  <span>📍 {distanceValue.toFixed(1)} km</span>
+                )}
+              </div>
+            )}
           </div>
         </div>
         </div>
