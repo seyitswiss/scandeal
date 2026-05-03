@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
-import DealCard from '@/components/DealCard'
+import DealCardList from '@/components/DealCardList'
 import IconRow from '@/components/IconRow'
 import GoogleReviewBox from '@/components/GoogleReviewBox'
 import ProfileTracker from '@/components/ProfileTracker'
@@ -349,20 +349,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         alignItems: 'stretch',
         gap: '24px',
       }}>
-        {/* OUR DEAL - only if valid dealId and belongs to this business */}
-        {ourDeal && (
-          <DealCard deal={ourDeal} mode="ourDeal" />
-        )}
-
-        {/* 5. DEAL SECTION */}
-        {selectedDeals.length > 0 && (
-          <>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.75rem', textAlign: 'center' }}>Weitere Deals</h2>
-            {selectedDeals.map((deal: typeof scoredDeals[0]) => (
-              <DealCard key={deal.id} deal={deal} />
-            ))}
-          </>
-        )}
+        <DealCardList ourDeal={ourDeal} selectedDeals={selectedDeals} />
       </div>
     </div>
     </ProfileTracker>

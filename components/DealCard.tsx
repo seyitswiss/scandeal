@@ -44,14 +44,25 @@ interface DealCardProps {
     mp4?: string | null
   }
   mode?: 'normal' | 'ourDeal'
+  isPreviewOpen?: boolean
+  onPreviewToggle?: (dealId: string, open: boolean) => void
 }
 
-export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
+export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPreviewOpenProp, onPreviewToggle }: DealCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const router = useRouter()
   const businessSlug = deal.business?.slug
+
+  const previewOpen = typeof isPreviewOpenProp === 'boolean' ? isPreviewOpenProp : localPreviewOpen
+  const setPreviewOpen = (open: boolean) => {
+    if (typeof isPreviewOpenProp === 'boolean') {
+      onPreviewToggle?.(deal.id, open)
+    } else {
+      setLocalPreviewOpen(open)
+    }
+  }
 
   const isOurDeal = mode === 'ourDeal'
   const previewText = deal.previewText ?? deal.description
@@ -139,10 +150,10 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
   const cardStyle: React.CSSProperties = {
     display: 'flex',
     width: '100%',
-    maxWidth: isPreviewOpen ? '820px' : '760px',
+    maxWidth: previewOpen ? '820px' : '760px',
     margin: '0 auto',
     minWidth: 0,
-    minHeight: !isOurDeal && !isPreviewOpen ? '150px' : undefined,
+    minHeight: !isOurDeal && !previewOpen ? '150px' : undefined,
     boxSizing: 'border-box',
     position: 'relative',
     overflow: 'hidden',
@@ -151,10 +162,10 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
     borderRadius: isOurDeal || deal.isPremium ? '12px' : '16px',
     background: '#fff',
     border: isOurDeal || deal.isPremium ? '2px solid #f5c842' : undefined,
-    boxShadow: isPreviewOpen ? '0 20px 60px rgba(0,0,0,0.18)' : (isOurDeal ? undefined : '0 4px 10px rgba(0,0,0,0.05)'),
-    transform: isPreviewOpen ? 'translateY(-4px) scale(1.025)' : undefined,
-    zIndex: isPreviewOpen ? 30 : undefined,
-    transition: isPreviewOpen ? 'all 0.18s ease' : undefined,
+    boxShadow: previewOpen ? '0 20px 60px rgba(0,0,0,0.18)' : (isOurDeal ? undefined : '0 4px 10px rgba(0,0,0,0.05)'),
+    transform: previewOpen ? 'translateY(-4px) scale(1.025)' : undefined,
+    zIndex: previewOpen ? 30 : undefined,
+    transition: previewOpen ? 'all 0.18s ease' : undefined,
     flexDirection: 'column',
     alignSelf: 'stretch',
     padding: '12px',
@@ -194,11 +205,13 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
     e.preventDefault()
     e.stopPropagation()
 
+    if (isExpanded) return
+
     const redeemedKey = `redeemed_${deal.id}`
 
     // Check if already redeemed
     if (localStorage.getItem(redeemedKey)) {
-      alert("Deal bereits eingelöst")
+      setIsExpanded(true)
       return
     }
 
@@ -220,7 +233,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
       localStorage.setItem(redeemedKey, "true")
     }
 
-    setIsExpanded(!isExpanded)
+    setIsExpanded(true)
   }
 
   // Handle preview expand for normal mode
@@ -243,7 +256,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
       })
     }
 
-    setIsPreviewOpen(true)
+    setPreviewOpen(true)
   }
 
   // Handle navigation to deal for normal mode
@@ -281,7 +294,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
     e.stopPropagation()
 
     // Track preview_open only on first open
-    if (!isPreviewOpen && deal.id && deal.businessId) {
+    if (!previewOpen && deal.id && deal.businessId) {
       fetch('/api/deal-stats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -296,7 +309,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
       })
     }
 
-    setIsPreviewOpen(!isPreviewOpen)
+    setPreviewOpen(!previewOpen)
   }
 
   // Handle bookmark toggle
@@ -446,14 +459,14 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           <div style={{ flex: 1, minWidth: 0, padding: '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
             {/* Top row: Title + Badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: '1 1 auto', minWidth: 0, overflow: 'hidden' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1, minWidth: 0, overflow: 'hidden' }}>
                 {deal.isPremium && <span aria-hidden="true">🔥</span>}
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block' }}>
                   {deal.title}
                 </span>
               </h4>
               {badgeLabel && (
-                <span style={{ background: '#2e7d32', color: '#fff', padding: '2px 6px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 'bold', whiteSpace: 'nowrap', flex: '0 0 auto' }}>
+                <span style={{ marginLeft: 'auto', background: '#2e7d32', color: '#fff', padding: '2px 6px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 'bold', whiteSpace: 'nowrap', flex: '0 0 auto' }}>
                   {badgeLabel}
                 </span>
               )}
@@ -461,54 +474,65 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
 
             {deal.highlight && (
               <div style={{
-                background: '#e8f5e9',
                 color: '#2e7d32',
-                padding: '4px 10px',
-                borderRadius: '10px',
-                fontSize: '0.75rem',
+                fontSize: '0.8rem',
+                fontWeight: 600,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                width: 'fit-content',
+                padding: '2px 0',
               }}>
-                ✔ {deal.highlight}
+                <span style={{
+                  width: '14px',
+                  height: '14px',
+                  border: '1.5px solid #388e3c',
+                  borderRadius: '50%',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.7rem',
+                  color: '#388e3c',
+                  background: 'transparent',
+                  flexShrink: 0,
+                }}>
+                  ✔
+                </span>
+                <span>{deal.highlight}</span>
               </div>
             )}
 
-            {(isOurDeal || isPreviewOpen) && (isOurDeal ? fullDescription : previewText) && (
+            {fullDescription && (
               <div style={{
-                marginBottom: '0.5rem',
-                padding: '0.5rem',
-                background: '#f9f9f9',
-                border: '1px solid #e0e0e0',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
-                color: '#555',
-                lineHeight: 1.5,
+                fontSize: '0.88rem',
+                color: '#444',
+                lineHeight: 1.6,
+                margin: '0.5rem 0 0 0',
+                overflow: 'hidden',
               }}>
-                <div style={{ paddingRight: '1rem' }}>
-                  {isOurDeal ? fullDescription : previewText}
-                </div>
+                {fullDescription}
               </div>
             )}
 
             {/* Button row */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', margin: '0.9rem 0 0 0' }}>
               <button
                 onClick={handleRedeem}
+                disabled={isExpanded}
                 style={{ 
-                  fontSize: '0.8rem', 
+                  fontSize: '0.95rem', 
                   color: '#fff', 
-                  fontWeight: '600',
-                  background: '#f5c842',
+                  fontWeight: '700',
+                  background: '#2e7d32',
                   border: 'none',
-                  borderRadius: '10px',
-                  padding: '0.5rem 0.75rem',
-                  cursor: 'pointer',
+                  borderRadius: '12px',
+                  padding: '0.95rem 1.1rem',
+                  cursor: isExpanded ? 'not-allowed' : 'pointer',
                   whiteSpace: 'nowrap',
+                  boxShadow: '0 10px 20px rgba(46,125,50,0.18)',
+                  opacity: isExpanded ? 0.65 : 1,
                 }}
               >
-                Jetzt unverbindlich einlösen
+                {isExpanded ? 'BEREITS EINGELÖST' : 'JETZT EINLÖSEN'}
               </button>
             </div>
 
@@ -527,7 +551,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
         {isExpanded && (
           <div style={{ padding: '0.75rem', borderTop: '1px solid #f5c842', background: '#fff9e6' }}>
             <div style={{ background: '#4caf50', color: '#fff', padding: '0.75rem', borderRadius: '6px', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 'bold' }}>Deal aktiviert!</p>
+              <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 'bold' }}>Deal aktiviert ✔️</p>
               <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem' }}>Code: SD-0001</p>
               <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', opacity: 0.9 }}>Zeige diesen Code vor Ort</p>
             </div>
@@ -540,7 +564,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           className={cardClass}
           onClick={handleCardTap}
         >
-        {isPreviewOpen ? (
+        {previewOpen ? (
           <div style={{
             position: 'absolute',
             top: '10px',
@@ -578,7 +602,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                setIsPreviewOpen(false)
+                setPreviewOpen(false)
               }}
               style={{
                 width: '24px',
@@ -628,7 +652,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           </button>
         )}
         {/* Card content for normal mode */}
-        <div style={{ display: 'flex', gap: '16px', alignItems: isPreviewOpen ? 'flex-start' : 'center' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: previewOpen ? 'flex-start' : 'center' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
             width: '190px', 
@@ -664,8 +688,8 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, minWidth: 0, padding: isPreviewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.75rem 3rem 0.75rem 0', display: 'flex', flexDirection: 'column', justifyContent: isPreviewOpen ? 'flex-start' : 'center', gap: isPreviewOpen ? '0.25rem' : '6px', position: 'relative', overflow: 'hidden' }}>
-            {isPreviewOpen ? (
+          <div style={{ flex: 1, minWidth: 0, padding: previewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.75rem 3rem 0.75rem 0', display: 'flex', flexDirection: 'column', justifyContent: previewOpen ? 'flex-start' : 'center', gap: previewOpen ? '0.25rem' : '6px', position: 'relative', overflow: 'hidden' }}>
+            {previewOpen ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0, width: '100%' }}>
                 {/* Top row: Title + Badge */}
                 <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px' }}>
@@ -706,7 +730,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                   </div>
                 )}
 
-                {previewText && (
+                {previewTeaser && (
                   <div style={{
                     fontSize: '0.85rem',
                     color: '#444',
@@ -716,7 +740,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                     padding: 0,
                     margin: 0,
                   }}>
-                    {previewText}
+                    {previewTeaser}
                   </div>
                 )}
 
