@@ -365,7 +365,14 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
             }}
             title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
           >
-            {isSaved ? '❤️' : '🤍'}
+            <span style={{
+              color: isSaved ? '#2e7d32' : '#b5b5b5',
+              opacity: isSaved ? 1 : 0.55,
+              fontSize: '1.35rem',
+              fontWeight: isSaved ? '700' : 'normal',
+              transform: isSaved ? 'scale(1.08)' : 'scale(1)',
+              transition: 'all 0.15s ease'
+            }}>🔖</span>
           </button>
           <button
             onClick={handleClose}
@@ -546,7 +553,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
               }}
               title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
             >
-              <span style={{color: isSaved ? '#2e7d32' : '#bbb'}}>{isSaved ? '❤️' : '🤍'}</span>
+              <span style={{color: isSaved ? '#2e7d32' : '#bbb', opacity: isSaved ? 1 : 0.7}}>🔖</span>
             </button>
             <button
               onClick={(e) => {
@@ -591,7 +598,7 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
             }}
             title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
           >
-            <span style={{color: isSaved ? '#2e7d32' : '#bbb'}}>{isSaved ? '❤️' : '🤍'}</span>
+            <span style={{color: isSaved ? '#2e7d32' : '#bbb', opacity: isSaved ? 1 : 0.7}}>🔖</span>
           </button>
         )}
         {/* Card content for normal mode */}
