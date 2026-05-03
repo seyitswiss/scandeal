@@ -242,39 +242,19 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const tripadvisorUrl = normalizeUrl(business.tripadvisor)
   const tiktokUrl = normalizeUrl(business.tiktok)
 
-  // Determine which links are shown as buttons (to avoid duplicates in icons)
-  const buttonLinks = {
-    website: !!websiteUrl,
-    route: !!googleMapsUrl,
-    whatsapp: !!whatsappUrl,
-    phone: !!phoneUrl,
-    instagram: !!instagramUrl,
-  }
-
-  // Icons to show (exclude those shown as buttons)
+  // Icons to show: SOCIAL LINKS ONLY (never as buttons)
   const iconItems = [
-    { url: websiteUrl, icon: '/icons/website.svg', label: 'Website' },
     { url: instagramUrl, icon: '/icons/instagram.svg', label: 'Instagram' },
     { url: facebookUrl, icon: '/icons/facebook.svg', label: 'Facebook' },
-    { url: whatsappUrl, icon: '/icons/whatsapp.svg', label: 'WhatsApp' },
-    { url: phoneUrl, icon: '/icons/telefon.svg', label: 'Phone' },
-    { url: emailUrl, icon: '/icons/mail.svg', label: 'Email' },
+    { url: tiktokUrl, icon: '/icons/tiktok.svg', label: 'TikTok' },
     { url: linkedinUrl, icon: '/icons/linkedin.svg', label: 'LinkedIn' },
     { url: tripadvisorUrl, icon: '/icons/tripadvisor.svg', label: 'TripAdvisor' },
-    { url: tiktokUrl, icon: '/icons/tiktok.svg', label: 'TikTok' },
-  ].filter(item => {
-    // Filter out if URL is null
-    if (!item.url) return false
-    // Filter out if shown as button
-    if (item.label === 'Website' && buttonLinks.website) return false
-    if (item.label === 'WhatsApp' && buttonLinks.whatsapp) return false
-    if (item.label === 'Phone' && buttonLinks.phone) return false
-    return true
-  })
+    { url: emailUrl, icon: '/icons/mail.svg', label: 'Email' },
+  ].filter(item => item.url !== null)
 
   return (
     <ProfileTracker businessId={business.id}>
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem' }}>
+      <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', padding: '1rem', boxSizing: 'border-box' }}>
       {/* 1. MAIN OP HEADER CARD */}
       <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
@@ -302,64 +282,88 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
           <IconRow icons={iconItems} businessId={business.id} />
         </div>
+
+        {/* Google Review Box */}
+        <GoogleReviewBox
+          businessName={business.name}
+          googleReviewUrl={googleReviewUrl}
+          whatsappUrl={whatsappUrl}
+          emailUrl={emailUrl}
+          businessId={business.id}
+        />
+
+        {/* Action buttons for core links ONLY */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '1rem' }}>
+          {websiteUrl && (
+            <TrackedLink href={websiteUrl} businessId={business.id} source="website" style={{ display: 'block', textAlign: 'center', background: '#34a853', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
+              Website
+            </TrackedLink>
+          )}
+          {googleMapsUrl && (
+            <TrackedLink href={googleMapsUrl} businessId={business.id} source="google" style={{ display: 'block', textAlign: 'center', background: '#4285f4', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
+              Route
+            </TrackedLink>
+          )}
+          {whatsappUrl && (
+            <TrackedLink href={whatsappUrl} businessId={business.id} source="whatsapp" style={{ display: 'block', textAlign: 'center', background: '#25d366', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
+              WhatsApp
+            </TrackedLink>
+          )}
+          {phoneUrl && (
+            <TrackedLink href={phoneUrl} businessId={business.id} source="phone" style={{ display: 'block', textAlign: 'center', background: '#000', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
+              Phone
+            </TrackedLink>
+          )}
+        </div>
+
+        {/* Custom Links */}
+        {customLinks.length > 0 && (
+          <div style={{ marginTop: '1rem' }}>
+            {customLinks.map((link, index) => {
+              const normalized = normalizeUrl(link.url)
+              if (!normalized) return null
+              return (
+                <TrackedLink
+                  key={index}
+                  href={normalized}
+                  businessId={business.id}
+                  source="website"
+                  style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '0.5rem', textDecoration: 'none', color: '#333', fontSize: '0.9rem' }}
+                >
+                  {link.label}
+                </TrackedLink>
+              )
+            })}
+          </div>
+        )}
       </div>
 
-      {/* OUR DEAL - only if valid dealId and belongs to this business */}
-      {ourDeal && (
-        <div style={{ marginBottom: '1rem', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+      {/* DEAL CARDS CONTAINER - stable wrapper for all DealCards */}
+      <div style={{
+        width: '100%',
+        maxWidth: '640px',
+        margin: '0 auto',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        gap: '24px',
+      }}>
+        {/* OUR DEAL - only if valid dealId and belongs to this business */}
+        {ourDeal && (
           <DealCard deal={ourDeal} mode="ourDeal" />
-        </div>
-      )}
+        )}
 
-      {/* 2. GOOGLE REVIEW BOX */}
-      <GoogleReviewBox 
-        businessName={business.name} 
-        googleReviewUrl={googleReviewUrl}
-        whatsappUrl={whatsappUrl}
-        emailUrl={emailUrl}
-        businessId={business.id}
-      />
-
-      {/* 3. MAIN ACTION BUTTONS */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
-        {websiteUrl && <TrackedLink href={websiteUrl} businessId={business.id} source="website" style={{ display: 'block', textAlign: 'center', background: '#34a853', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Website</TrackedLink>}
-        {instagramUrl && !buttonLinks.instagram && <TrackedLink href={instagramUrl} businessId={business.id} source="instagram" style={{ display: 'block', textAlign: 'center', background: '#e1306c', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Instagram</TrackedLink>}
-        {googleMapsUrl && <TrackedLink href={googleMapsUrl} businessId={business.id} source="google" style={{ display: 'block', textAlign: 'center', background: '#4285f4', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>Route</TrackedLink>}
-        {whatsappUrl && <TrackedLink href={whatsappUrl} businessId={business.id} source="whatsapp" style={{ display: 'block', textAlign: 'center', background: '#25d366', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>WhatsApp</TrackedLink>}
-      </div>
-
-      {/* 4. CUSTOM LINKS */}
-      {customLinks.length > 0 && (
-        <div style={{ marginBottom: '1rem' }}>
-          {customLinks.map((link, index) => {
-            const normalized = normalizeUrl(link.url)
-            if (!normalized) return null
-            return (
-              <TrackedLink
-                key={index}
-                href={normalized}
-                businessId={business.id}
-                source="website"
-                style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '0.5rem', textDecoration: 'none', color: '#333', fontSize: '0.9rem' }}
-              >
-                {link.label}
-              </TrackedLink>
-            )
-          })}
-        </div>
-      )}
-
-      {/* 5. DEAL SECTION */}
-      {selectedDeals.length > 0 && (
-        <div style={{ marginTop: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.75rem', textAlign: 'center' }}>Weitere Deals</h2>
-          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+        {/* 5. DEAL SECTION */}
+        {selectedDeals.length > 0 && (
+          <>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.75rem', textAlign: 'center' }}>Weitere Deals</h2>
             {selectedDeals.map((deal: typeof scoredDeals[0]) => (
               <DealCard key={deal.id} deal={deal} />
             ))}
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </div>
     </ProfileTracker>
   )

@@ -120,18 +120,18 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
     display: 'flex',
     width: '100%',
     maxWidth: '640px',
+    minWidth: 0,
     boxSizing: 'border-box',
-    margin: '0 auto',
     position: 'relative',
     overflow: 'hidden',
     textDecoration: 'none',
     color: 'inherit',
-    marginBottom: '0.75rem',
     borderRadius: isOurDeal || deal.isPremium ? '12px' : '8px',
     background: isOurDeal ? '#fff9e6' : '#fff',
     border: isOurDeal || deal.isPremium ? '2px solid #f5c842' : undefined,
     boxShadow: isOurDeal ? undefined : deal.isPremium ? '0 2px 8px rgba(245, 200, 66, 0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
-    flexDirection: isOurDeal ? 'column' : 'row',
+    flexDirection: 'column',
+    alignSelf: 'stretch',
   }
 
   // Add premium class for hover effects
@@ -320,28 +320,66 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
       {isOurDeal ? (
         <div style={cardStyle} className={cardClass} onClick={handleDealClick}>
         {/* Close button for OUR DEAL */}
-        <button
-          onClick={handleClose}
-          style={{
-            position: 'absolute',
-            top: '0.5rem',
-            right: '0.5rem',
-            width: '24px',
-            height: '24px',
-            border: 'none',
-            background: 'rgba(0,0,0,0.1)',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '14px',
-            lineHeight: 1,
-            zIndex: 10,
-          }}
-        >
-          ×
-        </button>
+        <div style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          zIndex: 20,
+        }}>
+          {deal.discountText && (
+            <span style={{
+              background: '#ff6b6b',
+              color: '#fff',
+              padding: '4px 8px',
+              borderRadius: '6px',
+              fontSize: '0.65rem',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap',
+              display: 'inline-flex',
+              alignItems: 'center',
+            }}>
+              {deal.discountText}
+            </span>
+          )}
+          <button
+            onClick={handleBookmarkClick}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1rem',
+              padding: '0',
+              lineHeight: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
+          >
+            {isSaved ? '❤️' : '🤍'}
+          </button>
+          <button
+            onClick={handleClose}
+            style={{
+              width: '24px',
+              height: '24px',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '16px',
+              lineHeight: 1,
+              padding: '0',
+            }}
+          >
+            ×
+          </button>
+        </div>
 
         {/* Card content */}
         <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -380,49 +418,17 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, padding: '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
             {/* Top row: Title + Badge */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem', gap: '0.5rem', minWidth: 0, overflow: 'hidden' }}>
               {/* Title */}
               <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1 }}>
                 {deal.isPremium && <span aria-hidden="true">🔥</span>}
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minWidth: 0 }}>
                   {deal.title}
                 </span>
               </h4>
-
-              {/* Badge (top right) */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
-                {deal.discountText && (
-                  <span style={{ background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                    {deal.discountText}
-                  </span>
-                )}
-              </div>
             </div>
-
-            {/* Bookmark icon (absolutely positioned) */}
-            <button
-              onClick={handleBookmarkClick}
-              style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                padding: '0',
-                lineHeight: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10,
-              }}
-              title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
-            >
-              {isSaved ? '❤️' : '🤍'}
-            </button>
 
             {/* Description (max 2 lines) */}
             {deal.description && (
@@ -545,6 +551,72 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           className={cardClass}
           onClick={handleCardTap}
         >
+        {isPreviewOpen && (
+          <div style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            zIndex: 20,
+          }}>
+            {deal.discountText && (
+              <span style={{
+                background: '#ff6b6b',
+                color: '#fff',
+                padding: '4px 8px',
+                borderRadius: '6px',
+                fontSize: '0.65rem',
+                fontWeight: 'bold',
+                whiteSpace: 'nowrap',
+                display: 'inline-flex',
+                alignItems: 'center',
+              }}>
+                {deal.discountText}
+              </span>
+            )}
+            <button
+              onClick={handleBookmarkClick}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                padding: '0',
+                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
+            >
+              {isSaved ? '❤️' : '🤍'}
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setIsPreviewOpen(false)
+              }}
+              style={{
+                width: '24px',
+                height: '24px',
+                border: 'none',
+                background: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '16px',
+                lineHeight: 1,
+                padding: '0',
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
         {/* Card content for normal mode */}
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           {/* Left: Deal Image or Video for Premium */}
@@ -582,49 +654,53 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, padding: '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: isPreviewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
             {/* Top row: Title + Badge */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem', gap: '0.5rem', minWidth: 0, overflow: 'hidden' }}>
               {/* Title */}
               <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1 }}>
                 {deal.isPremium && <span aria-hidden="true">🔥</span>}
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minWidth: 0 }}>
                   {deal.title}
                 </span>
               </h4>
 
-              {/* Badge (top right) */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
-                {deal.discountText && (
-                  <span style={{ background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                    {deal.discountText}
-                  </span>
-                )}
-              </div>
+              {/* Badge (top right for compact normal mode) */}
+              {!isPreviewOpen && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
+                  {deal.discountText && (
+                    <span style={{ background: '#ff6b6b', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontSize: '0.6rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                      {deal.discountText}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Bookmark icon (absolutely positioned) */}
-            <button
-              onClick={handleBookmarkClick}
-              style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                padding: '0',
-                lineHeight: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10,
-              }}
-              title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
-            >
-              {isSaved ? '❤️' : '🤍'}
-            </button>
+            {/* Bookmark icon (compact normal mode only) */}
+            {!isPreviewOpen && (
+              <button
+                onClick={handleBookmarkClick}
+                style={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '10px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  padding: '0',
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 10,
+                }}
+                title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
+              >
+                {isSaved ? '❤️' : '🤍'}
+              </button>
+            )}
 
             {/* Description (max 2 lines) */}
             {deal.description && (
@@ -656,33 +732,6 @@ export default function DealCard({ deal, mode = 'normal' }: DealCardProps) {
                 lineHeight: 1.5,
                 position: 'relative',
               }}>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    setIsPreviewOpen(false)
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: '0.25rem',
-                    right: '0.25rem',
-                    width: '16px',
-                    height: '16px',
-                    border: 'none',
-                    background: 'rgba(0,0,0,0.1)',
-                    borderRadius: '50%',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '10px',
-                    lineHeight: 1,
-                    color: '#666',
-                    padding: '0',
-                  }}
-                >
-                  ×
-                </button>
                 <div style={{ paddingRight: '1rem' }}>
                   {deal.description}
                 </div>
