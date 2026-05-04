@@ -161,8 +161,8 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
     color: 'inherit',
     borderRadius: isOurDeal || deal.isPremium ? '12px' : '16px',
     background: '#fff',
-    border: isOurDeal || deal.isPremium ? '2px solid #f5c842' : undefined,
-    boxShadow: previewOpen ? '0 20px 60px rgba(0,0,0,0.18)' : (isOurDeal ? undefined : '0 4px 10px rgba(0,0,0,0.05)'),
+    border: deal.isPremium ? '1.5px solid rgba(245, 200, 66, 0.35)' : isOurDeal ? '1px solid #e5e5e5' : undefined,
+    boxShadow: previewOpen ? '0 20px 60px rgba(0,0,0,0.18)' : (deal.isPremium ? '0 8px 22px rgba(0,0,0,0.10)' : (isOurDeal ? undefined : '0 4px 10px rgba(0,0,0,0.05)')),
     transform: previewOpen ? 'translateY(-4px) scale(1.025)' : undefined,
     zIndex: previewOpen ? 30 : undefined,
     transition: previewOpen ? 'all 0.18s ease' : undefined,
@@ -474,15 +474,15 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
 
             {deal.highlight && (
               <div style={{
-                background: '#ecf7ed',
-                color: '#1b5e20',
+                background: 'rgba(46, 125, 50, 0.10)',
+                color: '#2e7d32',
                 fontSize: '0.82rem',
-                fontWeight: 600,
+                fontWeight: 500,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
                 padding: '6px 10px',
-                borderRadius: '10px',
+                borderRadius: '8px',
                 margin: '0.45rem 0 0 0',
               }}>
                 <span style={{
@@ -703,13 +703,15 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
 
                 {deal.highlight && (
                   <div style={{
-                    color: '#1b5e20',
-                    padding: '2px 0',
+                    background: 'rgba(46, 125, 50, 0.10)',
+                    color: '#2e7d32',
                     fontSize: '0.88rem',
-                    fontWeight: 600,
+                    fontWeight: 500,
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
+                    padding: '6px 10px',
+                    borderRadius: '8px',
                   }}>
                     <span style={{
                       width: '14px',

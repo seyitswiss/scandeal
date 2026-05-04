@@ -149,7 +149,7 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
   }
 
   return (
-    <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1rem', marginBottom: '1rem', position: 'relative' }}>
+    <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '0.75rem', marginBottom: '1rem', position: 'relative' }}>
       {/* Close button */}
       {isOpen && (
         <button
@@ -177,8 +177,8 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
       )}
 
       {/* Default View */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <img src="/icons/google.svg" alt="Google" style={{ width: '28px', height: '28px' }} />
           <div>
             <p style={{ fontSize: '0.9rem', margin: 0 }}>Hat dir {businessName} gefallen?</p>
@@ -187,7 +187,7 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
         </div>
         
         {/* Stars */}
-        <div style={{ display: 'flex', gap: '4px' }}>
+        <div style={{ display: 'flex', gap: '2px' }}>
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -210,17 +210,18 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
 
       {/* Rating 1-3: Feedback form */}
       {isOpen && rating !== null && rating <= 3 && (
-        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee' }}>
           <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Was können wir besser machen?</p>
           <textarea
+            className="h-16 resize-none text-sm"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Dein Feedback..."
-            style={{ width: '100%', minHeight: '80px', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.85rem', resize: 'vertical' }}
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
           />
           <button
             onClick={handleFeedbackSend}
-            style={{ marginTop: '0.5rem', background: '#4285f4', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontSize: '0.85rem', cursor: 'pointer' }}
+            style={{ marginTop: '0.5rem', background: '#4285f4', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.375rem 0.75rem', fontSize: '0.85rem', cursor: 'pointer' }}
           >
             Feedback senden
           </button>
@@ -229,18 +230,19 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
 
       {/* Rating 4-5: Review form */}
       {isOpen && rating !== null && rating >= 4 && (
-        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
-          <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Schreib kurz deine Bewertung</p>
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee' }}>
+          <p style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>Schreib kurz deine Bewertung</p>
           <textarea
+            className="h-16 resize-none text-sm"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Deine Bewertung..."
-            style={{ width: '100%', minHeight: '80px', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.85rem', resize: 'vertical' }}
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
           />
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem' }}>
             <button
               onClick={handleCopy}
-              style={{ background: '#34a853', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontSize: '0.85rem', cursor: 'pointer' }}
+              style={{ background: '#34a853', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.375rem 0.75rem', fontSize: '0.85rem', cursor: 'pointer' }}
             >
               {copied ? 'Kopiert!' : 'Text kopieren'}
             </button>

@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import DealCardList from '@/components/DealCardList'
-import IconRow from '@/components/IconRow'
 import GoogleReviewBox from '@/components/GoogleReviewBox'
 import ProfileTracker from '@/components/ProfileTracker'
 import TrackedLink from '@/components/TrackedLink'
+import LinkSlider from '@/components/LinkSlider'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -119,6 +119,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const business = await prisma.business.findUnique({
     where: { slug },
   })
+
+  console.log("Business category:", business?.category)
+  console.log("Business subCategory:", business?.subCategory)
 
   if (!business) {
     notFound()
@@ -242,116 +245,93 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const tripadvisorUrl = normalizeUrl(business.tripadvisor)
   const tiktokUrl = normalizeUrl(business.tiktok)
 
-  // Icons to show: SOCIAL LINKS ONLY (never as buttons)
-  const iconItems = [
-    { url: instagramUrl, icon: '/icons/instagram.svg', label: 'Instagram' },
-    { url: facebookUrl, icon: '/icons/facebook.svg', label: 'Facebook' },
-    { url: tiktokUrl, icon: '/icons/tiktok.svg', label: 'TikTok' },
-    { url: linkedinUrl, icon: '/icons/linkedin.svg', label: 'LinkedIn' },
-    { url: tripadvisorUrl, icon: '/icons/tripadvisor.svg', label: 'TripAdvisor' },
-    { url: emailUrl, icon: '/icons/mail.svg', label: 'Email' },
-  ].filter(item => item.url !== null)
+  // Links for horizontal scroll
+  const links = [
+    { label: "Website", icon: "/icons/website.svg", href: websiteUrl },
+    { label: "Route", icon: "/icons/kartenpoint.svg", href: googleMapsUrl },
+    { label: "WhatsApp", icon: "/icons/whatsapp.svg", href: whatsappUrl },
+    { label: "Call", icon: "/icons/telefon.svg", href: phoneUrl },
+    { label: "Google", icon: "/icons/google.svg", href: googleReviewUrl },
+    { label: "Instagram", icon: "/icons/instagram.svg", href: instagramUrl },
+    { label: "Facebook", icon: "/icons/facebook.svg", href: facebookUrl },
+    { label: "LinkedIn", icon: "/icons/linkedin.svg", href: linkedinUrl },
+    { label: "TripAdvisor", icon: "/icons/tripadvisor.svg", href: tripadvisorUrl },
+    { label: "TikTok", icon: "/icons/tiktok.svg", href: tiktokUrl },
+    { label: "Email", icon: "/icons/mail.svg", href: emailUrl },
+  ].filter(
+    (link): link is { label: string; icon: string; href: string } =>
+      Boolean(link.href)
+  )
 
   return (
     <ProfileTracker businessId={business.id}>
-      <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', padding: '1rem', boxSizing: 'border-box' }}>
-      {/* 1. MAIN OP HEADER CARD */}
-      <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '1.5rem', marginBottom: '1rem' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-          {business.logoUrl && (
+      <div className="max-w-[760px] mx-auto px-3">
+        {/* 1. MAIN OP HEADER CARD */}
+        <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '1rem' }}>
+          <div className="flex items-start gap-3 px-4 py-3">
             <img
-              src={business.logoUrl}
+              src={business.logoUrl || '/icons/default.svg'}
               alt={business.name}
-              style={{ width: '80px', height: '80px', borderRadius: '12px', objectFit: 'cover', flexShrink: 0 }}
-            />
-          )}
-          <div style={{ flex: 1 }}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>{business.name}</h1>
-            {business.category && business.subCategory && (
-              <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                {business.category} • {business.subCategory}
-              </p>
+            className="w-16 h-16 rounded-xl object-cover"
+          />
+
+          <div className="flex flex-col">
+            <h1 className="text-lg font-semibold">{business.name}</h1>
+            {business.category && (
+              <span className="text-sm text-gray-500">{business.category}</span>
             )}
-            {business.description && (
-              <p style={{ marginTop: '0.5rem', color: '#333', fontSize: '0.95rem' }}>{business.description}</p>
-            )}
+            <span className="text-sm text-gray-600">⭐ 4.8 (128)</span>
+            <span className="text-sm text-gray-500">📍 Zürich</span>
+            <span className="text-sm">🟢 Geöffnet · schliesst um 22:00</span>
           </div>
         </div>
 
-        {/* Quick icon row with expand */}
-        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
-          <IconRow icons={iconItems} businessId={business.id} />
-        </div>
+        {/* Action Buttons - Horizontal Scroll */}
+        <LinkSlider links={links} businessId={business.id} />
 
         {/* Google Review Box */}
-        <GoogleReviewBox
-          businessName={business.name}
-          googleReviewUrl={googleReviewUrl}
-          whatsappUrl={whatsappUrl}
-          emailUrl={emailUrl}
-          businessId={business.id}
-        />
+        <div style={{ marginTop: '1rem' }}>
+          <GoogleReviewBox
+            businessName={business.name}
+            googleReviewUrl={googleReviewUrl}
+            whatsappUrl={whatsappUrl}
+            emailUrl={emailUrl}
+            businessId={business.id}
+          />
+        </div>
 
-        {/* Action buttons for core links ONLY */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginTop: '1rem' }}>
-          {websiteUrl && (
-            <TrackedLink href={websiteUrl} businessId={business.id} source="website" style={{ display: 'block', textAlign: 'center', background: '#34a853', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
-              Website
-            </TrackedLink>
-          )}
-          {googleMapsUrl && (
-            <TrackedLink href={googleMapsUrl} businessId={business.id} source="google" style={{ display: 'block', textAlign: 'center', background: '#4285f4', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
-              Route
-            </TrackedLink>
-          )}
-          {whatsappUrl && (
-            <TrackedLink href={whatsappUrl} businessId={business.id} source="whatsapp" style={{ display: 'block', textAlign: 'center', background: '#25d366', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
-              WhatsApp
-            </TrackedLink>
-          )}
-          {phoneUrl && (
-            <TrackedLink href={phoneUrl} businessId={business.id} source="phone" style={{ display: 'block', textAlign: 'center', background: '#000', color: 'white', padding: '0.75rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem' }}>
-              Phone
-            </TrackedLink>
+          {/* Custom Links */}
+          {customLinks.length > 0 && (
+            <div style={{ marginTop: '1rem' }}>
+              {customLinks.map((link, index) => {
+                const normalized = normalizeUrl(link.url)
+                if (!normalized) return null
+                return (
+                  <TrackedLink
+                    key={index}
+                    href={normalized}
+                    businessId={business.id}
+                    source="website"
+                    style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '0.5rem', textDecoration: 'none', color: '#333', fontSize: '0.9rem' }}
+                  >
+                    {link.label}
+                  </TrackedLink>
+                )
+              })}
+            </div>
           )}
         </div>
 
-        {/* Custom Links */}
-        {customLinks.length > 0 && (
-          <div style={{ marginTop: '1rem' }}>
-            {customLinks.map((link, index) => {
-              const normalized = normalizeUrl(link.url)
-              if (!normalized) return null
-              return (
-                <TrackedLink
-                  key={index}
-                  href={normalized}
-                  businessId={business.id}
-                  source="website"
-                  style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '0.5rem', textDecoration: 'none', color: '#333', fontSize: '0.9rem' }}
-                >
-                  {link.label}
-                </TrackedLink>
-              )
-            })}
-          </div>
-        )}
+        {/* DEAL CARDS CONTAINER - stable wrapper for all DealCards */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          gap: '24px',
+        }}>
+          <DealCardList ourDeal={ourDeal} selectedDeals={selectedDeals} />
+        </div>
       </div>
-
-      {/* DEAL CARDS CONTAINER - stable wrapper for all DealCards */}
-      <div style={{
-        width: '100%',
-        maxWidth: '640px',
-        margin: '0 auto',
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'stretch',
-        gap: '24px',
-      }}>
-        <DealCardList ourDeal={ourDeal} selectedDeals={selectedDeals} />
-      </div>
-    </div>
     </ProfileTracker>
   )
 }
