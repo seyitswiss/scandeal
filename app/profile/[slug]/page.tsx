@@ -265,71 +265,90 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   return (
     <ProfileTracker businessId={business.id}>
-      <div className="max-w-[760px] mx-auto px-3">
-        {/* 1. MAIN OP HEADER CARD */}
-        <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '1rem' }}>
-          <div className="flex items-start gap-3 px-4 py-3">
-            <img
-              src={business.logoUrl || '/icons/default.svg'}
-              alt={business.name}
-            className="w-16 h-16 rounded-xl object-cover"
-          />
+      {/* TOP BAR */}
+      <div className="fixed top-0 left-0 w-full h-10 bg-black text-white flex items-center px-4 z-[9999]">
+        <span className="font-semibold">scan deal</span>
+      </div>
 
-          <div className="flex flex-col">
-            <h1 className="text-lg font-semibold">{business.name}</h1>
-            {business.category && (
-              <span className="text-sm text-gray-500">{business.category}</span>
+      {/* BOTTOM BAR */}
+      <div className="fixed bottom-0 left-0 w-full h-12 bg-black text-white flex items-center justify-center z-[9999]">
+        <span className="text-sm">Scandeal · Hilfe</span>
+      </div>
+
+      {/* OP / BUSINESS SECTION */}
+      <div style={{ width: '100%', background: '#000', color: '#fff' }}>
+        <div className="max-w-[760px] mx-auto px-3 pt-6 pb-0">
+          <div style={{ padding: '0.5rem 0.75rem' }}>
+            <div className="flex items-start gap-3 px-3 py-2">
+              <img
+                src={business.logoUrl || '/icons/default.svg'}
+                alt={business.name}
+                className="w-16 h-16 rounded-xl object-cover"
+              />
+
+              <div className="flex flex-col">
+                <h1 className="text-lg font-semibold text-white">{business.name}</h1>
+                {business.category && (
+                  <span className="text-sm text-gray-300">
+                    {business.subCategory
+                      ? `${business.category} · ${business.subCategory}`
+                      : business.category}
+                  </span>
+                )}
+                <span className="text-sm text-gray-200">⭐ 4.8 (128)</span>
+                <span className="text-sm text-gray-300">📍 Zürich</span>
+                <span className="text-sm text-gray-300">🟢 Geöffnet · schliesst um 22:00</span>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '0.375rem', color: '#111' }}>
+              <LinkSlider links={links} businessId={business.id} />
+            </div>
+
+            <div style={{ marginTop: '0.5rem', color: '#111' }}>
+              <GoogleReviewBox
+                businessName={business.name}
+                googleReviewUrl={googleReviewUrl}
+                whatsappUrl={whatsappUrl}
+                emailUrl={emailUrl}
+                businessId={business.id}
+              />
+            </div>
+
+            {customLinks.length > 0 && (
+              <div style={{ marginTop: '1rem' }}>
+                {customLinks.map((link, index) => {
+                  const normalized = normalizeUrl(link.url)
+                  if (!normalized) return null
+                  return (
+                    <TrackedLink
+                      key={index}
+                      href={normalized}
+                      businessId={business.id}
+                      source="website"
+                      style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '0.5rem', textDecoration: 'none', color: '#333', fontSize: '0.9rem' }}
+                    >
+                      {link.label}
+                    </TrackedLink>
+                  )
+                })}
+              </div>
             )}
-            <span className="text-sm text-gray-600">⭐ 4.8 (128)</span>
-            <span className="text-sm text-gray-500">📍 Zürich</span>
-            <span className="text-sm">🟢 Geöffnet · schliesst um 22:00</span>
           </div>
         </div>
+      </div>
 
-        {/* Action Buttons - Horizontal Scroll */}
-        <LinkSlider links={links} businessId={business.id} />
-
-        {/* Google Review Box */}
-        <div style={{ marginTop: '1rem' }}>
-          <GoogleReviewBox
-            businessName={business.name}
-            googleReviewUrl={googleReviewUrl}
-            whatsappUrl={whatsappUrl}
-            emailUrl={emailUrl}
-            businessId={business.id}
-          />
-        </div>
-
-          {/* Custom Links */}
-          {customLinks.length > 0 && (
-            <div style={{ marginTop: '1rem' }}>
-              {customLinks.map((link, index) => {
-                const normalized = normalizeUrl(link.url)
-                if (!normalized) return null
-                return (
-                  <TrackedLink
-                    key={index}
-                    href={normalized}
-                    businessId={business.id}
-                    source="website"
-                    style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '0.5rem', textDecoration: 'none', color: '#333', fontSize: '0.9rem' }}
-                  >
-                    {link.label}
-                  </TrackedLink>
-                )
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* DEAL CARDS CONTAINER - stable wrapper for all DealCards */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'stretch',
-          gap: '24px',
-        }}>
-          <DealCardList ourDeal={ourDeal} selectedDeals={selectedDeals} />
+      {/* DEALS SECTION */}
+      <div style={{ width: '100%', background: '#fff', color: '#111', borderTopLeftRadius: '22px', borderTopRightRadius: '22px', marginTop: '-2px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto', paddingTop: '8px', paddingBottom: '16px', paddingLeft: '16px', paddingRight: '16px' }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'stretch',
+            gap: '16px',
+          }}>
+              <DealCardList ourDeal={ourDeal} selectedDeals={selectedDeals} />
+          </div>
         </div>
       </div>
     </ProfileTracker>

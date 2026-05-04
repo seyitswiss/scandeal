@@ -168,7 +168,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
     transition: previewOpen ? 'all 0.18s ease' : undefined,
     flexDirection: 'column',
     alignSelf: 'stretch',
-    padding: '12px',
+    padding: '10px',
   }
 
   // Add premium class for hover effects
@@ -652,11 +652,11 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
           </button>
         )}
         {/* Card content for normal mode */}
-        <div style={{ display: 'flex', gap: '16px', alignItems: previewOpen ? 'flex-start' : 'center' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: previewOpen ? 'flex-start' : 'center' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
-            width: '190px', 
-            height: '150px', 
+            width: '130px', 
+            height: '115px', 
             flexShrink: 0, 
             background: '#f5f5f5', 
             display: 'flex', 
@@ -799,7 +799,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                 <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px' }}>
                   <div style={{ minWidth: 0, flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     {deal.isPremium && <span aria-hidden="true">🔥</span>}
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.15rem', fontWeight: '600', color: '#111' }}>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.3rem', fontWeight: '700', lineHeight: '1.2', color: '#111' }}>
                       {deal.title}
                     </span>
                   </div>
@@ -809,14 +809,15 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   <div style={{
                     background: '#ecf6ea',
                     color: '#388e3c',
-                    padding: '6px 12px',
+                    padding: '4px 8px',
                     borderRadius: '8px',
-                    fontSize: '0.8rem',
+                    fontSize: '0.9rem',
                     fontWeight: '600',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
                     width: 'fit-content',
+                    marginTop: '4px',
                   }}>
                     <span style={{
                       width: '14px',
@@ -838,11 +839,12 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                 )}
 
                 <div style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.8rem',
+                  lineHeight: '1.2',
                   color: '#777',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '4px',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   minHeight: '16px',
