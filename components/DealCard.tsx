@@ -8,12 +8,11 @@ import { useRouter } from 'next/navigation'
 // Premium hover styles (injected into page)
 const premiumHoverStyles = `
   .premium-deal-card {
-    transition: transform 0.24s ease, box-shadow 0.24s ease;
-    will-change: transform, box-shadow;
+    transition: transform 0.24s ease;
+    will-change: transform;
   }
   .premium-deal-card:hover {
     transform: scale(1.03);
-    box-shadow: 0 6px 24px rgba(245, 200, 66, 0.22);
   }
 `
 interface DealCardProps {
@@ -153,22 +152,24 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
     maxWidth: previewOpen ? '820px' : '760px',
     margin: '0 auto',
     minWidth: 0,
-    minHeight: !isOurDeal && !previewOpen ? '150px' : undefined,
+    minHeight: !isOurDeal && !previewOpen ? '108px' : undefined,
     boxSizing: 'border-box',
     position: 'relative',
     overflow: 'hidden',
     textDecoration: 'none',
     color: 'inherit',
-    borderRadius: isOurDeal || deal.isPremium ? '12px' : '16px',
+    borderRadius: isOurDeal || deal.isPremium ? '12px' : '12px',
     background: '#fff',
     border: deal.isPremium ? '1.5px solid rgba(245, 200, 66, 0.35)' : isOurDeal ? '1px solid #e5e5e5' : undefined,
-    boxShadow: previewOpen ? '0 20px 60px rgba(0,0,0,0.18)' : (deal.isPremium ? '0 8px 22px rgba(0,0,0,0.10)' : (isOurDeal ? undefined : '0 4px 10px rgba(0,0,0,0.05)')),
+    boxShadow: 'none',
     transform: previewOpen ? 'translateY(-4px) scale(1.025)' : undefined,
     zIndex: previewOpen ? 30 : undefined,
     transition: previewOpen ? 'all 0.18s ease' : undefined,
     flexDirection: 'column',
     alignSelf: 'stretch',
-    padding: '10px',
+    marginTop: 0,
+    marginBottom: 0,
+    padding: !isOurDeal && !previewOpen ? '4px' : '6px',
   }
 
   // Add premium class for hover effects
@@ -642,10 +643,10 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
             title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
           >
             <span style={{
-              color: isSaved ? '#2e7d32' : '#b5b5b5',
-              opacity: isSaved ? 1 : 0.55,
+              color: '#2e7d32',
+              opacity: isSaved ? 1 : 0.4,
               fontSize: '1.35rem',
-              fontWeight: isSaved ? '700' : 'normal',
+              fontWeight: isSaved ? '700' : '400',
               transform: isSaved ? 'scale(1.08)' : 'scale(1)',
               transition: 'all 0.15s ease'
             }}>🔖</span>
@@ -655,8 +656,8 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
         <div style={{ display: 'flex', gap: '10px', alignItems: previewOpen ? 'flex-start' : 'center' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
-            width: '130px', 
-            height: '115px', 
+            width: '145px', 
+            height: '125px', 
             flexShrink: 0, 
             background: '#f5f5f5', 
             display: 'flex', 
@@ -688,7 +689,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, minWidth: 0, padding: previewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.75rem 3rem 0.75rem 0', display: 'flex', flexDirection: 'column', justifyContent: previewOpen ? 'flex-start' : 'center', gap: previewOpen ? '0.25rem' : '6px', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: previewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.5rem 2rem 0.5rem 0', display: 'flex', flexDirection: 'column', justifyContent: previewOpen ? 'flex-start' : 'center', gap: previewOpen ? '0.25rem' : '4px', position: 'relative', overflow: 'hidden' }}>
             {previewOpen ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0, width: '100%' }}>
                 {/* Top row: Title + Badge */}
@@ -763,7 +764,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   whiteSpace: 'nowrap',
                   minHeight: '16px',
                   marginTop: 0,
-                  flexWrap: 'wrap',
+                  flexWrap: 'nowrap',
                   visibility: (formattedEndDate || distanceValue !== null && distanceValue !== undefined || deal.business?.name) ? 'visible' : 'hidden',
                 }}>
                   {distanceValue !== null && distanceValue !== undefined && (
@@ -801,7 +802,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '3px', minWidth: 0, width: '100%', minHeight: '72px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', minWidth: 0, width: '100%', minHeight: '64px' }}>
                 {/* Top row: Title only (no badge in History) */}
                 <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px' }}>
                   <div style={{ minWidth: 0, flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -814,40 +815,35 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
 
                 {deal.highlight && (
                   <div style={{
-                    background: '#ecf6ea',
-                    color: '#388e3c',
-                    padding: '4px 8px',
-                    borderRadius: '8px',
+                    color: '#2e7d32',
                     fontSize: '0.9rem',
-                    fontWeight: '600',
+                    fontWeight: '500',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '8px',
+                    gap: '6px',
                     width: 'fit-content',
                     marginTop: '4px',
                   }}>
                     <span style={{
-                      width: '14px',
-                      height: '14px',
+                      width: '16px',
+                      height: '16px',
                       background: 'transparent',
-                      border: '1.5px solid #388e3c',
-                      color: '#388e3c',
+                      border: '1.5px solid #2e7d32',
+                      color: '#2e7d32',
                       borderRadius: '50%',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.80rem',
+                      fontSize: '0.75rem',
                       flexShrink: 0,
                     }}>
                       ✔
                     </span>
                     <span style={{
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      maxWidth: '100%',
+                      whiteSpace: 'nowrap',
+                      minWidth: 0,
                     }}>{deal.highlight}</span>
                   </div>
                 )}
@@ -864,21 +860,22 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   minHeight: '16px',
                   marginTop: '10px',
                   visibility: (formattedEndDate || distanceValue !== null && distanceValue !== undefined || deal.business?.name) ? 'visible' : 'hidden',
-                  flexWrap: 'wrap',
+                  flexWrap: 'nowrap',
+                  minWidth: 0,
                 }}>
                   {distanceValue !== null && distanceValue !== undefined && (
                     <>
-                      <span><span style={{color: '#2e7d32', opacity: 0.75}}>📍</span> {distanceValue.toFixed(1)} km</span>
-                      {(formattedEndDate || deal.business?.name) && <span>·</span>}
+                      <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{color: '#2e7d32', opacity: 0.75}}>📍</span> {distanceValue.toFixed(1)} km</span>
+                      {(formattedEndDate || deal.business?.name) && <span style={{ flexShrink: 0 }}>·</span>}
                     </>
                   )}
                   {formattedEndDate && (
                     <>
-                      <span><span style={{color: '#2e7d32', opacity: 0.75}}>📅</span> {formattedEndDate}</span>
-                      {deal.business?.name && <span>·</span>}
+                      <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{color: '#2e7d32', opacity: 0.75}}>📅</span> {formattedEndDate}</span>
+                      {deal.business?.name && <span style={{ flexShrink: 0 }}>·</span>}
                     </>
                   )}
-                  {deal.business?.name && <span style={{ color: '#666' }}>{deal.business.name}</span>}
+                  {deal.business?.name && <span style={{ color: '#666', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{deal.business.name}</span>}
                 </div>
               </div>
             )}

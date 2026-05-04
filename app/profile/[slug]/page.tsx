@@ -252,11 +252,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     { label: "WhatsApp", icon: "/icons/whatsapp.svg", href: whatsappUrl },
     { label: "Call", icon: "/icons/telefon.svg", href: phoneUrl },
     { label: "Google", icon: "/icons/google.svg", href: googleReviewUrl },
-    { label: "Instagram", icon: "/icons/instagram.svg", href: instagramUrl },
-    { label: "Facebook", icon: "/icons/facebook.svg", href: facebookUrl },
-    { label: "LinkedIn", icon: "/icons/linkedin.svg", href: linkedinUrl },
+    { label: "Instagram", icon: "/slideicons/slide_insta.jpeg", href: instagramUrl },
+    { label: "Facebook", icon: "/slideicons/slide_fb.jpeg", href: facebookUrl },
+    { label: "LinkedIn", icon: "/slideicons/slide_linkedin.jpeg", href: linkedinUrl },
     { label: "TripAdvisor", icon: "/icons/tripadvisor.svg", href: tripadvisorUrl },
-    { label: "TikTok", icon: "/icons/tiktok.svg", href: tiktokUrl },
+    { label: "TikTok", icon: "/slideicons/slide_tiktok.jpeg", href: tiktokUrl },
     { label: "Email", icon: "/icons/mail.svg", href: emailUrl },
   ].filter(
     (link): link is { label: string; icon: string; href: string } =>
@@ -267,7 +267,8 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     <ProfileTracker businessId={business.id}>
       {/* TOP BAR */}
       <div className="fixed top-0 left-0 w-full h-10 bg-black text-white flex items-center px-4 z-[9999]">
-        <span className="font-semibold">scan deal</span>
+        <img src="/icons/scandeal.logo.svg" alt="Scandeal" style={{ height: '24px' }} />
+       
       </div>
 
       {/* BOTTOM BAR */}
@@ -275,8 +276,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         <span className="text-sm">Scandeal · Hilfe</span>
       </div>
 
-      {/* OP / BUSINESS SECTION */}
-      <div style={{ width: '100%', background: '#000', color: '#fff' }}>
+      <div style={{ background: '#ffffff', color: '#111', paddingTop: '10px', paddingBottom: '12px' }}>
+        {/* OP / BUSINESS SECTION */}
+        <div style={{ width: '100%', background: '#000', color: '#fff' }}>
         <div className="max-w-[760px] mx-auto px-3 pt-6 pb-0">
           <div style={{ padding: '0.5rem 0.75rem' }}>
             <div className="flex items-start gap-3 px-3 py-2">
@@ -351,6 +353,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
           </div>
         </div>
       </div>
+    </div>
     </ProfileTracker>
   )
 }

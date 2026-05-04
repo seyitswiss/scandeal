@@ -60,19 +60,36 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
         style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}
         className="scrollbar-hide"
       >
-        <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '1rem', padding: '0.75rem 3rem', minWidth: 'max-content' }}>
-          {links.map((link, i) => (
-            <TrackedLink
-              key={i}
-              href={link.href}
-              businessId={businessId}
-              source={link.label.toLowerCase()}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'white', border: '1px solid #ddd', borderRadius: '8px', padding: '0.75rem 1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', whiteSpace: 'nowrap', textDecoration: 'none', color: 'inherit', flexShrink: 0 }}
-            >
-              <img src={link.icon} style={{ width: '1.25rem', height: '1.25rem' }} />
-              <span style={{ fontSize: '1rem' }}>{link.label}</span>
-            </TrackedLink>
-          ))}
+        <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '0.75rem', padding: '0.75rem 3rem', minWidth: 'max-content' }}>
+          {links.map((link, i) => {
+            const isJpeg = link.icon.toLowerCase().endsWith('.jpeg') || link.icon.toLowerCase().endsWith('.jpg')
+            return isJpeg ? (
+              <TrackedLink
+                key={i}
+                href={link.href}
+                businessId={businessId}
+                source={link.label.toLowerCase()}
+                className="block"
+              >
+                <img
+                  src={link.icon}
+                  alt={link.label}
+                  className="h-16 w-40 rounded-xl object-cover"
+                />
+              </TrackedLink>
+            ) : (
+              <TrackedLink
+                key={i}
+                href={link.href}
+                businessId={businessId}
+                source={link.label.toLowerCase()}
+                className="flex items-center gap-2 bg-white border rounded-lg px-3 py-2 shadow-sm"
+              >
+                <img src={link.icon} className="w-5 h-5" alt={link.label} />
+                <span className="text-sm">{link.label}</span>
+              </TrackedLink>
+            )
+          })}
         </div>
       </div>
       <button

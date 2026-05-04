@@ -24,17 +24,19 @@ export default function DealCardList({ ourDeal, selectedDeals }: DealCardListPro
 
       {selectedDeals.length > 0 && (
         <>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.75rem', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center' }}>
             Weitere Deals
           </h2>
-          {selectedDeals.map((deal) => (
-            <DealCard
-              key={deal.id}
-              deal={deal}
-              isPreviewOpen={activePreviewDealId === deal.id}
-              onPreviewToggle={handlePreviewToggle}
-            />
-          ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {selectedDeals.map((deal) => (
+              <DealCard
+                key={deal.id}
+                deal={deal}
+                isPreviewOpen={activePreviewDealId === deal.id}
+                onPreviewToggle={handlePreviewToggle}
+              />
+            ))}
+          </div>
         </>
       )}
     </>
