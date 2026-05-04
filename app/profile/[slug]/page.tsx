@@ -247,17 +247,16 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   // Links for horizontal scroll
   const links = [
-    { label: "Website", icon: "/icons/website.svg", href: websiteUrl },
-    { label: "Route", icon: "/icons/kartenpoint.svg", href: googleMapsUrl },
-    { label: "WhatsApp", icon: "/icons/whatsapp.svg", href: whatsappUrl },
-    { label: "Call", icon: "/icons/telefon.svg", href: phoneUrl },
-    { label: "Google", icon: "/icons/google.svg", href: googleReviewUrl },
+    { label: "Website", icon: "/slideicons/slide_webseite.jpeg", href: websiteUrl },
+    { label: "Route", icon: "/slideicons/slide_googlemaps.jpeg", href: googleMapsUrl },
+    { label: "WhatsApp", icon: "/slideicons/slide_whatsapp.jpeg", href: whatsappUrl },
+    { label: "Call", icon: "/slideicons/slide_mobil.jpeg", href: phoneUrl },
     { label: "Instagram", icon: "/slideicons/slide_insta.jpeg", href: instagramUrl },
     { label: "Facebook", icon: "/slideicons/slide_fb.jpeg", href: facebookUrl },
     { label: "LinkedIn", icon: "/slideicons/slide_linkedin.jpeg", href: linkedinUrl },
-    { label: "TripAdvisor", icon: "/icons/tripadvisor.svg", href: tripadvisorUrl },
+    { label: "TripAdvisor", icon: "/slideicons/slide_tripadvisor.jpeg", href: tripadvisorUrl },
     { label: "TikTok", icon: "/slideicons/slide_tiktok.jpeg", href: tiktokUrl },
-    { label: "Email", icon: "/icons/mail.svg", href: emailUrl },
+    { label: "Email", icon: "/slideicons/slide_email.jpeg", href: emailUrl },
   ].filter(
     (link): link is { label: string; icon: string; href: string } =>
       Boolean(link.href)

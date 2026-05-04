@@ -74,7 +74,7 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
                 <img
                   src={link.icon}
                   alt={link.label}
-                  className="h-16 w-40 rounded-xl object-cover"
+                  className="h-16 w-40 rounded-xl object-cover border border-gray-260"
                 />
               </TrackedLink>
             ) : (
