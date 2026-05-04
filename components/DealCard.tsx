@@ -728,7 +728,14 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                     }}>
                       ✔
                     </span>
-                    <span>{deal.highlight}</span>
+                    <span style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '100%',
+                    }}>{deal.highlight}</span>
                   </div>
                 )}
 
@@ -834,7 +841,14 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                     }}>
                       ✔
                     </span>
-                    {deal.highlight}
+                    <span style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '100%',
+                    }}>{deal.highlight}</span>
                   </div>
                 )}
 
