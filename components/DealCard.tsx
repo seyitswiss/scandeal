@@ -456,7 +456,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, minWidth: 0, padding: '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', background: '#fff' }}>
             {/* Top row: Title + Badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1, minWidth: 0, overflow: 'hidden' }}>
@@ -474,13 +474,16 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
 
             {deal.highlight && (
               <div style={{
-                color: '#2e7d32',
-                fontSize: '0.8rem',
+                background: '#ecf7ed',
+                color: '#1b5e20',
+                fontSize: '0.82rem',
                 fontWeight: 600,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '2px 0',
+                padding: '6px 10px',
+                borderRadius: '10px',
+                margin: '0.45rem 0 0 0',
               }}>
                 <span style={{
                   width: '14px',
@@ -505,16 +508,15 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
               <div style={{
                 fontSize: '0.88rem',
                 color: '#444',
-                lineHeight: 1.6,
+                lineHeight: 1.55,
                 margin: '0.5rem 0 0 0',
-                overflow: 'hidden',
               }}>
                 {fullDescription}
               </div>
             )}
 
             {/* Button row */}
-            <div style={{ display: 'flex', gap: '0.5rem', margin: '0.9rem 0 0 0' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', margin: '0.65rem 0 0 0' }}>
               <button
                 onClick={handleRedeem}
                 disabled={isExpanded}
@@ -528,7 +530,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   padding: '0.95rem 1.1rem',
                   cursor: isExpanded ? 'not-allowed' : 'pointer',
                   whiteSpace: 'nowrap',
-                  boxShadow: '0 10px 20px rgba(46,125,50,0.18)',
+                  
                   opacity: isExpanded ? 0.65 : 1,
                 }}
               >
@@ -536,20 +538,18 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
               </button>
             </div>
 
-            {/* Footer: Date · Distance */}
-            <div style={{ fontSize: '0.7rem', color: '#999', display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
+            {/* Footer: Date · Business */}
+            <div style={{ fontSize: '0.72rem', color: '#777', display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
               {formattedEndDate && <span>📅 {formattedEndDate}</span>}
-              {formattedEndDate && distanceValue !== null && distanceValue !== undefined && <span>·</span>}
-              {distanceValue !== null && distanceValue !== undefined && (
-                <span>📍 {distanceValue.toFixed(1)} km</span>
-              )}
+              {formattedEndDate && deal.business?.name && <span>·</span>}
+              {deal.business?.name && <span style={{ color: '#555' }}>{deal.business.name}</span>}
             </div>
           </div>
         </div>
 
         {/* Expanded Redeem UI */}
         {isExpanded && (
-          <div style={{ padding: '0.75rem', borderTop: '1px solid #f5c842', background: '#fff9e6' }}>
+          <div style={{ padding: '0.75rem', marginTop: '0.5rem' }}>
             <div style={{ background: '#4caf50', color: '#fff', padding: '0.75rem', borderRadius: '6px', textAlign: 'center' }}>
               <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 'bold' }}>Deal aktiviert ✔️</p>
               <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem' }}>Code: SD-0001</p>
