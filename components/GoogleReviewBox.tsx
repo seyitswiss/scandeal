@@ -1,7 +1,7 @@
 // filepath: components/GoogleReviewBox.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface GoogleReviewBoxProps {
   businessName: string
@@ -35,17 +35,18 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
   const [rating, setRating] = useState<number | null>(null)
   const [feedback, setFeedback] = useState('')
   const [copied, setCopied] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
+  const [isReviewBoxOpen, setIsReviewBoxOpen] = useState(false)
+  const boxRef = useRef<HTMLDivElement | null>(null)
 
   const normalizedGoogleUrl = normalizeGoogleReviewUrl(googleReviewUrl)
 
   if (!googleReviewUrl) return null
 
   const handleStarClick = (value: number) => {
-    const shouldTrackOpen = !isOpen && businessId
+    const shouldTrackOpen = !isReviewBoxOpen && businessId
 
     setRating(value)
-    setIsOpen(true)
+    setIsReviewBoxOpen(true)
     setCopied(false)
 
     if (shouldTrackOpen) {
@@ -74,8 +75,27 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
     setRating(null)
     setFeedback('')
     setCopied(false)
-    setIsOpen(false)
+    setIsReviewBoxOpen(false)
   }
+
+  useEffect(() => {
+    const handleDocumentClick = (event: MouseEvent) => {
+      if (!boxRef.current) return
+      const target = event.target as Node
+      if (boxRef.current.contains(target)) return
+      if (isReviewBoxOpen) {
+        setRating(null)
+        setFeedback('')
+        setCopied(false)
+        setIsReviewBoxOpen(false)
+      }
+    }
+
+    document.addEventListener('click', handleDocumentClick, true)
+    return () => {
+      document.removeEventListener('click', handleDocumentClick, true)
+    }
+  }, [isReviewBoxOpen])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(feedback)
@@ -149,9 +169,9 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
   }
 
   return (
-    <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '0.75rem', marginBottom: '1rem', position: 'relative' }}>
+    <div ref={boxRef} onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '0.75rem', marginBottom: '1rem', position: 'relative' }}>
       {/* Close button */}
-      {isOpen && (
+      {isReviewBoxOpen && (
         <button
           onClick={handleClose}
           style={{
@@ -209,7 +229,7 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
       </div>
 
       {/* Rating 1-3: Feedback form */}
-      {isOpen && rating !== null && rating <= 3 && (
+      {isReviewBoxOpen && rating !== null && rating <= 3 && (
         <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee' }}>
           <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Was können wir besser machen?</p>
           <textarea
@@ -229,7 +249,7 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
       )}
 
       {/* Rating 4-5: Review form */}
-      {isOpen && rating !== null && rating >= 4 && (
+      {isReviewBoxOpen && rating !== null && rating >= 4 && (
         <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee' }}>
           <p style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>Schreib kurz deine Bewertung</p>
           <textarea
