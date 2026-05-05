@@ -39,8 +39,9 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
           top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 1,
-          background: 'white',
-          border: '1px solid #ddd',
+          background: '#111',
+          border: '1px solid #333',
+          color: '#fff',
           borderRadius: '50%',
           width: '32px',
           height: '32px',
@@ -48,7 +49,6 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           fontSize: '16px',
           lineHeight: 1,
         }}
@@ -74,7 +74,7 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
                 <img
                   src={link.icon}
                   alt={link.label}
-                  className="h-16 w-40 rounded-xl object-cover border border-gray-260"
+                  className="h-16 w-40 rounded-xl object-cover border border-neutral-800"
                 />
               </TrackedLink>
             ) : (
@@ -83,7 +83,7 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
                 href={link.href}
                 businessId={businessId}
                 source={link.label.toLowerCase()}
-                className="flex items-center gap-2 bg-white border rounded-lg px-3 py-2 shadow-sm"
+                className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2"
               >
                 <img src={link.icon} className="w-5 h-5" alt={link.label} />
                 <span className="text-sm">{link.label}</span>
@@ -100,8 +100,9 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
           top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 1,
-          background: 'white',
-          border: '1px solid #ddd',
+          background: '#111',
+          border: '1px solid #333',
+          color: '#fff',
           borderRadius: '50%',
           width: '32px',
           height: '32px',
@@ -109,7 +110,6 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           fontSize: '16px',
           lineHeight: 1,
         }}

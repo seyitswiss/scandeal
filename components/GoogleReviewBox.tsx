@@ -212,17 +212,16 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
 
   return (
     <div
-  ref={boxRef}
-  onClick={(e) => e.stopPropagation()}
-  style={{
-    background: 'transparent',
-    color: '#ccc',           // 👈 DAS FEHLT
-    padding: '0.5rem',
-    marginBottom: '0.75rem',
-    position: 'relative',
-    
-  }}
->
+      ref={boxRef}
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        background: 'transparent',
+        color: '#e5e7eb',
+        padding: '0.5rem',
+        marginBottom: '0.75rem',
+        position: 'relative',
+      }}
+    >
       {/* Close button */}
       {isReviewBoxOpen && (
         <button
@@ -252,13 +251,12 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
       {/* Default View */}
       <div style={{ display: 'flex', gap: '0.5rem' }}>
   <img
-    src="/icons/G.png"
+    src="/icons/google.svg"
     alt="Google"
     style={{
-      width: '26px',
-      height: '26px',
+      width: '20px',
+      height: '20px',
       flexShrink: 0,
-      marginTop: '7px'
     }}
   />
 

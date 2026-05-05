@@ -264,22 +264,22 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   return (
     <ProfileTracker businessId={business.id}>
-      {/* TOP BAR */}
-      <div className="fixed top-0 left-0 w-full h-10 bg-black text-white flex items-center px-4 z-[9999]">
-        <img src="/icons/scandeal.logo.svg" alt="Scandeal" style={{ height: '24px' }} />
-       
-      </div>
+      <div className="bg-black text-white min-h-screen">
+        {/* TOP BAR */}
+        <div className="fixed top-0 left-0 w-full h-10 bg-black text-white flex items-center px-4 z-[9999]">
+          <img src="/icons/scandeal.logo.svg" alt="Scandeal" style={{ height: '24px' }} />
+        </div>
 
       {/* BOTTOM BAR */}
       <div className="fixed bottom-0 left-0 w-full h-12 bg-black text-white flex items-center justify-center z-[9999]">
         <span className="text-sm">Scandeal · Hilfe</span>
       </div>
 
-      <div style={{ background: '#ffffff', color: '#111', paddingTop: '10px', paddingBottom: '12px' }}>
+      <div style={{ paddingTop: '56px', paddingBottom: '96px' }}>
         {/* OP / BUSINESS SECTION */}
-        <div style={{ width: '100%', background: '#000', color: '#fff' }}>
-        <div className="max-w-[760px] mx-auto px-3 pt-6 pb-0">
-          <div style={{ padding: '0.5rem 0.75rem' }}>
+        <div style={{ width: '100%' }}>
+          <div className="max-w-[760px] mx-auto px-4 pt-6 pb-0">
+            <div style={{ padding: '0.5rem 0.75rem' }}>
             <div className="flex items-start gap-3 px-3 py-2">
               <img
                 src={business.logoUrl || '/icons/default.svg'}
@@ -302,11 +302,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
               </div>
             </div>
 
-            <div style={{ marginTop: '0.375rem', color: '#111' }}>
+            <div style={{ marginTop: '0.375rem' }}>
               <LinkSlider links={links} businessId={business.id} />
             </div>
 
-            <div style={{ marginTop: '0.5rem', color: '#111' }}>
+            <div style={{ marginTop: '0.5rem' }}>
               <GoogleReviewBox
                 businessName={business.name}
                 googleReviewUrl={googleReviewUrl}
@@ -327,7 +327,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                       href={normalized}
                       businessId={business.id}
                       source="website"
-                      style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '0.5rem', textDecoration: 'none', color: '#333', fontSize: '0.9rem' }}
+                      style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#111', borderRadius: '12px', border: '1px solid #222', marginBottom: '0.5rem', textDecoration: 'none', color: '#f8fafc', fontSize: '0.95rem' }}
                     >
                       {link.label}
                     </TrackedLink>
@@ -340,7 +340,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       </div>
 
       {/* DEALS SECTION */}
-      <div style={{ width: '100%', background: '#fff', color: '#111', borderTopLeftRadius: '22px', borderTopRightRadius: '22px', marginTop: '-2px' }}>
+      <div style={{ width: '100%', color: '#fff' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto', paddingTop: '8px', paddingBottom: '16px', paddingLeft: '16px', paddingRight: '16px' }}>
           <div style={{
             display: 'flex',
@@ -353,6 +353,7 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         </div>
       </div>
     </div>
+  </div>
     </ProfileTracker>
   )
 }
