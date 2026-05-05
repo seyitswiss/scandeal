@@ -211,7 +211,18 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
   }
 
   return (
-    <div ref={boxRef} onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '0.75rem', marginBottom: '1rem', position: 'relative', minHeight: '8rem' }}>
+    <div
+  ref={boxRef}
+  onClick={(e) => e.stopPropagation()}
+  style={{
+    background: 'transparent',
+    color: '#ccc',           // 👈 DAS FEHLT
+    padding: '0.5rem',
+    marginBottom: '0.75rem',
+    position: 'relative',
+    
+  }}
+>
       {/* Close button */}
       {isReviewBoxOpen && (
         <button
@@ -239,55 +250,69 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
       )}
 
       {/* Default View */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <img
-          src="/icons/google.svg"
-          alt="Google"
-          style={{ width: '20px', height: '20px', flexShrink: 0 }}
-          onError={(event) => {
-            event.currentTarget.style.display = 'none'
-          }}
-        />
-        <p style={{ fontSize: '0.95rem', margin: 0, fontWeight: 600 }}>Hat dir {businessName} gefallen?</p>
-      </div>
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+  <img
+    src="/icons/G.png"
+    alt="Google"
+    style={{
+      width: '26px',
+      height: '26px',
+      flexShrink: 0,
+      marginTop: '7px'
+    }}
+  />
+
+  <div>
+    <p style={{ fontSize: '0.95rem', margin: 0, fontWeight: 600 }}>
+      Hat dir {businessName} gefallen?
+    </p>
+    <p style={{ fontSize: '0.8rem', margin: 0, color: '#aaa' }}>
+      Bewerte uns auf Google
+    </p>
+  </div>
+</div>
 
       {!isReviewBoxOpen && !showThankYouMessage && (
-        <div style={{ display: 'flex', gap: '2px', marginTop: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.6rem', marginTop: '0.1rem', paddingLeft: '26px' }}>
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
               onClick={() => handleStarClick(star)}
+              onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.9)')}
+              onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               style={{
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: '1.5rem',
-                color: rating && star <= rating ? '#f5c842' : '#ddd',
+                fontSize: '2rem',
+                color: rating && star <= rating ? '#f5c842' : '#444',
                 padding: '0',
                 lineHeight: 1,
+                transition: 'transform 0.1s ease',
               }}
             >
-              ★
+              {star <= (rating ?? 0) ? '★' : '☆'}
             </button>
           ))}
         </div>
       )}
 
       {showThankYouMessage && (
-        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee', minHeight: '8rem' }}>
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', minHeight: '8rem' }}>
           <p style={{ fontSize: '0.9rem', margin: 0 }}>🙏 Vielen Dank – so hilfst du uns sehr! 🙌</p>
         </div>
       )}
 
       {isReviewBoxOpen && rating !== null && rating <= 3 && !showThankYouMessage && (
-        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee', minHeight: '8rem' }}>
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem',  minHeight: '8rem' }}>
           <p style={{ fontSize: '0.95rem', marginBottom: '0.5rem' }}>😕 Danke für dein Feedback</p>
           <textarea
             className="h-16 resize-none text-sm"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Dein Feedback..."
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
+            style={{ width: '100%', padding: '0.5rem', borderRadius: '6px',}}
           />
           <button
             onClick={handleFeedbackSend}
@@ -299,9 +324,9 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
       )}
 
       {isReviewBoxOpen && rating !== null && rating >= 4 && !showThankYouMessage && (
-        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee', minHeight: '8rem' }}>
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', minHeight: '8rem' }}>
           <p style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.4rem' }}>🙏 Vielen Dank 🙌</p>
-          <p style={{ fontSize: '0.85rem', margin: 0, color: '#555' }}>Du kannst deinen Bewertungstext auch mit KI generieren lassen</p>
+          <p style={{ fontSize: '0.85rem', margin: 0, color: '#9b9494' }}>Du kannst deinen Bewertungstext auch mit KI generieren lassen</p>
 
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
             <button
@@ -325,7 +350,7 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder="KI-generierter Text erscheint hier..."
-                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #706b6b' }}
               />
 
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
@@ -333,7 +358,7 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
                   onClick={handleCopyAndGoogle}
                   style={{ background: '#34a853', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 0.85rem', fontSize: '0.85rem', cursor: 'pointer' }}
                 >
-                  Kopieren & Zu Google
+                  Kopieren & zu Google
                 </button>
               </div>
             </div>
