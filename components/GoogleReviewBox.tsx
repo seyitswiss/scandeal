@@ -36,6 +36,8 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
   const [feedback, setFeedback] = useState('')
   const [copied, setCopied] = useState(false)
   const [isReviewBoxOpen, setIsReviewBoxOpen] = useState(false)
+  const [showKiText, setShowKiText] = useState(false)
+  const [showThankYouMessage, setShowThankYouMessage] = useState(false)
   const boxRef = useRef<HTMLDivElement | null>(null)
 
   const normalizedGoogleUrl = normalizeGoogleReviewUrl(googleReviewUrl)
@@ -46,7 +48,10 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
     const shouldTrackOpen = !isReviewBoxOpen && businessId
 
     setRating(value)
+    setFeedback('')
     setIsReviewBoxOpen(true)
+    setShowKiText(false)
+    setShowThankYouMessage(false)
     setCopied(false)
 
     if (shouldTrackOpen) {
@@ -75,6 +80,8 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
     setRating(null)
     setFeedback('')
     setCopied(false)
+    setShowKiText(false)
+    setShowThankYouMessage(false)
     setIsReviewBoxOpen(false)
   }
 
@@ -87,6 +94,8 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
         setRating(null)
         setFeedback('')
         setCopied(false)
+        setShowKiText(false)
+        setShowThankYouMessage(false)
         setIsReviewBoxOpen(false)
       }
     }
@@ -97,43 +106,76 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
     }
   }, [isReviewBoxOpen])
 
+  const openGoogleUrl = async () => {
+    if (!normalizedGoogleUrl) return
+
+    if (businessId) {
+      try {
+        const data = JSON.stringify({
+          businessId,
+          type: 'link_click',
+          source: 'google',
+        })
+
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/business-stats', data)
+        } else {
+          await fetch('/api/business-stats', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: data,
+            keepalive: true,
+          })
+        }
+      } catch (error) {
+        console.error('Tracking failed:', error)
+      }
+    }
+
+    window.open(normalizedGoogleUrl, '_blank')
+  }
+
   const handleCopy = () => {
     navigator.clipboard.writeText(feedback)
     setCopied(true)
   }
 
-  const handleGoogleRedirect = async () => {
-    if (normalizedGoogleUrl) {
-      // Track Google review click
-      if (businessId) {
-        try {
-          // Use sendBeacon for better reliability on page navigation
-          const data = JSON.stringify({
-            businessId,
-            type: 'link_click',
-            source: 'google',
-          })
+  const handleGenerateKiText = () => {
+    const dummyText = 'Sehr freundlicher Service und angenehme Erfahrung.'
+    setFeedback(dummyText)
+    setShowKiText(true)
+    setCopied(false)
+  }
 
-          if (navigator.sendBeacon) {
-            navigator.sendBeacon('/api/business-stats', data)
-          } else {
-            // Fallback to fetch with keepalive
-            await fetch('/api/business-stats', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: data,
-              keepalive: true,
-            })
-          }
-        } catch (error) {
-          console.error('Tracking failed:', error)
-        }
-      }
+  const handleDirectGoogle = () => {
+    setShowThankYouMessage(true)
+    setIsReviewBoxOpen(false)
+    setShowKiText(false)
+    setRating(null)
 
-      window.open(normalizedGoogleUrl, '_blank')
+    setTimeout(() => {
+      openGoogleUrl()
+      setShowThankYouMessage(false)
+    }, 1000)
+  }
+
+  const handleCopyAndGoogle = () => {
+    if (feedback) {
+      navigator.clipboard.writeText(feedback)
+      setCopied(true)
     }
+
+    setShowThankYouMessage(true)
+    setIsReviewBoxOpen(false)
+    setShowKiText(false)
+    setRating(null)
+
+    setTimeout(() => {
+      openGoogleUrl()
+      setShowThankYouMessage(false)
+    }, 1000)
   }
 
   const handleFeedbackSend = async () => {
@@ -169,7 +211,7 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
   }
 
   return (
-    <div ref={boxRef} onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '0.75rem', marginBottom: '1rem', position: 'relative' }}>
+    <div ref={boxRef} onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', padding: '0.75rem', marginBottom: '1rem', position: 'relative', minHeight: '8rem' }}>
       {/* Close button */}
       {isReviewBoxOpen && (
         <button
@@ -197,17 +239,20 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
       )}
 
       {/* Default View */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <img src="/icons/google.svg" alt="Google" style={{ width: '28px', height: '28px' }} />
-          <div>
-            <p style={{ fontSize: '0.9rem', margin: 0 }}>Hat dir {businessName} gefallen?</p>
-            <p style={{ fontSize: '0.8rem', margin: 0, color: '#666' }}>Bewerte uns auf Google</p>
-          </div>
-        </div>
-        
-        {/* Stars */}
-        <div style={{ display: 'flex', gap: '2px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <img
+          src="/icons/google.svg"
+          alt="Google"
+          style={{ width: '20px', height: '20px', flexShrink: 0 }}
+          onError={(event) => {
+            event.currentTarget.style.display = 'none'
+          }}
+        />
+        <p style={{ fontSize: '0.95rem', margin: 0, fontWeight: 600 }}>Hat dir {businessName} gefallen?</p>
+      </div>
+
+      {!isReviewBoxOpen && !showThankYouMessage && (
+        <div style={{ display: 'flex', gap: '2px', marginTop: '0.5rem' }}>
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -226,12 +271,17 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
             </button>
           ))}
         </div>
-      </div>
+      )}
 
-      {/* Rating 1-3: Feedback form */}
-      {isReviewBoxOpen && rating !== null && rating <= 3 && (
-        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee' }}>
-          <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Was können wir besser machen?</p>
+      {showThankYouMessage && (
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee', minHeight: '8rem' }}>
+          <p style={{ fontSize: '0.9rem', margin: 0 }}>🙏 Vielen Dank – so hilfst du uns sehr! 🙌</p>
+        </div>
+      )}
+
+      {isReviewBoxOpen && rating !== null && rating <= 3 && !showThankYouMessage && (
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee', minHeight: '8rem' }}>
+          <p style={{ fontSize: '0.95rem', marginBottom: '0.5rem' }}>😕 Danke für dein Feedback</p>
           <textarea
             className="h-16 resize-none text-sm"
             value={feedback}
@@ -248,31 +298,46 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
         </div>
       )}
 
-      {/* Rating 4-5: Review form */}
-      {isReviewBoxOpen && rating !== null && rating >= 4 && (
-        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee' }}>
-          <p style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>Schreib kurz deine Bewertung</p>
-          <textarea
-            className="h-16 resize-none text-sm"
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Deine Bewertung..."
-            style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
-          />
-          <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem' }}>
+      {isReviewBoxOpen && rating !== null && rating >= 4 && !showThankYouMessage && (
+        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #eee', minHeight: '8rem' }}>
+          <p style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.4rem' }}>🙏 Vielen Dank 🙌</p>
+          <p style={{ fontSize: '0.85rem', margin: 0, color: '#555' }}>Du kannst deinen Bewertungstext auch mit KI generieren lassen</p>
+
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
             <button
-              onClick={handleCopy}
-              style={{ background: '#34a853', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.375rem 0.75rem', fontSize: '0.85rem', cursor: 'pointer' }}
+              onClick={handleGenerateKiText}
+              style={{ background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 0.75rem', fontSize: '0.85rem', cursor: 'pointer' }}
             >
-              {copied ? 'Kopiert!' : 'Text kopieren'}
+              KI Text generieren
             </button>
             <button
-              onClick={handleGoogleRedirect}
-              style={{ background: '#4285f4', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontSize: '0.85rem', cursor: 'pointer' }}
+              onClick={handleDirectGoogle}
+              style={{ background: '#4285f4', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 0.75rem', fontSize: '0.85rem', cursor: 'pointer' }}
             >
-              Zu Google
+              Direkt zu Google
             </button>
           </div>
+
+          {showKiText && (
+            <div style={{ marginTop: '0.75rem' }}>
+              <textarea
+                className="h-20 resize-none text-sm"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="KI-generierter Text erscheint hier..."
+                style={{ width: '100%', padding: '0.5rem', borderRadius: '6px', border: '1px solid #ddd' }}
+              />
+
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                <button
+                  onClick={handleCopyAndGoogle}
+                  style={{ background: '#34a853', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 0.85rem', fontSize: '0.85rem', cursor: 'pointer' }}
+                >
+                  Kopieren & Zu Google
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
