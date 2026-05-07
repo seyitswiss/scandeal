@@ -172,7 +172,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
   const cardStyle: React.CSSProperties = {
     display: 'flex',
     width: '100%',
-    maxWidth: previewOpen ? '820px' : '760px',
+    maxWidth: previewOpen ? '650px' : '600px',
     margin: '0 auto',
     minWidth: 0,
     minHeight: !isOurDeal && !previewOpen ? '108px' : undefined,
@@ -182,7 +182,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
     textDecoration: 'none',
     color: 'inherit',
     borderRadius: isOurDeal || deal.isPremium ? '12px' : '12px',
-    background: isHovered ? '#27272a' : '#18181b',
+    background: isHovered ? '#252529' : '#121214',
     border: deal.isPremium ? '1.5px solid rgba(74, 222, 128, 0.24)' : '1px solid rgba(255, 255, 255, 0.05)',
     boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.02)',
     transform: previewOpen ? 'translateY(-4px) scale(1.025)' : undefined,
@@ -192,7 +192,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
     alignSelf: 'stretch',
     marginTop: 0,
     marginBottom: 0,
-    padding: '0.75rem',
+    padding: '0.20rem 0.25rem 0.20rem 0.2rem',
     cursor: 'pointer',
   }
 
@@ -452,17 +452,17 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
         </div>
 
         {/* Card content */}
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '1rem' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
-            width: '190px', 
-            height: '150px', 
+            width: '110px', 
+            height: '100px', 
             flexShrink: 0, 
-            background: '#121212', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            borderRadius: '14px',
+            background: '#transparen', 
+            borderTopLeftRadius: '12px',
+            borderBottomLeftRadius: '12px',
+            borderTopRightRadius: '0',
+            borderBottomRightRadius: '0',
             overflow: 'hidden'
           }}>
             {deal.isPremium && imageSrc.endsWith('.mp4') ? (
@@ -476,6 +476,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
+                  display: 'block',
                 }}
               />
             ) : (
@@ -486,6 +487,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
+                  display: 'block',
                 }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
@@ -496,11 +498,11 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, minWidth: 0, padding: '0.75rem 2.5rem 0.75rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: '1rem 2.5rem 1rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', background: 'transparent' }}>
             {/* Top row: Title + Badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                {deal.isPremium && <span aria-hidden="true">🔥</span>}
+              <h4 style={{ fontSize: '0.95rem', fontWeight: '700', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1, minWidth: 0, overflow: 'hidden' }}>
+
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block' }}>
                   {deal.title}
                 </span>
@@ -516,14 +518,14 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
               <div style={{
                 background: 'rgba(74, 222, 128, 0.10)',
                 color: '#86efac',
-                fontSize: '0.82rem',
-                fontWeight: 500,
+                fontSize: '0.92rem',
+                fontWeight: 600,
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '6px 10px',
-                borderRadius: '8px',
-                margin: '0.45rem 0 0 0',
+                padding: '8px 12px',
+                borderRadius: '10px',
+                margin: '0.65rem 0 0 0',
               }}>
                 <span style={{
                   width: '14px',
@@ -545,7 +547,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
             )}
 
             {/* Button row */}
-            <div style={{ display: 'flex', gap: '0.5rem', margin: '0.65rem 0 0 0' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', margin: '0.85rem 0 0 0' }}>
               <button
                 onClick={handleRedeem}
                 disabled={isExpanded}
@@ -568,7 +570,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
             </div>
 
             {/* Footer: Date · Business */}
-            <div style={{ fontSize: '0.72rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+            <div style={{ fontSize: '0.7rem', color: '#8f9bb3', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
               {formattedEndDate && <span>📅 {formattedEndDate}</span>}
               {formattedEndDate && deal.business?.name && <span>·</span>}
               {deal.business?.name && <span style={{ color: '#94a3b8' }}>{deal.business.name}</span>}
@@ -696,17 +698,17 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
           </button>
         )}
         {/* Card content for normal mode */}
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: previewOpen ? 'flex-start' : 'center' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
-            width: '145px', 
-            height: '125px', 
+            width: '130px', 
+            height: '110px', 
             flexShrink: 0, 
-            background: '#121212', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            borderRadius: '14px',
+            background: '#777777', 
+            borderTopLeftRadius: '12px',
+            borderBottomLeftRadius: '12px',
+            borderTopRightRadius: '12px',
+            borderBottomRightRadius: '12px',
             overflow: 'hidden',
           }}>
             {deal.isPremium && imageSrc.endsWith('.mp4') ? (
@@ -717,9 +719,10 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                 loop
                 playsInline
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  width: '130%',
+                  height: '110%',
                   objectFit: 'cover',
+                  display: 'block',
                 }}
               />
             ) : (
@@ -727,9 +730,10 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                 src={imageSrc}
                 alt={deal.title ?? 'Deal image'}
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  width: '110%',
+                  height: '110%',
                   objectFit: 'cover',
+                  display: 'block',
                 }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
@@ -740,14 +744,14 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, minWidth: 0, padding: previewOpen ? '0.75rem 4.75rem 0.75rem 0' : '0.5rem 2rem 0.5rem 0', display: 'flex', flexDirection: 'column', justifyContent: previewOpen ? 'flex-start' : 'center', gap: previewOpen ? '0.25rem' : '4px', position: 'relative', overflow: 'hidden', maxWidth: '100%' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: previewOpen ? '1rem 4.75rem 1rem 0' : '0.75rem 2rem 0.75rem 0', display: 'flex', flexDirection: 'column', justifyContent: previewOpen ? 'flex-start' : 'center', gap: previewOpen ? '0.5rem' : '0.75rem', position: 'relative', overflow: 'hidden', maxWidth: '100%' }}>
             {previewOpen ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0, width: '100%' }}>
                 {/* Top row: Title + Badge */}
-                <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px', marginBottom: '0.25rem' }}>
                   <div style={{ minWidth: 0, flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    {deal.isPremium && <span aria-hidden="true">🔥</span>}
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.15rem', fontWeight: '600', color: '#ffffff' }}>
+
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.18rem', fontWeight: '700', color: '#ffffff' }}>
                       {deal.title}
                     </span>
                   </div>
@@ -757,13 +761,14 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   <div style={{
                     background: 'rgba(74, 222, 128, 0.12)',
                     color: '#4ade80',
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
+                    fontSize: '0.875rem',
+                    fontWeight: 300,
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    padding: '8px 12px',
-                    borderRadius: '8px',
+                    padding: '9px 14px',
+                    borderRadius: '10px',
+                    marginTop: '0.6rem',
                   }}>
                     <span style={{
                       width: '16px',
@@ -782,7 +787,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                     </span>
                     <span style={{
                       display: '-webkit-box',
-                      WebkitLineClamp: 2,
+                      WebkitLineClamp: 1,
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -793,15 +798,15 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
 
 
                 <div style={{
-                  fontSize: '0.75rem',
-                  color: '#94a3b8',
+                  fontSize: '0.7rem',
+                  color: '#8f9bb3',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '0.5rem',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   minHeight: '16px',
-                  marginTop: 0,
+                  marginTop: '0.4rem',
                   flexWrap: 'nowrap',
                   visibility: (formattedEndDate || distanceValue !== null && distanceValue !== undefined || deal.business?.name) ? 'visible' : 'hidden',
                 }}>
@@ -820,7 +825,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   {deal.business?.name && <span style={{ color: '#94a3b8' }}>{deal.business.name}</span>}
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.25rem', marginTop: 0 }}>
+                <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.75rem' }}>
                   <button
                     onClick={handlePreviewNavigate}
                     style={{ 
@@ -842,10 +847,10 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', minWidth: 0, width: '100%', minHeight: '64px' }}>
                 {/* Top row: Title only (no badge in History) */}
-                <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px', marginBottom: '0.2rem' }}>
                   <div style={{ minWidth: 0, flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    {deal.isPremium && <span aria-hidden="true">🔥</span>}
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.3rem', fontWeight: '600', lineHeight: '1.2', color: '#ffffff' }}>
+
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.10rem', fontWeight: '700', lineHeight: '1', color: '#ffffff' }}>
                       {deal.title}
                     </span>
                   </div>
@@ -854,8 +859,9 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                 {deal.highlight && (
                   <div style={{
                     color: '#86efac',
-                    fontSize: '0.9rem',
-                    fontWeight: '500',
+                    fontSize: '0.70rem',
+                    fontWeight: '400',
+                    opacity: 0.7,
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
@@ -863,16 +869,16 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                     marginTop: '4px',
                   }}>
                     <span style={{
-                      width: '16px',
-                      height: '16px',
+                      width: '12px',
+                      height: '12px',
                       background: 'transparent',
-                      border: '1.5px solid #4ade80',
+                      border: '1px solid #4ade80',
                       color: '#4ade80',
                       borderRadius: '50%',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.75rem',
+                      fontSize: '0.6rem',
                       flexShrink: 0,
                     }}>
                       ✔
@@ -887,45 +893,42 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                 )}
 
                 <div style={{
-                  fontSize: '0.8rem',
-                  lineHeight: '1.2',
-                  color: '#94a3b8',
+                  fontSize: '0.72rem',
+                  lineHeight: '1.3',
+                  color: '#8f9bb3',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px',
+                  gap: '6px',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   minHeight: '16px',
                   marginTop: '10px',
-                  visibility: (formattedEndDate || distanceValue !== null && distanceValue !== undefined || deal.business?.name) ? 'visible' : 'hidden',
+                  visibility: (distanceValue !== null && distanceValue !== undefined || deal.business?.name) ? 'visible' : 'hidden',
                   flexWrap: 'nowrap',
                   minWidth: 0,
                 }}>
                   {distanceValue !== null && distanceValue !== undefined && (
                     <>
                       <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{color: '#86efac', opacity: 0.75}}>📍</span> {distanceValue.toFixed(1)} km</span>
-                      {(formattedEndDate || deal.business?.name) && <span style={{ flexShrink: 0 }}>·</span>}
-                    </>
-                  )}
-                  {formattedEndDate && (
-                    <>
-                      <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{color: '#86efac', opacity: 0.75}}>📅</span> {formattedEndDate}</span>
                       {deal.business?.name && <span style={{ flexShrink: 0 }}>·</span>}
                     </>
                   )}
+                  
                   {deal.business?.name && <span style={{ color: '#94a3b8', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{deal.business.name}</span>}
                 </div>
               </div>
             )}
           </div>
         </div>
-{previewOpen && previewTeaser && (
-          <div style={{
-            fontSize: '0.8rem',
-            color: '#94a3b8',
-            lineHeight: 1.4,
-            marginTop: '0.5rem',
-          }}>
+                    {previewOpen && previewTeaser && (
+         <div style={{
+  fontSize: '0.8rem',
+  color: '#9ca3af',
+  lineHeight: 1.4,
+  marginTop: '0.75rem',
+  paddingTop: '0.5rem',
+  borderTop: '1px solid rgba(255,255,255,0.05)',
+}}>
             {previewTeaser}
           </div>
         )}
