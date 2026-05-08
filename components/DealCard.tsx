@@ -85,7 +85,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
   const distanceValue = deal.distanceKm ?? deal.distance
   const formattedEndDate = formatDate(endDateValue)
 
-  const previewTeaser = getTextTeaser(previewText, 80)
+  const previewTeaser = getTextTeaser(previewText, 180)
 
   let imageSrc = deal.image || '/deals/scandeal.png'
   if (deal.isPremium && deal.subCategory === 'Restaurant') {
@@ -746,12 +746,12 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
           {/* Right: Content */}
           <div style={{ flex: 1, minWidth: 0, padding: previewOpen ? '1rem 4.75rem 1rem 0' : '0.75rem 2rem 0.75rem 0', display: 'flex', flexDirection: 'column', justifyContent: previewOpen ? 'flex-start' : 'center', gap: previewOpen ? '0.5rem' : '0.75rem', position: 'relative', overflow: 'hidden', maxWidth: '100%' }}>
             {previewOpen ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0, width: '100%' }}>
-                {/* Top row: Title + Badge */}
-                <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '32px', gap: '6px', marginBottom: '0.25rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2px', minWidth: 0, width: '100%', minHeight: '64px' }}>
+                {/* Top row: Title only (Preview uses same History structure) */}
+                <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '0px', gap: '6px', marginBottom: '0.2rem' }}>
                   <div style={{ minWidth: 0, flex: '1 1 auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
-
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.18rem', fontWeight: '700', color: '#ffffff' }}>
+                    <span style={{ 
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, display: 'block', fontSize: '1.10rem', fontWeight: '700', lineHeight: '1.2', color: '#ffffff' }}>
                       {deal.title}
                     </span>
                   </div>
@@ -759,89 +759,62 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
 
                 {deal.highlight && (
                   <div style={{
-                    background: 'rgba(74, 222, 128, 0.12)',
-                    color: '#4ade80',
-                    fontSize: '0.875rem',
-                    fontWeight: 300,
+                    color: '#86efac',
+                    fontSize: '0.70rem',
+                    fontWeight: '400',
+                    opacity: 0.7,
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    padding: '9px 14px',
-                    borderRadius: '10px',
-                    marginTop: '0.6rem',
+                    width: 'fit-content',
+                    marginTop: '4px',
                   }}>
                     <span style={{
-                      width: '16px',
-                      height: '16px',
-                      border: '1.5px solid rgba(74, 222, 128, 0.75)',
+                      width: '12px',
+                      height: '12px',
+                      background: 'transparent',
+                      border: '1px solid #4ade80',
+                      color: '#4ade80',
                       borderRadius: '50%',
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '0.75rem',
-                      color: '#4ade80',
-                      background: 'transparent',
+                      fontSize: '0.6rem',
                       flexShrink: 0,
                     }}>
                       ✔
                     </span>
                     <span style={{
-                      display: '-webkit-box',
-                      WebkitLineClamp: 1,
-                      WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      maxWidth: '100%',
+                      whiteSpace: 'nowrap',
+                      minWidth: 0,
                     }}>{deal.highlight}</span>
                   </div>
                 )}
 
-
                 <div style={{
-                  fontSize: '0.7rem',
+                  fontSize: '0.72rem',
+                  lineHeight: '1.3',
                   color: '#8f9bb3',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
+                  gap: '6px',
                   overflow: 'hidden',
                   whiteSpace: 'nowrap',
                   minHeight: '16px',
-                  marginTop: '0.4rem',
+                  marginTop: '10px',
+                  visibility: (distanceValue !== null && distanceValue !== undefined || deal.business?.name) ? 'visible' : 'hidden',
                   flexWrap: 'nowrap',
-                  visibility: (formattedEndDate || distanceValue !== null && distanceValue !== undefined || deal.business?.name) ? 'visible' : 'hidden',
+                  minWidth: 0,
                 }}>
                   {distanceValue !== null && distanceValue !== undefined && (
                     <>
-                      <span><span style={{color: '#86efac', opacity: 0.75}}>📍</span> {distanceValue.toFixed(1)} km</span>
-                      {(formattedEndDate || deal.business?.name) && <span>·</span>}
+                      <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{color: '#86efac', opacity: 0.75}}>📍</span> {distanceValue.toFixed(1)} km</span>
+                      {deal.business?.name && <span style={{ flexShrink: 0 }}>·</span>}
                     </>
                   )}
-                  {formattedEndDate && (
-                    <>
-                      <span><span style={{color: '#86efac', opacity: 0.75}}>📅</span> {formattedEndDate}</span>
-                      {deal.business?.name && <span>·</span>}
-                    </>
-                  )}
-                  {deal.business?.name && <span style={{ color: '#94a3b8' }}>{deal.business.name}</span>}
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.75rem' }}>
-                  <button
-                    onClick={handlePreviewNavigate}
-                    style={{ 
-                      fontSize: '0.8rem', 
-                      color: '#fff', 
-                      fontWeight: '600',
-                      background: '#4caf50',
-                      border: 'none',
-                      borderRadius: '10px',
-                      padding: '0.4rem 0.6rem',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    Zum Deal →
-                  </button>
+                  {deal.business?.name && <span style={{ color: '#94a3b8', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{deal.business.name}</span>}
                 </div>
               </div>
             ) : (
@@ -920,18 +893,42 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
             )}
           </div>
         </div>
-                    {previewOpen && previewTeaser && (
+        {previewOpen && previewTeaser && (
+                      
          <div style={{
   fontSize: '0.8rem',
-  color: '#9ca3af',
-  lineHeight: 1.4,
+  color: '#cbd5e1',
+  lineHeight: 1.45,
   marginTop: '0.75rem',
-  paddingTop: '0.5rem',
-  borderTop: '1px solid rgba(255,255,255,0.05)',
+  padding: '0.65rem 0.75rem',
+  background: 'rgba(255,255,255,0.02)',
+  borderRadius: '8px',
+  border: '1px solid rgba(74, 222, 128, 0.15)',
+borderLeft: '3px solid #4ade80',
 }}>
             {previewTeaser}
           </div>
         )}
+        {previewOpen && (
+  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.4rem' }}>
+    <button
+      onClick={handlePreviewNavigate}
+      style={{
+        fontSize: '0.8rem',
+        color: '#fff',
+        fontWeight: '600',
+        background: '#4caf50',
+        border: 'none',
+        borderRadius: '10px',
+        padding: '0.45rem 0.7rem',
+        cursor: 'pointer',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      Deal ansehen →
+    </button>
+  </div>
+)}
       
         </div>
       )}
