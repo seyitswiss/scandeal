@@ -465,6 +465,7 @@ export default function NewBusinessPage() {
             <div className="border p-4 rounded">
               <h3 className="text-lg font-semibold mb-3">QR Code</h3>
               <img src={qrCodeUrl} alt="Business QR Code" className="w-full h-auto rounded-md mb-4" />
+              <p className="text-xs text-red-600 mb-3">Achtung: Wenn du den Slug änderst, musst du den QR-Code neu erstellen.</p>
               <button
                 type="button"
                 onClick={() => {

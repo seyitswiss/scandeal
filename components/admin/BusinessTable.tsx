@@ -66,7 +66,7 @@ export default function BusinessTable({ businesses }: BusinessTableProps) {
                 <td className="p-3 border">{business.category || '-'}</td>
                 <td className="p-3 border">{business.subCategory || '-'}</td>
                 <td className="p-3 border">
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <Link
                       href={`/profile/${business.slug}`}
                       target="_blank"

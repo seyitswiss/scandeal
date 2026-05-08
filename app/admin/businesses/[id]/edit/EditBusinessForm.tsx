@@ -118,7 +118,6 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
     setFormData({
       ...formData,
       name,
-      slug: generateSlug(name),
     })
   }
 
@@ -556,6 +555,7 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
               alt="Business QR Code"
               className="w-full h-auto rounded mb-4"
             />
+            <p className="text-xs text-red-600 mb-3">Achtung: Wenn du den Slug änderst, musst du den QR-Code neu erstellen.</p>
             <button
               type="button"
               onClick={handleDownloadQr}

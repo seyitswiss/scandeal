@@ -204,6 +204,12 @@ export default function NewDealPage() {
         <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Business</h2>
           
+          {formData.businessId && (
+            <p className="text-sm text-gray-600 mb-3">
+              Business: <span className="font-medium">{businesses.find(b => b.id === formData.businessId)?.name || 'Loading...'}</span>
+            </p>
+          )}
+          
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">Business *</label>
