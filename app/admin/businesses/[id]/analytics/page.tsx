@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import ExpandableAnalyticsCard from '@/components/ExpandableAnalyticsCard'
+import { getDealRecommendation, getBusinessRecommendation } from '@/lib/analyticsRecommendations'
 
 export default async function BusinessAnalyticsPage({
   params,
@@ -16,6 +17,13 @@ export default async function BusinessAnalyticsPage({
 
   const business = await prisma.business.findUnique({
     where: { id },
+    select: {
+      id: true,
+      name: true,
+      instagram: true,
+      googleReviewUrl: true,
+      deals: true,
+    },
   })
 
   if (!business) {
@@ -113,16 +121,7 @@ export default async function BusinessAnalyticsPage({
     const redeemRate = dealClicks === 0 ? 0 : Math.round((dealRedeems / dealClicks) * 100)
 
     // Generate recommendation
-    let recommendation = ''
-    if (clickRate < 20) {
-      recommendation = 'Low click rate – improve title or image'
-    } else if (clickRate >= 20 && redeemRate < 30) {
-      recommendation = 'Users click but do not redeem – improve offer'
-    } else if (redeemRate >= 50) {
-      recommendation = 'Strong performance – consider increasing visibility'
-    } else {
-      recommendation = 'Needs improvement – review deal strategy'
-    }
+    let recommendation = getDealRecommendation(dealViews, dealClicks, dealRedeems)
 
     // Generate performance label
     let label = ''
@@ -285,6 +284,11 @@ export default async function BusinessAnalyticsPage({
           No deals found for this business.
         </div>
       )}
+
+      <div className="border rounded-lg p-6 bg-white shadow-sm mt-10">
+        <h2 className="text-xl font-semibold mb-4">Business Recommendation</h2>
+        <p className="text-sm text-gray-700">{getBusinessRecommendation(qrScans, linkClicks, profileViews, googleViews, instagramViews, business.instagram, business.googleReviewUrl)}</p>
+      </div>
     </div>
   )
 }

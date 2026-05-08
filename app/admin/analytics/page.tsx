@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import ExpandableAnalyticsCard from '@/components/ExpandableAnalyticsCard'
+import { getDealRecommendation } from '@/lib/analyticsRecommendations'
 
 export default async function AnalyticsPage() {
   // Get all business stats
@@ -133,17 +134,7 @@ export default async function AnalyticsPage() {
     deal.clickRate = deal.views === 0 ? 0 : Math.round((deal.clicks / deal.views) * 100)
     deal.redeemRate = deal.clicks === 0 ? 0 : Math.round((deal.redeems / deal.clicks) * 100)
 
-    if (deal.views === 0) {
-      deal.status = 'No data'
-    } else if (deal.clickRate < 20) {
-      deal.status = '⚠️ Low Click Rate'
-    } else if (deal.redeemRate < 30) {
-      deal.status = '⚠️ Low Redeem Rate'
-    } else if (deal.redeemRate >= 50) {
-      deal.status = '🔥 Strong Deal'
-    } else {
-      deal.status = 'Normal'
-    }
+    deal.status = getDealRecommendation(deal.views, deal.clicks, deal.redeems)
   })
 
   // Sort deals by views (descending)
