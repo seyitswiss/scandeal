@@ -184,7 +184,11 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
     color: 'inherit',
     borderRadius: isOurDeal || deal.isPremium ? '12px' : '12px',
     background: isHovered ? '#252529' : '#121214',
-    border: deal.isPremium ? '1.5px solid rgba(74, 222, 128, 0.24)' : '1px solid rgba(255, 255, 255, 0.05)',
+    border: isOurDeal
+  ? '1.5px solid rgba(134, 239, 172, 0.2)'
+  : deal.isPremium
+  ? '1.5px solid rgba(134, 239, 172, 0.2)'
+  : '1px solid rgba(255, 255, 255, 0.05)',
     boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.02)',
     transform: previewOpen ? 'translateY(-4px) scale(1.025)' : undefined,
     zIndex: previewOpen ? 30 : undefined,
@@ -424,7 +428,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
             title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
           >
             <span style={{
-              color: isSaved ? '#2e7d32' : '#b5b5b5',
+              color: isSaved ? '#4ade80' : '#b5b5b5',
               opacity: isSaved ? 1 : 0.55,
               fontSize: '1.35rem',
               fontWeight: isSaved ? '700' : 'normal',
@@ -526,13 +530,13 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                 <span style={{
                   width: '14px',
                   height: '14px',
-                  border: '1.5px solid rgba(74, 222, 128, 0.65)',
+                  border: '1.5px solid rgba(134, 239, 172, 0.2)',
                   borderRadius: '50%',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '0.7rem',
-                  color: '#4ade80',
+                  color: '#86efac',
                   background: 'transparent',
                   flexShrink: 0,
                 }}>
@@ -562,7 +566,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
       fontSize: '0.75rem',
       color: '#000000',
       fontWeight: '700',
-      background: '#2e7d32',
+      background: '#4ade80',
       border: 'none',
       borderRadius: '12px',
       padding: '1rem',
@@ -570,7 +574,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
       opacity: isExpanded ? 0.65 : 1,
     }}
   >
-    {isExpanded ? 'BEREITS EINGELÖST' : 'JETZT EINLÖSEN'}
+    {isExpanded ? 'BEREITS EINGELÖST' : 'JETZT UNVERBINDLICH EINLÖSEN'}
   </button>
 </div>
 
@@ -585,9 +589,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
     borderRadius: '8px',
     border: '1px solid rgba(255,255,255,0.05)',
   }}>
-    {fullDescription.length > 120
-      ? fullDescription.slice(0, 120) + '...'
-      : fullDescription}
+    {fullDescription}
   </div>
 )}
 <div
@@ -614,7 +616,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
   <div style={{
     marginTop: '0.6rem',
     borderRadius: '12px',
-    border: '1px solid rgba(74, 222, 128, 0.3)',
+    border: '1px solid rgba(134, 239, 172, 0.2)',
     padding: '0.6rem 0.7rem',
     background: 'rgba(0,0,0,0.3)'
   }}>
@@ -667,9 +669,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
 )}
             {/* Footer: Date · Business */}
             <div style={{ fontSize: '0.7rem', color: '#8f9bb3', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-              {formattedEndDate && <span>📅 {formattedEndDate}</span>}
-              {formattedEndDate && deal.business?.name && <span>·</span>}
-              {deal.business?.name && <span style={{ color: '#94a3b8' }}>{deal.business.name}</span>}
+              
             </div>
       </div>
       ) : (
@@ -706,7 +706,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
               title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
             >
               <span style={{
-                color: isSaved ? '#2e7d32' : '#b5b5b5',
+                color: isSaved ? '#4ade80' : '#b5b5b5',
                 opacity: isSaved ? 1 : 0.55,
                 fontSize: '1.35rem',
                 fontWeight: isSaved ? '700' : 'normal',
@@ -758,7 +758,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
             title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
           >
             <span style={{
-              color: '#2e7d32',
+              color: '#4ade80',
               opacity: isSaved ? 1 : 0.4,
               fontSize: '1.35rem',
               fontWeight: isSaved ? '700' : '400',
@@ -843,8 +843,8 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                       width: '12px',
                       height: '12px',
                       background: 'transparent',
-                      border: '1px solid #4ade80',
-                      color: '#4ade80',
+                      border: '1px solid rgba(134, 239, 172, 0.2)',
+                      color: 'rgba(134, 239, 172, 0.2)',
                       borderRadius: '50%',
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -915,8 +915,8 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                       width: '12px',
                       height: '12px',
                       background: 'transparent',
-                      border: '1px solid #4ade80',
-                      color: '#4ade80',
+                      border: '1px solid rgba(134, 239, 172, 0.2)',
+                      color: 'rgba(134, 239, 172, 0.2)',
                       borderRadius: '50%',
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -973,8 +973,8 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
   padding: '0.65rem 0.75rem',
   background: 'rgba(255,255,255,0.02)',
   borderRadius: '8px',
-  border: '1px solid rgba(74, 222, 128, 0.15)',
-borderLeft: '3px solid #4ade80',
+  border: '1px solid rgba(134, 239, 172, 0.2)',
+borderLeft: '3px solid rgba(134, 239, 172, 0.2)',
 }}>
             {previewTeaser}
           </div>
@@ -987,7 +987,7 @@ borderLeft: '3px solid #4ade80',
         fontSize: '0.8rem',
         color: '#fff',
         fontWeight: '600',
-        background: '#4caf50',
+        background: '#4ade80',
         border: 'none',
         borderRadius: '10px',
         padding: '0.45rem 0.7rem',

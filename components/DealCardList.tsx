@@ -25,7 +25,7 @@ export default function DealCardList({ ourDeal, selectedDeals }: DealCardListPro
       {selectedDeals.length > 0 && (
         <>
           <h2 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '0.5rem', textAlign: 'center', color: '#f8fafc' }}>
-            Weitere Deals
+            Deals für Dich
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {selectedDeals.map((deal) => (
