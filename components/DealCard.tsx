@@ -65,6 +65,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
   const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
   const router = useRouter()
   const businessSlug = deal.business?.slug
 
@@ -452,17 +453,17 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
         </div>
 
         {/* Card content */}
-        <div style={{ display: 'flex', gap: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
           {/* Left: Deal Image or Video for Premium */}
           <div style={{ 
-            width: '110px', 
-            height: '100px', 
+            width: '130px', 
+            height: '110px', 
             flexShrink: 0, 
             background: '#transparen', 
             borderTopLeftRadius: '12px',
             borderBottomLeftRadius: '12px',
-            borderTopRightRadius: '0',
-            borderBottomRightRadius: '0',
+            borderTopRightRadius: '12px',
+            borderBottomRightRadius: '12px',
             overflow: 'hidden'
           }}>
             {deal.isPremium && imageSrc.endsWith('.mp4') ? (
@@ -498,7 +499,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
           </div>
 
           {/* Right: Content */}
-          <div style={{ flex: 1, minWidth: 0, padding: '1rem 2.5rem 1rem 0', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: '1rem 4.75rem 1rem 0', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', gap: '0.5rem', position: 'relative', overflow: 'hidden', background: 'transparent' }}>
             {/* Top row: Title + Badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
               <h4 style={{ fontSize: '0.95rem', fontWeight: '700', margin: 0, lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1, minWidth: 0, overflow: 'hidden' }}>
@@ -507,26 +508,21 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
                   {deal.title}
                 </span>
               </h4>
-              {badgeLabel && (
-                <span style={{ marginLeft: 'auto', background: '#2e7d32', color: '#fff', padding: '2px 6px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 'bold', whiteSpace: 'nowrap', flex: '0 0 auto' }}>
-                  {badgeLabel}
-                </span>
-              )}
+              
             </div>
 
             {deal.highlight && (
-              <div style={{
-                background: 'rgba(74, 222, 128, 0.10)',
-                color: '#86efac',
-                fontSize: '0.92rem',
-                fontWeight: 600,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 12px',
-                borderRadius: '10px',
-                margin: '0.65rem 0 0 0',
-              }}>
+  <div style={{
+    color: '#86efac',
+    fontSize: '0.70rem',
+    fontWeight: '400',
+    opacity: 0.7,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    width: 'fit-content',
+    marginTop: '4px',
+  }}>
                 <span style={{
                   width: '14px',
                   height: '14px',
@@ -546,61 +542,135 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
               </div>
             )}
 
-            {/* Button row */}
-            <div style={{ display: 'flex', gap: '0.5rem', margin: '0.85rem 0 0 0' }}>
-              <button
-                onClick={handleRedeem}
-                disabled={isExpanded}
-                style={{ 
-                  fontSize: '0.95rem', 
-                  color: '#fff', 
-                  fontWeight: '700',
-                  background: '#2e7d32',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '0.95rem 1.1rem',
-                  cursor: isExpanded ? 'not-allowed' : 'pointer',
-                  whiteSpace: 'nowrap',
-                  
-                  opacity: isExpanded ? 0.65 : 1,
-                }}
-              >
-                {isExpanded ? 'BEREITS EINGELÖST' : 'JETZT EINLÖSEN'}
-              </button>
-            </div>
+            
 
+            
+            
+
+
+        
+          </div>
+        </div>
+        {/* Button row */}
+<div style={{ width: '100%', marginTop: '0.75rem' }}>
+  <button
+    onClick={handleRedeem}
+    disabled={isExpanded}
+    style={{
+      width: '100%',
+      display: 'block',
+      fontSize: '0.75rem',
+      color: '#000000',
+      fontWeight: '700',
+      background: '#2e7d32',
+      border: 'none',
+      borderRadius: '12px',
+      padding: '1rem',
+      cursor: isExpanded ? 'not-allowed' : 'pointer',
+      opacity: isExpanded ? 0.65 : 1,
+    }}
+  >
+    {isExpanded ? 'BEREITS EINGELÖST' : 'JETZT EINLÖSEN'}
+  </button>
+</div>
+
+{fullDescription && (
+  <div style={{
+    fontSize: '0.8rem',
+    color: '#cbd5e1',
+    lineHeight: 1.45,
+    marginTop: '0.75rem',
+    padding: '0.65rem 0.75rem',
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.05)',
+  }}>
+    {fullDescription.length > 120
+      ? fullDescription.slice(0, 120) + '...'
+      : fullDescription}
+  </div>
+)}
+<div
+  onClick={() => setShowDetails(!showDetails)}
+  style={{
+    fontSize: '0.75rem',
+    color: '#9ca3af',
+    marginTop: '0.6rem',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+  }}
+>
+  <span>ⓘ</span>
+  <span>Details & Bedingungen anzeigen</span>
+  <span style={{ marginLeft: 'auto' }}>
+    {showDetails ? '↑' : '↓'}
+  </span>
+</div>
+{/* Details section */}
+
+{showDetails && (
+  <div style={{
+    marginTop: '0.6rem',
+    borderRadius: '12px',
+    border: '1px solid rgba(74, 222, 128, 0.3)',
+    padding: '0.6rem 0.7rem',
+    background: 'rgba(0,0,0,0.3)'
+  }}>
+
+    {/* Header */}
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      fontSize: '0.8rem',
+      color: '#d1d5db',
+      marginBottom: '0.4rem'
+    }}>
+      <span>ℹ️</span>
+      <span>Details & Bedingungen</span>
+    </div>
+
+    {/* Row */}
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <span>📅 Gültig von</span>
+      <span>01.05.2025 – 31.07.2025</span>
+    </div>
+
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <span>🕒 Einlösbar</span>
+      <span>Mo – Fr</span>
+    </div>
+
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <span>👤 Einlösbar für</span>
+      <span>1 Person</span>
+    </div>
+
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <span>✔️ Voraussetzung</span>
+      <span>Termin erforderlich</span>
+    </div>
+
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <span>❌ Nicht kombinierbar</span>
+      <span>Mit anderen Angeboten</span>
+    </div>
+
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', padding: '0.35rem 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <span>ℹ️ Hinweis</span>
+      <span>Nicht gültig für Produkte</span>
+    </div>
+
+  </div>
+)}
             {/* Footer: Date · Business */}
             <div style={{ fontSize: '0.7rem', color: '#8f9bb3', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
               {formattedEndDate && <span>📅 {formattedEndDate}</span>}
               {formattedEndDate && deal.business?.name && <span>·</span>}
               {deal.business?.name && <span style={{ color: '#94a3b8' }}>{deal.business.name}</span>}
             </div>
-          </div>
-        </div>
-
-        {fullDescription && (
-          <div style={{
-            fontSize: '0.88rem',
-            color: '#9ca3af',
-            lineHeight: 1.55,
-            marginTop: '0.5rem',
-          }}>
-            {fullDescription.length > 80
-              ? fullDescription.slice(0, 80) + '...'
-              : fullDescription}
-          </div>
-        )}
-
-        {/* Expanded Redeem UI */}
-        {isExpanded && (
-          <div style={{ padding: '0.75rem', marginTop: '0.5rem' }}>
-            <div style={{ background: '#4caf50', color: '#fff', padding: '0.75rem', borderRadius: '6px', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 'bold' }}>Deal aktiviert ✔️</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem' }}>Code: SD-0001</p>
-              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', opacity: 0.9 }}>Zeige diesen Code vor Ort</p>
-            </div>
-          </div>
-        )}
       </div>
       ) : (
         <div 
