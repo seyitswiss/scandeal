@@ -38,6 +38,13 @@ export default async function BusinessAnalyticsPage({
   })
 
   const profileViews = businessStats.filter((s) => s.type === 'profile_view').length
+  const qrScans = businessStats.filter((s) => s.type === 'profile_view_qr').length
+  const instagramViews = businessStats.filter((s) => s.type === 'profile_view_instagram').length
+  const googleViews = businessStats.filter((s) => s.type === 'profile_view_google').length
+  const directViews =
+    businessStats.filter(
+      (s) => s.type === 'profile_view_direct' || s.type === 'profile_view',
+    ).length
   const linkClicks = businessStats.filter((s) => s.type === 'link_click').length
   const googleReviewClicks = businessStats.filter((s) => s.type === 'link_click' && s.source === 'google').length
   const googleBoxOpen = businessStats.filter((s) => s.type === 'google_box_open').length
@@ -56,6 +63,9 @@ export default async function BusinessAnalyticsPage({
   const dealClicks = dealStats.filter((s) => s.type === 'click').length
   const redeems = dealStats.filter((s) => s.type === 'redeem').length
   const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').length
+
+  const dealClickRate = dealViews === 0 ? 0 : Math.round((dealClicks / dealViews) * 100)
+  const redeemRateOverall = dealClicks === 0 ? 0 : Math.round((redeems / dealClicks) * 100)
 
   const formatDay = (createdAt: Date | string) => {
     const date = new Date(createdAt)
@@ -81,6 +91,7 @@ export default async function BusinessAnalyticsPage({
   }
 
   const profileViewsByDay = groupByDay(businessStats.filter((s) => s.type === 'profile_view'))
+  const qrScansByDay = groupByDay(businessStats.filter((s) => s.type === 'profile_view_qr'))
   const linkClicksByDay = groupByDay(businessStats.filter((s) => s.type === 'link_click'))
   const dealViewsByDay = groupByDay(dealStats.filter((s) => s.type === 'view'))
 
@@ -113,6 +124,20 @@ export default async function BusinessAnalyticsPage({
       recommendation = 'Needs improvement – review deal strategy'
     }
 
+    // Generate performance label
+    let label = ''
+    if (dealViews === 0) {
+      label = 'No data'
+    } else if (clickRate < 20) {
+      label = '⚠️ Low Click Rate'
+    } else if (redeemRate < 30) {
+      label = '⚠️ Low Redeem Rate'
+    } else if (redeemRate >= 50) {
+      label = '🔥 Strong Deal'
+    } else {
+      label = 'Normal'
+    }
+
     return {
       id: deal.id,
       title: deal.title,
@@ -122,6 +147,7 @@ export default async function BusinessAnalyticsPage({
       clickRate,
       redeemRate,
       recommendation,
+      label,
     }
   }).sort((a, b) => b.views - a.views)
 
@@ -142,6 +168,33 @@ export default async function BusinessAnalyticsPage({
         <ExpandableAnalyticsCard title="Link Clicks" value={linkClicks} details={linkClicksByDay} />
         <ExpandableAnalyticsCard title="Deal Views" value={dealViews} details={dealViewsByDay} />
       </div>
+
+      <div className="border rounded-lg p-6 bg-white shadow-sm mb-10">
+        <h2 className="text-xl font-semibold mb-4">Profile Views by Source</h2>
+        <div className="grid gap-6 md:grid-cols-4">
+          <ExpandableAnalyticsCard
+            title="QR Scans"
+            value={qrScans}
+            details={qrScansByDay}
+          />
+          <div className="border rounded-lg p-6 bg-white shadow-sm">
+            <div className="text-sm font-medium text-gray-500">Instagram Views</div>
+            <div className="mt-4 text-3xl font-bold text-pink-600">{instagramViews}</div>
+            <div className="text-sm text-gray-600 mt-2">Views originating from Instagram links</div>
+          </div>
+          <div className="border rounded-lg p-6 bg-white shadow-sm">
+            <div className="text-sm font-medium text-gray-500">Google Views</div>
+            <div className="mt-4 text-3xl font-bold text-blue-600">{googleViews}</div>
+            <div className="text-sm text-gray-600 mt-2">Views from Google-sourced links</div>
+          </div>
+          <div className="border rounded-lg p-6 bg-white shadow-sm">
+            <div className="text-sm font-medium text-gray-500">Direct Views</div>
+            <div className="mt-4 text-3xl font-bold text-green-600">{directViews}</div>
+            <div className="text-sm text-gray-600 mt-2">Views without a source parameter</div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-6 md:grid-cols-3 mb-10">
         <div className="border rounded-lg p-6 bg-white shadow-sm">
           <div className="text-sm font-medium text-gray-500">Google Box Opens</div>
@@ -173,7 +226,7 @@ export default async function BusinessAnalyticsPage({
         </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-4 mb-10">
+      <div className="grid gap-6 md:grid-cols-6 mb-10">
         <div className="border rounded-lg p-6 bg-white shadow-sm">
           <div className="text-sm font-medium text-gray-500">Deal Views</div>
           <div className="mt-4 text-3xl font-bold text-blue-600">{dealViews}</div>
@@ -190,6 +243,16 @@ export default async function BusinessAnalyticsPage({
           <div className="text-sm font-medium text-gray-500">Our Deal Closed</div>
           <div className="mt-4 text-3xl font-bold text-red-600">{ourDealClosed}</div>
         </div>
+        <div className="border rounded-lg p-6 bg-white shadow-sm">
+          <div className="text-sm font-medium text-gray-500">Click Rate</div>
+          <div className="mt-4 text-3xl font-bold text-orange-600">{dealClickRate}%</div>
+          <div className="text-xs text-gray-500 mt-2">Clicks / Views</div>
+        </div>
+        <div className="border rounded-lg p-6 bg-white shadow-sm">
+          <div className="text-sm font-medium text-gray-500">Redeem Rate</div>
+          <div className="mt-4 text-3xl font-bold text-indigo-600">{redeemRateOverall}%</div>
+          <div className="text-xs text-gray-500 mt-2">Redeems / Clicks</div>
+        </div>
       </div>
 
       {/* Per-Deal Analytics */}
@@ -204,6 +267,7 @@ export default async function BusinessAnalyticsPage({
                   <div className="text-sm text-gray-600">
                     Views: {deal.views} • Clicks: {deal.clicks} • Redeems: {deal.redeems} • Click Rate: {deal.clickRate}% • Redeem Rate: {deal.redeemRate}%
                   </div>
+                  <div className="text-xs text-gray-700 mt-1 font-medium">{deal.label}</div>
                   <div className="text-sm text-blue-600 mt-1">
                     Recommendation: {deal.recommendation}
                   </div>

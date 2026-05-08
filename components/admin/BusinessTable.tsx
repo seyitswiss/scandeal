@@ -19,6 +19,12 @@ interface BusinessTableProps {
 export default function BusinessTable({ businesses }: BusinessTableProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
+  const handleCopyLink = (slug: string) => {
+    const profileUrl = `${window.location.origin}/profile/${slug}`
+    navigator.clipboard.writeText(profileUrl)
+    alert('Copied!')
+  }
+
   // Filter businesses based on search query
   const filteredBusinesses = businesses.filter((business) => {
     const query = searchQuery.toLowerCase()
@@ -67,6 +73,19 @@ export default function BusinessTable({ businesses }: BusinessTableProps) {
                       className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                     >
                       Open
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyLink(business.slug)}
+                      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                    >
+                      Copy Link
+                    </button>
+                    <Link
+                      href={`/admin/businesses/${business.id}/analytics`}
+                      className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+                    >
+                      Analytics
                     </Link>
                     <Link
                       href={`/admin/businesses/${business.id}/edit`}

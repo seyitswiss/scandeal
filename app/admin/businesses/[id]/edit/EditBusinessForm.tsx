@@ -158,6 +158,34 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
     setLoading(false)
   }
 
+  const profileUrl = `${window.location.origin}/profile/${formData.slug}`
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+    profileUrl,
+  )}`
+
+  const handleCopyProfileLink = () => {
+    navigator.clipboard.writeText(profileUrl)
+    alert('Copied!')
+  }
+
+  const handleDownloadQr = () => {
+    const link = document.createElement('a')
+    link.href = qrCodeUrl
+    link.download = `${formData.slug}-qr.png`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
+  const handleCopyQrLink = () => {
+    navigator.clipboard.writeText(profileUrl)
+    alert('Copied!')
+  }
+
+  const handleCreateDeal = () => {
+    router.push(`/admin/deals/new?businessId=${business.id}`)
+  }
+
   if (saved) {
     return (
       <div className="max-w-2xl mx-auto p-8">
@@ -181,25 +209,27 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
           <h2 className="text-lg font-bold mb-4">Basic</h2>
           
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Name *</label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                className="w-full p-2 border rounded"
-              />
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Slug</label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="w-full p-2 border rounded"
-              />
+              <div>
+                <label className="block text-sm font-medium mb-1">Slug</label>
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
             </div>
 
             <div>
@@ -273,27 +303,29 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Postal Code</label>
-              <input
-                type="text"
-                value={formData.postalCode}
-                onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                className="w-full p-2 border rounded"
-              />
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Postal Code</label>
+                <input
+                  type="text"
+                  value={formData.postalCode}
+                  onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Google Maps Route Link</label>
-              <input
-                type="text"
-                value={formData.googleMapsUrl}
-                onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
-                className="w-full p-2 border rounded"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Maps</a>
-              </p>
+              <div>
+                <label className="block text-sm font-medium mb-1">Google Maps Route Link</label>
+                <input
+                  type="text"
+                  value={formData.googleMapsUrl}
+                  onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
+                  className="w-full p-2 border rounded"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Maps</a>
+                </p>
+              </div>
             </div>
 
             <div>
@@ -508,11 +540,74 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 disabled:opacity50"
+          className="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
         >
           {loading ? 'Saving...' : 'Update Business'}
         </button>
       </form>
+
+      <div className="mt-8 border p-4 rounded">
+        <h2 className="text-lg font-bold mb-4">QR &amp; Links</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="border p-4 rounded">
+            <h3 className="text-sm font-semibold mb-3">QR Code</h3>
+            <img
+              src={qrCodeUrl}
+              alt="Business QR Code"
+              className="w-full h-auto rounded mb-4"
+            />
+            <button
+              type="button"
+              onClick={handleDownloadQr}
+              className="w-full px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+            >
+              Download QR
+            </button>
+          </div>
+
+          <div className="border p-4 rounded">
+            <h3 className="text-sm font-semibold mb-3">QR Link</h3>
+            <div className="break-words bg-gray-100 p-3 rounded text-sm mb-4">{profileUrl}</div>
+            <button
+              type="button"
+              onClick={handleCopyQrLink}
+              className="w-full px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+            >
+              Copy QR Link
+            </button>
+          </div>
+
+          <div className="border p-4 rounded">
+            <h3 className="text-sm font-semibold mb-3">Scandeal Link</h3>
+            <div className="break-words bg-gray-100 p-3 rounded text-sm mb-4">{profileUrl}</div>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={handleCopyProfileLink}
+                className="w-full px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+              >
+                Copy Link
+              </button>
+              <a
+                href={profileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex justify-center w-full px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+              >
+                Open Profile
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleCreateDeal}
+          className="mt-6 w-full bg-indigo-600 text-white py-3 px-4 rounded hover:bg-indigo-700 text-sm"
+        >
+          + Deal für dieses Business erstellen
+        </button>
+      </div>
     </div>
   )
 }

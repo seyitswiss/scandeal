@@ -12,12 +12,17 @@ export default function ProfileTracker({ businessId, children }: ProfileTrackerP
     // Track profile view on page load
     async function trackProfileView() {
       try {
+        const urlParams = new URLSearchParams(window.location.search)
+        const src = urlParams.get('src') || 'direct'
+        const validSources = ['qr', 'instagram', 'google', 'direct']
+        const source = validSources.includes(src) ? src : 'direct'
+
         await fetch('/api/business-stats', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             businessId,
-            type: 'profile_view',
+            type: `profile_view_${source}`,
           }),
         })
       } catch (error) {
