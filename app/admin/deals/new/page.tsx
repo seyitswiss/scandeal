@@ -22,6 +22,7 @@ export default function NewDealPage() {
     description: '',
     discountText: '',
     highlight: '',
+    image: '',
     category: '',
     subCategory: '',
     isPremium: false,
@@ -30,6 +31,9 @@ export default function NewDealPage() {
     endDate: '',
     businessId: '',
   })
+
+  const [generatingAI, setGeneratingAI] = useState(false)
+  const [imagePreview, setImagePreview] = useState('')
 
   useEffect(() => {
     fetch('/api/businesses')
@@ -60,6 +64,60 @@ export default function NewDealPage() {
       category: business?.category || '',
       subCategory: business?.subCategory || '',
     })
+  }
+
+  async function handleGenerateAI() {
+    if (!formData.businessId) {
+      alert('Please select a business first')
+      return
+    }
+
+    setGeneratingAI(true)
+    try {
+      const res = await fetch('/api/deals/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          businessId: formData.businessId,
+          isPremium: formData.isPremium,
+        }),
+      })
+
+      if (res.ok) {
+        const generated = await res.json()
+        setFormData((prev) => ({
+          ...prev,
+          title: generated.title || prev.title,
+          highlight: generated.highlight || prev.highlight,
+          description: generated.description || prev.description,
+          image: generated.image || prev.image,
+        }))
+        if (generated.image) {
+          setImagePreview(generated.image)
+        }
+      } else {
+        const error = await res.json()
+        alert(error.error || 'Failed to generate deal content')
+      }
+    } catch (error) {
+      console.error('Generation error:', error)
+      alert('Failed to generate deal content')
+    } finally {
+      setGeneratingAI(false)
+    }
+  }
+
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string
+        setFormData({ ...formData, image: dataUrl })
+        setImagePreview(dataUrl)
+      }
+      reader.readAsDataURL(file)
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -139,6 +197,58 @@ export default function NewDealPage() {
                 className="w-full p-2 border rounded"
               />
             </div>
+
+            {/* AI Generation Section */}
+            {!formData.isPremium && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleGenerateAI}
+                    disabled={generatingAI || !formData.businessId}
+                    className="flex-1 bg-blue-600 text-white py-2 px-3 rounded hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {generatingAI ? '⏳ Generierung...' : '✨ Mit KI generieren'}
+                  </button>
+                  {formData.title && (
+                    <button
+                      type="button"
+                      onClick={handleGenerateAI}
+                      disabled={generatingAI || !formData.businessId}
+                      className="bg-blue-600 text-white py-2 px-3 rounded hover:bg-blue-700 disabled:opacity-50"
+                      title="Regenerate"
+                    >
+                      {generatingAI ? '⏳' : '🔄'}
+                    </button>
+                  )}
+                </div>
+                <p className="text-xs text-blue-700 mt-2">Generiert Titel, Highlight, Beschreibung und Bild basierend auf Ihrem Business.</p>
+              </div>
+            )}
+
+            {/* Image Upload & Preview */}
+            <div className="mt-4 border p-4 rounded">
+              <label className="block text-sm font-medium mb-2">Bild</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={formData.isPremium}
+                className="w-full p-2 border rounded disabled:opacity-50"
+              />
+              <p className="text-xs text-gray-600 mt-1">
+                {formData.isPremium ? 'Premium Deals verwenden nur MP4 Videos' : 'Laden Sie ein Bild hoch oder lassen Sie es mit KI generieren'}
+              </p>
+              {imagePreview && (
+                <div className="mt-3">
+                  <img
+                    src={imagePreview}
+                    alt="Vorschau"
+                    className="max-w-xs h-auto rounded"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -152,7 +262,12 @@ export default function NewDealPage() {
                 <input
                   type="checkbox"
                   checked={formData.isPremium}
-                  onChange={(e) => setFormData({ ...formData, isPremium: e.target.checked })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, isPremium: e.target.checked })
+                    if (e.target.checked) {
+                      setImagePreview('')
+                    }
+                  }}
                   className="mr-2"
                 />
                 Premium
