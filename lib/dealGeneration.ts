@@ -15,10 +15,11 @@ export async function generateDealContent(
   businessName: string,
   category: string,
   subCategory: string,
-  businessDescription?: string
+  businessDescription?: string,
+  dealIdea?: string
 ): Promise<GeneratedDealContent> {
   try {
-    const prompt = buildPrompt(businessName, category, subCategory, businessDescription)
+    const prompt = buildPrompt(businessName, category, subCategory, businessDescription, dealIdea)
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -29,11 +30,34 @@ export async function generateDealContent(
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          {
-            role: 'system',
-            content:
-              'You are a marketing expert creating short, catchy deal descriptions for local businesses. Keep responses concise and engaging.',
-          },
+  {
+    role: 'system',
+    content: `
+Generate high-converting deal content for a local business.
+
+Rules:
+- Use the primary language of the business (default: German)
+- Write simple, clear sentences
+- Think like a salesperson, not a corporate writer
+- Focus on customer benefit
+- Do NOT use time-based urgency (no "today", "this week", etc.)
+- Do NOT invent discounts, dates, or conditions
+
+Structure:
+- Title: max 6–8 words, strong and clear
+- Highlight: one short hook sentence
+- Description:
+  - First 1–2 sentences must be attention-grabbing and work as preview
+  - Then explain the offer clearly
+
+Output ONLY valid JSON:
+{
+  "title": "...",
+  "highlight": "...",
+  "description": "..."
+}
+`,
+  },
           {
             role: 'user',
             content: prompt,
@@ -71,19 +95,31 @@ function buildPrompt(
   businessName: string,
   category: string,
   subCategory: string,
-  businessDescription?: string
+  businessDescription?: string,
+  dealIdea?: string
 ): string {
-  return `Generate a short deal for "${businessName}" (${category}/${subCategory}).
-${businessDescription ? `Business info: ${businessDescription}` : ''}
+  return `Create deal content for the business "${businessName}" in the category ${category}/${subCategory}.
+${businessDescription ? `Business description: ${businessDescription}
+` : ''}${dealIdea ? `Deal idea: ${dealIdea}
+` : ''}
 
-Return JSON in this exact format:
+- Use the primary language of the business, default German.
+- Keep sentences short and simple.
+- Think like a salesperson.
+- Focus on customer benefit and value.
+- Do not invent discounts, dates, deadlines, or conditions.
+- Do not use urgency words like today, tomorrow, this week.
+- Output only valid JSON with the exact keys: title, highlight, description.
+- Title: short, strong, maximum 6-8 words.
+- Highlight: one short hook sentence.
+- Description: first 1-2 sentences must work as a standalone preview, show benefit, and trigger action. Then explain the offer clearly, what is included, for whom it is, and why it is valuable.
+
+Return:
 {
-  "title": "short catchy title (5-8 words)",
-  "highlight": "one-line hook (10-15 words)",
-  "description": "2-3 sentences. First 1-2 sentences are preview. Rest is full description for Our Deal section."
-}
-
-Keep it simple, in German if business sounds German, English otherwise.`
+  "title": "...",
+  "highlight": "...",
+  "description": "..."
+}`
 }
 
 function parseGeneratedContent(
@@ -93,12 +129,15 @@ function parseGeneratedContent(
   subCategory: string
 ): Omit<GeneratedDealContent, 'image'> {
   try {
-    const parsed = JSON.parse(content)
-    if (parsed.title && parsed.highlight && parsed.description) {
-      return {
-        title: parsed.title.substring(0, 100),
-        highlight: parsed.highlight.substring(0, 150),
-        description: parsed.description.substring(0, 1000),
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0])
+      if (parsed.title && parsed.highlight && parsed.description) {
+        return {
+          title: String(parsed.title).trim().substring(0, 100),
+          highlight: String(parsed.highlight).trim().substring(0, 150),
+          description: String(parsed.description).trim().substring(0, 1000),
+        }
       }
     }
   } catch {
@@ -112,11 +151,11 @@ function getDefaultContent(
   businessName: string,
   category: string
 ): Omit<GeneratedDealContent, 'image'> {
-  return {
-    title: `${businessName} Special`,
-    highlight: `Exclusive offer from ${businessName}`,
-    description: `Enjoy a special offer at ${businessName}. Valid for a limited time only. ${category ? `Perfect for ${category.toLowerCase()}.` : ''} Come visit us and make the most of this great deal!`,
-  }
+return {
+  title: `${businessName} Angebot`,
+  highlight: `Exklusives Angebot bei ${businessName}`,
+  description: `Entdecke ein attraktives Angebot bei ${businessName}. Klar, einfach und passend zu deinem Interesse. Jetzt ansehen und profitieren.`,
+}
 }
 
 async function generateDealImage(
