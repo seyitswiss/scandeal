@@ -277,32 +277,48 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
       <div style={{ paddingTop: '56px', paddingBottom: '96px' }}>
         {/* OP / BUSINESS SECTION */}
-        <div style={{ width: '100%' }}>
-          <div className="max-w-[760px] mx-auto px-4 pt-6 pb-0">
-            <div style={{ padding: '0.5rem 0.75rem' }}>
-            <div className="flex items-start gap-3 px-3 py-2">
-              <img
-                src={business.logoUrl || '/icons/default.svg'}
-                alt={business.name}
-                className="w-16 h-16 rounded-xl object-cover"
-              />
+<div style={{ width: '100%' }}>
+  <div className="max-w-[760px] mx-auto px-4 pt-6 pb-0">
+    <div style={{ padding: '0.5rem 0.75rem' }}>
+      <div className="px-3 py-2">
+        <div className="flex items-start gap-3">
+          <img
+            src={business.logoUrl || '/icons/default.svg'}
+            alt={business.name}
+            className="w-20 h-20 rounded-xl object-cover shrink-0"
+          />
 
-              <div className="flex flex-col">
-                <h1 className="text-lg font-semibold text-white">{business.name}</h1>
-                {business.category && (
-                  <span className="text-sm text-gray-300">
-                    {business.subCategory
-                      ? `${business.category} · ${business.subCategory}`
-                      : business.category}
-                  </span>
-                )}
-                <span className="text-sm text-gray-200">⭐ 4.8 (128)</span>
-                <span className="text-sm text-gray-300">📍 Zürich</span>
-                <span className="text-sm text-gray-300">🟢 Geöffnet · schliesst um 22:00</span>
-              </div>
-            </div>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <h1 className="truncate text-lg font-semibold text-white">
+              {business.name}
+            </h1>
 
-            <div style={{ marginTop: '0.375rem' }}>
+            {business.category && (
+              <span className="text-sm text-gray-400">
+                {business.subCategory
+                  ? `${business.category} · ${business.subCategory}`
+                  : business.category}
+              </span>
+            )}
+
+            {business.description && (
+              <p className="mt-1 line-clamp-2 text-xs leading-snug text-gray-400">
+                {business.description}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-300">
+          <span>⭐ 4.8 (128)</span>
+          <span>📍 Zürich</span>
+          <span className="text-green-400">
+            🟢 Geöffnet · schliesst um 22:00
+          </span>
+        </div>
+      </div>
+
+                <div style={{ marginTop: '0.375rem' }}>
               <LinkSlider links={links} businessId={business.id} />
             </div>
 
