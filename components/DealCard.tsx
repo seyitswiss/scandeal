@@ -199,6 +199,7 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
     marginBottom: 0,
     padding: '0.20rem 0.25rem 0.20rem 0.2rem',
     cursor: 'pointer',
+    touchAction: 'manipulation',
   }
 
   // Add premium class for hover effects
@@ -322,24 +323,47 @@ export default function DealCard({ deal, mode = 'normal', isPreviewOpen: isPrevi
 
     e.preventDefault()
     e.stopPropagation()
+    
 
-    // Track preview_open only on first open
-    if (!previewOpen && deal.id && deal.businessId) {
-      fetch('/api/deal-stats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          dealId: deal.id,
-          businessId: deal.businessId,
-          type: 'preview_open',
-        }),
-        keepalive: true,
-      }).catch((error) => {
-        console.error('Failed to track preview_open:', error)
-      })
+    if (previewOpen) {
+      // Navigate to deal
+      if (deal.id && deal.businessId) {
+        fetch('/api/deal-stats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dealId: deal.id,
+            businessId: deal.businessId,
+            type: 'click',
+          }),
+          keepalive: true,
+        }).catch((error) => {
+          console.error('Failed to track click:', error)
+        })
+      }
+
+      if (businessSlug) {
+        router.push(`/profile/${businessSlug}?dealId=${deal.id}`)
+      }
+    } else {
+      // Track preview_open only on first open
+      if (deal.id && deal.businessId) {
+        fetch('/api/deal-stats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dealId: deal.id,
+            businessId: deal.businessId,
+            type: 'preview_open',
+          }),
+          keepalive: true,
+        }).catch((error) => {
+          console.error('Failed to track preview_open:', error)
+        })
+      }
+
+      setPreviewOpen(true)
     }
-
-    setPreviewOpen(!previewOpen)
   }
 
   // Handle bookmark toggle

@@ -100,9 +100,9 @@ export default function GoogleReviewBox({ businessName, googleReviewUrl, whatsap
       }
     }
 
-    document.addEventListener('click', handleDocumentClick, true)
+    document.addEventListener('click', handleDocumentClick, false)
     return () => {
-      document.removeEventListener('click', handleDocumentClick, true)
+      document.removeEventListener('click', handleDocumentClick, false)
     }
   }, [isReviewBoxOpen])
 

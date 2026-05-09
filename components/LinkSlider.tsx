@@ -51,13 +51,14 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
           cursor: 'pointer',
           fontSize: '16px',
           lineHeight: 1,
+          touchAction: 'auto',
         }}
       >
         ‹
       </button>
       <div
         ref={scrollRef}
-        style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%' }}
+        style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', touchAction: 'manipulation' }}
         className="scrollbar-hide"
       >
         <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '0.75rem', padding: '0.75rem 3rem', minWidth: 'max-content' }}>
@@ -112,6 +113,7 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
           cursor: 'pointer',
           fontSize: '16px',
           lineHeight: 1,
+          touchAction: 'auto',
         }}
       >
         ›
