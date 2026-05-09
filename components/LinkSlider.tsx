@@ -100,7 +100,7 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
           right: '8px',
           top: '50%',
           transform: 'translateY(-50%)',
-          zIndex: 1,
+          zIndex: 9999,
           background: '#111',
           border: '1px solid #333',
           color: '#fff',
