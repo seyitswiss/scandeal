@@ -30,6 +30,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
   const [generatingAI, setGeneratingAI] = useState(false)
   const [saved, setSaved] = useState(false)
   const [imagePreview, setImagePreview] = useState(deal.image || '')
+  const [dealIdea, setDealIdea] = useState('')
 
   const [formData, setFormData] = useState({
     title: deal.title,
@@ -76,6 +77,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
         body: JSON.stringify({
           businessId: deal.businessId,
           isPremium: deal.isPremium,
+          idea: dealIdea,
         }),
       })
 
@@ -118,7 +120,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
 
   if (saved) {
     return (
-      <div className="max-w-2xl mx-auto p-8">
+      <div className="max-w-2xl mx-auto p-6">
         <h1 className="text-2xl font-bold mb-4">Deal Updated!</h1>
         <button
           onClick={() => router.push('/admin/deals')}
@@ -131,20 +133,80 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-6">Edit Deal</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Business (read-only) */}
-        <div className="border p-4 rounded">
-          <h2 className="text-lg font-bold mb-4">Business</h2>
-          <p className="text-gray-600">{deal.business.name}</p>
+    <div className="max-w-2xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-5">Edit Deal</h1>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* KI Section */}
+        <div className="border bg-slate-50 p-4 rounded-lg">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold">✨ Mit KI generieren</h2>
+                <p className="text-sm text-gray-600 mt-1">Aktualisiere Titel, Highlight, Beschreibung und Bild automatisch.</p>
+              </div>
+              {!formData.isPremium && (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleGenerateAI}
+                    disabled={generatingAI}
+                    className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {generatingAI ? '⏳ Generierung...' : 'KI generieren'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleGenerateAI}
+                    disabled={generatingAI}
+                    className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {generatingAI ? '⏳' : 'Neu generieren'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {!formData.isPremium && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Deal Idee (optional)</label>
+                  <input
+                    type="text"
+                    value={dealIdea}
+                    onChange={(e) => setDealIdea(e.target.value)}
+                    placeholder="z. B. Kaffee + Kuchen"
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Bild hochladen</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={formData.isPremium}
+                    className="w-full p-2 border rounded disabled:opacity-50"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">Upload überschreibt das KI-Bild.</p>
+                </div>
+              </div>
+            )}
+
+            {imagePreview ? (
+              <div className="overflow-hidden rounded-lg border bg-white">
+                <img src={imagePreview} alt="Vorschau" className="w-full h-auto" />
+              </div>
+            ) : !formData.isPremium ? (
+              <div className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">
+                Vorschau erscheint hier nach KI-Generierung oder Upload.
+              </div>
+            ) : null}
+          </div>
         </div>
 
-        {/* Deal Details */}
-        <div className="border p-4 rounded">
-          <h2 className="text-lg font-bold mb-4">Deal Details</h2>
-          
-          <div className="space-y-4">
+        <div className="border p-4 rounded-lg">
+          <h2 className="text-lg font-semibold mb-3">Deal Details</h2>
+          <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-1">Title *</label>
               <input
@@ -171,84 +233,22 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-2 border rounded"
-                rows={3}
+                className="w-full p-2 border rounded min-h-[120px]"
               />
             </div>
+          </div>
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Discount Text</label>
-              <input
-                type="text"
-                value={formData.discountText}
-                onChange={(e) => setFormData({ ...formData, discountText: e.target.value })}
-                className="w-full p-2 border rounded"
-                placeholder="e.g. 20% off"
-              />
-            </div>
+        <div className="border p-4 rounded-lg">
+          <h2 className="text-lg font-semibold mb-3">Business</h2>
+          <p className="text-sm text-gray-600">{deal.business.name}</p>
+        </div>
 
-            {/* AI Generation Section */}
-            {!formData.isPremium && (
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleGenerateAI}
-                    disabled={generatingAI}
-                    className="flex-1 bg-blue-600 text-white py-2 px-3 rounded hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    {generatingAI ? '⏳ Generierung...' : '✨ Mit KI generieren'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleGenerateAI}
-                    disabled={generatingAI}
-                    className="bg-blue-600 text-white py-2 px-3 rounded hover:bg-blue-700 disabled:opacity-50"
-                    title="Regenerate"
-                  >
-                    {generatingAI ? '⏳' : '🔄'}
-                  </button>
-                </div>
-                <p className="text-xs text-blue-700 mt-2">Regeneriert Titel, Highlight, Beschreibung und Bild.</p>
-              </div>
-            )}
-
-            {/* Image Upload & Preview */}
-            <div className="mt-4 border p-4 rounded">
-              <label className="block text-sm font-medium mb-2">Bild</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={formData.isPremium}
-                className="w-full p-2 border rounded disabled:opacity-50"
-              />
-              <p className="text-xs text-gray-600 mt-1">
-                {formData.isPremium ? 'Premium Deals verwenden nur MP4 Videos' : 'Laden Sie ein Bild hoch oder lassen Sie es mit KI generieren'}
-              </p>
-              {imagePreview && (
-                <div className="mt-3">
-                  <img
-                    src={imagePreview}
-                    alt="Vorschau"
-                    className="max-w-xs h-auto rounded"
-                  />
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Category</label>
-              <p className="text-gray-600">{formData.category || '-'}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Sub Category</label>
-              <p className="text-gray-600">{formData.subCategory || '-'}</p>
-            </div>
-
-            <div>
-              <label className="flex items-center gap-2">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="border p-4 rounded-lg">
+            <h3 className="text-sm font-semibold mb-3">Status</h3>
+            <div className="flex flex-wrap gap-4 text-sm">
+              <label className="inline-flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={formData.isPremium}
@@ -258,40 +258,43 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
                       setImagePreview('')
                     }
                   }}
+                  className="h-4 w-4"
                 />
-                <span className="text-sm font-medium">Premium Deal</span>
+                Premium
               </label>
-            </div>
-
-            <div>
-              <label className="flex items-center gap-2">
+              <label className="inline-flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                  className="h-4 w-4"
                 />
-                <span className="text-sm font-medium">Active</span>
+                Active
               </label>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Start Date (optional)</label>
-              <input
-                type="datetime-local"
-                value={formData.startDate}
-                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="w-full p-2 border rounded"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">End Date (optional)</label>
-              <input
-                type="datetime-local"
-                value={formData.endDate}
-                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className="w-full p-2 border rounded"
-              />
+          <div className="border p-4 rounded-lg">
+            <h3 className="text-sm font-semibold mb-3">Zeitraum</h3>
+            <div className="grid gap-3">
+              <div>
+                <label className="block text-sm font-medium mb-1">Start</label>
+                <input
+                  type="datetime-local"
+                  value={formData.startDate}
+                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">End</label>
+                <input
+                  type="datetime-local"
+                  value={formData.endDate}
+                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
             </div>
           </div>
         </div>
