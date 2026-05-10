@@ -142,8 +142,8 @@ export default function DealCard({
   }
 
   const profileHref = businessSlug ? `/profile/${businessSlug}` : '#'
-  const dealHref = businessSlug
-  ? `/profile/${businessSlug}?dealId=${deal.id}${shownDealsQuery}`
+ const dealHref = businessSlug
+  ? `/profile/${businessSlug}?dealId=${deal.id}`
   : '#'
 
   useEffect(() => {
