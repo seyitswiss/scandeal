@@ -38,6 +38,47 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [logoPreview, setLogoPreview] = useState(business.logoUrl || '')
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+
+  const handleLogoUpload = async (file: File | null) => {
+    if (!file) return
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      alert('Nur jpg, jpeg, png oder webp erlaubt.')
+      return
+    }
+
+    const previewUrl = URL.createObjectURL(file)
+    setLogoPreview(previewUrl)
+    setUploadingLogo(true)
+
+    try {
+      const data = new FormData()
+      data.append('logo', file)
+
+      const res = await fetch('/api/upload-logo', {
+        method: 'POST',
+        body: data,
+      })
+
+      if (!res.ok) {
+        throw new Error('Upload fehlgeschlagen')
+      }
+
+      const result = await res.json()
+      if (result?.path) {
+        setFormData((prev) => ({ ...prev, logoUrl: result.path }))
+        setLogoPreview(result.path)
+      }
+    } catch (error) {
+      console.error(error)
+      alert('Logo-Upload fehlgeschlagen. Bitte erneut versuchen.')
+    } finally {
+      setUploadingLogo(false)
+    }
+  }
 
   // Parse custom links from JSON
   const parseCustomLinks = () => {
@@ -237,19 +278,37 @@ const profileUrl = `${origin}/profile/${formData.slug}`
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Logo URL (Upload later)</label>
+              <label className="block text-sm font-medium mb-1">Logo hochladen</label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => handleLogoUpload(e.target.files?.[0] || null)}
+                className="w-full p-2 border rounded"
+              />
+              {uploadingLogo && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Logo URL</label>
               <input
                 type="text"
                 value={formData.logoUrl}
                 onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
                 className="w-full p-2 border rounded"
               />
+              {logoPreview ? (
+                <img
+                  src={logoPreview}
+                  alt="Logo Preview"
+                  className="mt-3 h-24 w-24 object-contain rounded border"
+                />
+              ) : null}
             </div>
           </div>
-        </div>
+         </div>
 
-        {/* Category Section */}
-        <div className="border p-4 rounded">
+         {/* Category Section */}
+         <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Category</h2>
           
           <div className="space-y-4">
@@ -288,10 +347,10 @@ const profileUrl = `${origin}/profile/${formData.slug}`
               </select>
             </div>
           </div>
-        </div>
+         </div>
 
-        {/* Location Section */}
-        <div className="border p-4 rounded">
+         {/* Location Section */}
+         <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Location</h2>
           
           <div className="space-y-4">
@@ -345,10 +404,10 @@ const profileUrl = `${origin}/profile/${formData.slug}`
               </p>
             </div>
           </div>
-        </div>
+         </div>
 
-        {/* Social/Contact Section */}
-        <div className="border p-4 rounded">
+         {/* Social/Contact Section */}
+         <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Social / Contact</h2>
           
           <div className="grid grid-cols-2 gap-4">
@@ -448,10 +507,10 @@ const profileUrl = `${origin}/profile/${formData.slug}`
               />
             </div>
           </div>
-        </div>
+         </div>
 
-        {/* Custom Links Section */}
-        <div className="border p-4 rounded">
+         {/* Custom Links Section */}
+         <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Custom Links</h2>
           
           <div className="space-y-4">
@@ -524,10 +583,10 @@ const profileUrl = `${origin}/profile/${formData.slug}`
               </div>
             </div>
           </div>
-        </div>
+         </div>
 
-        {/* Description Section */}
-        <div className="border p-4 rounded">
+         {/* Description Section */}
+         <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Description</h2>
           
           <div>
@@ -539,18 +598,18 @@ const profileUrl = `${origin}/profile/${formData.slug}`
               rows={4}
             />
           </div>
-        </div>
+         </div>
 
-        <button
+         <button
           type="submit"
           disabled={loading}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
         >
           {loading ? 'Saving...' : 'Update Business'}
-        </button>
-      </form>
+         </button>
+         </form>
 
-      <div className="mt-8 border p-4 rounded">
+       <div className="mt-8 border p-4 rounded">
         <h2 className="text-lg font-bold mb-4">QR &amp; Links</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <div className="border p-4 rounded">

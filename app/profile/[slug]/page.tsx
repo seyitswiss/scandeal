@@ -342,7 +342,7 @@ const forcedDetailsDeal = detailsDeal
                     <img
                       src={business.logoUrl || '/icons/default.svg'}
                       alt={business.name}
-                      className="h-24 w-24 shrink-0 rounded-2xl object-cover"
+                      className="h-24 w-24 shrink-0 rounded-2xl object-contain bg-white p-2"
                     />
 
                     <div className="flex min-w-0 flex-1 flex-col">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Business {
@@ -10,7 +10,7 @@ interface Business {
   subCategory: string | null
 }
 
-export default function NewDealPage() {
+function NewDealForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
@@ -368,5 +368,12 @@ export default function NewDealPage() {
         </button>
       </form>
     </div>
+  )
+}
+export default function NewDealPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
+      <NewDealForm />
+    </Suspense>
   )
 }

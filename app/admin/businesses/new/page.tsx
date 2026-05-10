@@ -50,6 +50,47 @@ export default function NewBusinessPage() {
 
   const selectedCategory = categories.find(c => c.name === formData.category)
   const subCategories = selectedCategory?.subCategories || []
+  const [logoPreview, setLogoPreview] = useState('')
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+
+  const handleLogoUpload = async (file: File | null) => {
+    if (!file) return
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      alert('Nur jpg, jpeg, png oder webp erlaubt.')
+      return
+    }
+
+    const previewUrl = URL.createObjectURL(file)
+    setLogoPreview(previewUrl)
+    setUploadingLogo(true)
+
+    try {
+      const data = new FormData()
+      data.append('logo', file)
+
+      const res = await fetch('/api/upload-logo', {
+        method: 'POST',
+        body: data,
+      })
+
+      if (!res.ok) {
+        throw new Error('Upload fehlgeschlagen')
+      }
+
+      const result = await res.json()
+      if (result?.path) {
+        setFormData((prev) => ({ ...prev, logoUrl: result.path }))
+        setLogoPreview(result.path)
+      }
+    } catch (error) {
+      console.error(error)
+      alert('Logo-Upload fehlgeschlagen. Bitte erneut versuchen.')
+    } finally {
+      setUploadingLogo(false)
+    }
+  }
 
   function generateSlug(name: string) {
     return name
@@ -144,13 +185,31 @@ export default function NewBusinessPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Logo URL (Upload later)</label>
+              <label className="block text-sm font-medium mb-1">Logo hochladen</label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => handleLogoUpload(e.target.files?.[0] || null)}
+                className="w-full p-2 border rounded"
+              />
+              {uploadingLogo && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Logo URL</label>
               <input
                 type="text"
                 value={formData.logoUrl}
                 onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
                 className="w-full p-2 border rounded"
               />
+              {logoPreview ? (
+                <img
+                  src={logoPreview}
+                  alt="Logo Preview"
+                  className="mt-3 h-24 w-24 object-contain rounded border"
+                />
+              ) : null}
             </div>
           </div>
         </div>
