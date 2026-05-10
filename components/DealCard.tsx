@@ -37,6 +37,7 @@ interface DealCardProps {
   onPreviewToggle?: (dealId: string, open: boolean) => void
   isExpandedFromUrl?: boolean
   showDetailsFromUrl?: boolean
+  shownDealIds?: string[]
 }
 
 function formatDate(date: string | Date | null | undefined) {
@@ -91,6 +92,7 @@ export default function DealCard({
   onPreviewToggle,
   isExpandedFromUrl = false,
   showDetailsFromUrl = false,
+  shownDealIds,
 }: DealCardProps) {
   const [isExpanded, setIsExpanded] = useState(isExpandedFromUrl)
   const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
@@ -103,6 +105,10 @@ export default function DealCard({
   const isOurDeal = mode === 'ourDeal'
   const businessSlug = deal.business?.slug
   const pathname = usePathname()
+
+  const shownDealsQuery = shownDealIds && shownDealIds.length > 0
+    ? `&shownDeals=${shownDealIds.join(',')}`
+    : ''
 
   const previewOpen =
     typeof isPreviewOpenProp === 'boolean'
@@ -136,7 +142,9 @@ export default function DealCard({
   }
 
   const profileHref = businessSlug ? `/profile/${businessSlug}` : '#'
-  const dealHref = businessSlug ? `/profile/${businessSlug}?dealId=${deal.id}` : '#'
+  const dealHref = businessSlug
+  ? `/profile/${businessSlug}?dealId=${deal.id}${shownDealsQuery}`
+  : '#'
 
   useEffect(() => {
     const savedDeals = JSON.parse(localStorage.getItem('savedDeals') || '[]')
@@ -266,7 +274,7 @@ export default function DealCard({
           </Link>
         ) : previewOpen ? (
 <Link
-  href={pathname}
+  href={shownDealsQuery ? `${pathname}?shownDeals=${shownDealIds?.join(',')}` : pathname}
   style={{
     color: '#e5e7eb',
     textDecoration: 'none',
@@ -430,7 +438,7 @@ export default function DealCard({
       {!isOurDeal && !previewOpen && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.4rem' }}>
 <Link
-  href={`${pathname}?previewDeal=${deal.id}`}
+  href={`${pathname}?previewDeal=${deal.id}${shownDealsQuery}`}
   style={{
     fontSize: '0.8rem',
     color: '#000',
@@ -500,7 +508,7 @@ export default function DealCard({
         <>
           <div style={{ width: '100%', marginTop: '0.75rem' }}>
             <Link
-href={`${pathname}?redeemDeal=${deal.id}`}  style={{
+href={`${pathname}?redeemDeal=${deal.id}${shownDealsQuery}`}  style={{
     width: '100%',
     display: 'block',
     fontSize: '0.75rem',
@@ -536,7 +544,7 @@ href={`${pathname}?redeemDeal=${deal.id}`}  style={{
           )}
 
           <Link
-  href={`${pathname}?detailsDeal=${deal.id}`}
+  href={`${pathname}?detailsDeal=${deal.id}${shownDealsQuery}`}
   style={{
     width: '100%',
     background: 'none',

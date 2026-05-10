@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import type { ComponentProps } from 'react'
 import DealCard from '@/components/DealCard'
 
@@ -12,6 +11,7 @@ interface DealCardListProps {
   previewDealId?: string
   redeemDealId?: string
   detailsDealId?: string
+  shownDealIds?: string[]
 }
 
 export default function DealCardList({
@@ -20,8 +20,12 @@ export default function DealCardList({
   previewDealId,
   redeemDealId,
   detailsDealId,
+  shownDealIds,
 }: DealCardListProps) {
-
+  const currentShownDealIds =
+    shownDealIds && shownDealIds.length > 0
+      ? shownDealIds
+      : selectedDeals.map((deal) => deal.id)
 
 
 
@@ -33,6 +37,7 @@ export default function DealCardList({
     mode="ourDeal"
     isExpandedFromUrl={redeemDealId === ourDeal.id}
     showDetailsFromUrl={detailsDealId === ourDeal.id}
+    shownDealIds={currentShownDealIds}
   />
 )}
 
@@ -46,11 +51,11 @@ export default function DealCardList({
               <DealCard
                 key={deal.id}
                 deal={deal}
-isPreviewOpen={previewDealId === deal.id}
-  isExpandedFromUrl={redeemDealId === deal.id}
-  showDetailsFromUrl={detailsDealId === deal.id}
-
-/>
+                isPreviewOpen={previewDealId === deal.id}
+                isExpandedFromUrl={redeemDealId === deal.id}
+                showDetailsFromUrl={detailsDealId === deal.id}
+                shownDealIds={currentShownDealIds}
+              />
             ))}
           </div>
         </>

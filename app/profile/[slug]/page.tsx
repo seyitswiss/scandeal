@@ -9,11 +9,12 @@ import LinkSlider from '@/components/LinkSlider'
 interface Props {
   params: Promise<{ slug: string }>
   searchParams: Promise<{
-  dealId?: string
-  previewDeal?: string
-  redeemDeal?: string
-  detailsDeal?: string
-}>
+    dealId?: string
+    previewDeal?: string
+    redeemDeal?: string
+    detailsDeal?: string
+    shownDeals?: string
+  }>
 }
 
 function normalizeUrl(url: string | null | undefined): string | null {
@@ -136,7 +137,7 @@ function shuffle<T>(array: T[]): T[] {
 
 export default async function ProfilePage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { dealId, previewDeal, redeemDeal, detailsDeal } = await searchParams
+  const { dealId, previewDeal, redeemDeal, detailsDeal, shownDeals } = await searchParams
 
   const business = await prisma.business.findUnique({
     where: { slug },
@@ -152,9 +153,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
       include: { business: { select: { name: true, slug: true } } },
     })
 
-    if (targetDeal && targetDeal.businessId === business.id) {
-      ourDeal = targetDeal
-    }
+    if (targetDeal) {
+  ourDeal = targetDeal
+}
   }
 
   const allDeals = await prisma.deal.findMany({
@@ -182,53 +183,95 @@ const forcedDetailsDeal = detailsDeal
   const premiumDeals = scoredDeals.filter((deal) => deal.isPremium)
   const normalDeals = scoredDeals.filter((deal) => !deal.isPremium)
 
- const randomPremiumDeals = previewDeal ? premiumDeals : shuffle(premiumDeals)
-const randomNormalDeals = previewDeal ? normalDeals : shuffle(normalDeals)
+  const hasUrlState = previewDeal || redeemDeal || detailsDeal
+  const shownDealIds = shownDeals
+    ? shownDeals
+        .split(',')
+        .map((id) => id.trim())
+        .filter(Boolean)
+    : []
+  const preserveShownDeals = shownDealIds.length > 0
+  const randomPremiumDeals = hasUrlState ? premiumDeals : shuffle(premiumDeals)
+  const randomNormalDeals = hasUrlState ? normalDeals : shuffle(normalDeals)
 
   const selectedDeals: typeof scoredDeals = []
-  const usedSubCategories = new Set<string>()
 
-  for (const deal of randomPremiumDeals) {
-    const subCategory = deal.subCategory || ''
-    if (!usedSubCategories.has(subCategory)) {
-      selectedDeals.push(deal)
-      usedSubCategories.add(subCategory)
-      break
+  if (preserveShownDeals) {
+    const dealById = new Map(scoredDeals.map((deal) => [deal.id, deal]))
+
+    for (const id of shownDealIds) {
+      const deal = dealById.get(id)
+      if (deal) selectedDeals.push(deal)
     }
-  }
 
-  for (const deal of randomNormalDeals) {
-    if (selectedDeals.length >= 4) break
+    const selectedDealIds = new Set(selectedDeals.map((deal) => deal.id))
 
-    const subCategory = deal.subCategory || ''
-    if (!usedSubCategories.has(subCategory)) {
-      selectedDeals.push(deal)
-      usedSubCategories.add(subCategory)
+    if (
+      forcedPreviewDeal &&
+      !selectedDealIds.has(forcedPreviewDeal.id)
+    ) {
+      selectedDeals.push({
+        ...forcedPreviewDeal,
+        relevanceScore: 999,
+      } as (typeof scoredDeals)[0])
     }
+
+    if (
+      forcedDetailsDeal &&
+      !selectedDealIds.has(forcedDetailsDeal.id)
+    ) {
+      selectedDeals.push({
+        ...forcedDetailsDeal,
+        relevanceScore: 998,
+      } as (typeof scoredDeals)[0])
+    }
+  } else {
+    const usedSubCategories = new Set<string>()
+
+    for (const deal of randomPremiumDeals) {
+      const subCategory = deal.subCategory || ''
+      if (!usedSubCategories.has(subCategory)) {
+        selectedDeals.push(deal)
+        usedSubCategories.add(subCategory)
+        break
+      }
+    }
+
+    for (const deal of randomNormalDeals) {
+      if (selectedDeals.length >= 4) break
+
+      const subCategory = deal.subCategory || ''
+      if (!usedSubCategories.has(subCategory)) {
+        selectedDeals.push(deal)
+        usedSubCategories.add(subCategory)
+      }
+    }
+
+    if (
+      forcedPreviewDeal &&
+      !selectedDeals.some((deal) => deal.id === forcedPreviewDeal.id)
+    ) {
+      selectedDeals.push({
+        ...forcedPreviewDeal,
+        relevanceScore: 999,
+      } as (typeof scoredDeals)[0])
+    }
+    if (
+      forcedDetailsDeal &&
+      !selectedDeals.some((deal) => deal.id === forcedDetailsDeal.id)
+    ) {
+      selectedDeals.push({
+        ...forcedDetailsDeal,
+        relevanceScore: 998,
+      } as (typeof scoredDeals)[0])
+    }
+
+    selectedDeals.sort((a, b) => {
+      if (a.isPremium && !b.isPremium) return -1
+      if (!a.isPremium && b.isPremium) return 1
+      return b.relevanceScore - a.relevanceScore
+    })
   }
-if (
-  forcedPreviewDeal &&
-  !selectedDeals.some((deal) => deal.id === forcedPreviewDeal.id)
-) {
-  selectedDeals.unshift({
-    ...forcedPreviewDeal,
-    relevanceScore: 999,
-  } as (typeof scoredDeals)[0])
-}
-if (
-  forcedDetailsDeal &&
-  !selectedDeals.some((deal) => deal.id === forcedDetailsDeal.id)
-) {
-  selectedDeals.unshift({
-    ...forcedDetailsDeal,
-    relevanceScore: 998,
-  } as (typeof scoredDeals)[0])
-}
-  selectedDeals.sort((a, b) => {
-    if (a.isPremium && !b.isPremium) return -1
-    if (!a.isPremium && b.isPremium) return 1
-    return b.relevanceScore - a.relevanceScore
-  })
 
   let customLinks: { label: string; url: string }[] = []
 
@@ -398,6 +441,7 @@ if (
   previewDealId={previewDeal}
   redeemDealId={redeemDeal}
   detailsDealId={detailsDeal}
+  shownDealIds={shownDealIds}
 />
               </div>
             </div>
