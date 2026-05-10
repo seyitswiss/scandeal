@@ -11,14 +11,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'businessId is required' }, { status: 400 })
     }
 
-    // Premium deals cannot use AI generation
-    if (isPremium) {
-      return NextResponse.json(
-        { error: 'Premium deals require manual MP4 uploads' },
-        { status: 400 }
-      )
-    }
-
     // Fetch business data
     const business = await prisma.business.findUnique({
       where: { id: businessId },
@@ -40,7 +32,8 @@ export async function POST(request: Request) {
       business.category || '',
       business.subCategory || '',
       business.description || undefined,
-      typeof idea === 'string' ? idea : undefined
+      typeof idea === 'string' ? idea : undefined,
+      !Boolean(isPremium)
     )
 
     return NextResponse.json(content)

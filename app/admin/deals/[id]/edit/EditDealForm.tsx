@@ -29,7 +29,8 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
   const [loading, setLoading] = useState(false)
   const [generatingAI, setGeneratingAI] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [imagePreview, setImagePreview] = useState(deal.image || '')
+  const [imagePreview, setImagePreview] = useState(deal.isPremium && deal.image?.endsWith('.mp4') ? '' : deal.image || '')
+  const [videoPreview, setVideoPreview] = useState(deal.isPremium && deal.image?.endsWith('.mp4') ? deal.image : '')
   const [dealIdea, setDealIdea] = useState('')
 
   const [formData, setFormData] = useState({
@@ -64,11 +65,6 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
   }
 
   async function handleGenerateAI() {
-    if (deal.isPremium) {
-      alert('Premium deals require manual MP4 uploads')
-      return
-    }
-
     setGeneratingAI(true)
     try {
       const res = await fetch('/api/deals/generate', {
@@ -76,7 +72,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           businessId: deal.businessId,
-          isPremium: deal.isPremium,
+          isPremium: formData.isPremium,
           idea: dealIdea,
         }),
       })
@@ -118,6 +114,35 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
     }
   }
 
+  async function handleVideoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.type !== 'video/mp4') {
+      alert('Please upload a valid MP4 file')
+      return
+    }
+
+    const form = new FormData()
+    form.append('video', file)
+
+    const res = await fetch('/api/upload-video', {
+      method: 'POST',
+      body: form,
+    })
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ error: 'Upload failed' }))
+      alert(error.error || 'Upload failed')
+      return
+    }
+
+    const result = await res.json()
+    setFormData((prev) => ({ ...prev, image: result.path }))
+    setVideoPreview(result.path)
+    setImagePreview('')
+  }
+
   if (saved) {
     return (
       <div className="max-w-2xl mx-auto p-6">
@@ -144,16 +169,16 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
                 <h2 className="text-lg font-semibold">✨ Mit KI generieren</h2>
                 <p className="text-sm text-gray-600 mt-1">Aktualisiere Titel, Highlight, Beschreibung und Bild automatisch.</p>
               </div>
-              {!formData.isPremium && (
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleGenerateAI}
-                    disabled={generatingAI}
-                    className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    {generatingAI ? '⏳ Generierung...' : 'KI generieren'}
-                  </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleGenerateAI}
+                  disabled={generatingAI}
+                  className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {generatingAI ? '⏳ Generierung...' : 'KI generieren'}
+                </button>
+                {formData.title && (
                   <button
                     type="button"
                     onClick={handleGenerateAI}
@@ -162,45 +187,71 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
                   >
                     {generatingAI ? '⏳' : 'Neu generieren'}
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
-            {!formData.isPremium && (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Deal Idee (optional)</label>
-                  <input
-                    type="text"
-                    value={dealIdea}
-                    onChange={(e) => setDealIdea(e.target.value)}
-                    placeholder="z. B. Kaffee + Kuchen"
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Bild hochladen</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    disabled={formData.isPremium}
-                    className="w-full p-2 border rounded disabled:opacity-50"
-                  />
-                  <p className="text-xs text-gray-600 mt-1">Upload überschreibt das KI-Bild.</p>
-                </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium mb-1">Deal Idee (optional)</label>
+                <input
+                  type="text"
+                  value={dealIdea}
+                  onChange={(e) => setDealIdea(e.target.value)}
+                  placeholder="z. B. Kaffee + Kuchen"
+                  className="w-full p-2 border rounded"
+                />
               </div>
-            )}
+              <div>
+                {formData.isPremium ? (
+                  <>
+                    <label className="block text-sm font-medium mb-1">MP4 Video hochladen</label>
+                    <input
+                      type="file"
+                      accept="video/mp4"
+                      onChange={handleVideoUpload}
+                      className="w-full p-2 border rounded"
+                    />
+                    <p className="text-xs text-gray-600 mt-1">Upload speichert das Premium-Video.</p>
+                  </>
+                ) : (
+                  <>
+                    <label className="block text-sm font-medium mb-1">Bild hochladen</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="w-full p-2 border rounded"
+                    />
+                    <p className="text-xs text-gray-600 mt-1">Upload überschreibt das KI-Bild.</p>
+                  </>
+                )}
+              </div>
+            </div>
 
-            {imagePreview ? (
+            {formData.isPremium ? (
+              videoPreview ? (
+                <div className="overflow-hidden rounded-lg border bg-black">
+                  <video
+                    src={videoPreview}
+                    controls
+                    className="w-full h-auto"
+                  />
+                </div>
+              ) : (
+                <div className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">
+                  MP4 Vorschau erscheint hier nach Upload.
+                </div>
+              )
+            ) : imagePreview ? (
               <div className="overflow-hidden rounded-lg border bg-white">
                 <img src={imagePreview} alt="Vorschau" className="w-full h-auto" />
               </div>
-            ) : !formData.isPremium ? (
+            ) : (
               <div className="rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-500">
                 Vorschau erscheint hier nach KI-Generierung oder Upload.
               </div>
-            ) : null}
+            )}
           </div>
         </div>
 
@@ -253,10 +304,10 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
                   type="checkbox"
                   checked={formData.isPremium}
                   onChange={(e) => {
-                    setFormData({ ...formData, isPremium: e.target.checked })
-                    if (e.target.checked) {
-                      setImagePreview('')
-                    }
+                    const isPremium = e.target.checked
+                    setFormData({ ...formData, isPremium, image: '' })
+                    setImagePreview('')
+                    setVideoPreview('')
                   }}
                   className="h-4 w-4"
                 />

@@ -16,7 +16,8 @@ export async function generateDealContent(
   category: string,
   subCategory: string,
   businessDescription?: string,
-  dealIdea?: string
+  dealIdea?: string,
+  includeImage = true
 ): Promise<GeneratedDealContent> {
   try {
     const prompt = buildPrompt(businessName, category, subCategory, businessDescription, dealIdea)
@@ -77,6 +78,10 @@ Output ONLY valid JSON:
     const content = data.choices?.[0]?.message?.content || ''
 
     const parsed = parseGeneratedContent(content, businessName, category, subCategory)
+
+    if (!includeImage) {
+      return parsed
+    }
 
     // Generate image
     const image = await generateDealImage(businessName, category, subCategory)
