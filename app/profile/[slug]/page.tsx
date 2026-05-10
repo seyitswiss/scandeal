@@ -149,18 +149,34 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   if (dealId || redeemDeal || detailsDeal) {
     const targetDeal = await prisma.deal.findUnique({
-      where: { id: detailsDeal || redeemDeal || dealId },
-      include: { business: { select: { name: true, slug: true } } },
-    })
+  where: { id: detailsDeal || redeemDeal || dealId },
+  include: {
+    business: {
+      select: {
+        name: true,
+        slug: true,
+        logoUrl: true,
+      },
+    },
+  },
+})
 
-    if (targetDeal) {
+if (targetDeal) {
   ourDeal = targetDeal
 }
-  }
+}
 
-  const allDeals = await prisma.deal.findMany({
-    include: { business: { select: { name: true, slug: true } } },
-  })
+ const allDeals = await prisma.deal.findMany({
+  include: {
+    business: {
+      select: {
+        name: true,
+        slug: true,
+        logoUrl: true,
+      },
+    },
+  },
+})
 
   const filteredDeals = allDeals.filter(
     (deal: (typeof allDeals)[0]) =>

@@ -13,9 +13,10 @@ interface DealCardProps {
     isPremium: boolean
     businessId: string
     business?: {
-      name: string
-      slug: string
-    } | null
+  name: string
+  slug: string
+  logoUrl?: string | null
+} | null
     validUntil?: string | Date | null
     endDate?: string | Date | null
     distance?: number | null
@@ -298,6 +299,7 @@ export default function DealCard({
             background: '#777',
             borderRadius: '12px',
             overflow: 'hidden',
+            position: 'relative',
           }}
         >
           {deal.isPremium && imageSrc.endsWith('.mp4') ? (
@@ -328,7 +330,35 @@ export default function DealCard({
                 const target = event.target as HTMLImageElement
                 target.src = '/deals/scandeal.png'
               }}
-            />
+                        />
+          )}
+
+          {deal.business?.logoUrl && (
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '8px',
+                right: '8px',
+                width: '42px',
+                height: '42px',
+                borderRadius: '10px',
+background: '#fff',
+padding: '1px',
+overflow: 'hidden',
+                
+              }}
+            >
+              <img
+                src={deal.business.logoUrl}
+                alt={deal.business.name}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  borderRadius: '10px',
+                }}
+              />
+            </div>
           )}
         </div>
 
