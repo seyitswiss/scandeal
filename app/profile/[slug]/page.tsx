@@ -8,7 +8,11 @@ import LinkSlider from '@/components/LinkSlider'
 
 interface Props {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ dealId?: string; previewDeal?: string }>
+  searchParams: Promise<{
+  dealId?: string
+  previewDeal?: string
+  redeemDeal?: string
+}>
 }
 
 function normalizeUrl(url: string | null | undefined): string | null {
@@ -131,7 +135,7 @@ function shuffle<T>(array: T[]): T[] {
 
 export default async function ProfilePage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { dealId, previewDeal } = await searchParams
+  const { dealId, previewDeal, redeemDeal } = await searchParams
 
   const business = await prisma.business.findUnique({
     where: { slug },
@@ -141,9 +145,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   let ourDeal: Awaited<ReturnType<typeof prisma.deal.findUnique>> | null = null
 
-  if (dealId) {
+  if (dealId || redeemDeal) {
     const targetDeal = await prisma.deal.findUnique({
-      where: { id: dealId },
+      where: { id: redeemDeal || dealId },
       include: { business: { select: { name: true, slug: true } } },
     })
 
@@ -380,6 +384,7 @@ if (
   ourDeal={ourDeal}
   selectedDeals={selectedDeals}
   previewDealId={previewDeal}
+  redeemDealId={redeemDeal}
 />
               </div>
             </div>

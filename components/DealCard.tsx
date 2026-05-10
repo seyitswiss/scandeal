@@ -35,6 +35,7 @@ interface DealCardProps {
   mode?: 'normal' | 'ourDeal'
   isPreviewOpen?: boolean
   onPreviewToggle?: (dealId: string, open: boolean) => void
+  isExpandedFromUrl?: boolean
 }
 
 function formatDate(date: string | Date | null | undefined) {
@@ -87,8 +88,9 @@ export default function DealCard({
   mode = 'normal',
   isPreviewOpen: isPreviewOpenProp,
   onPreviewToggle,
+  isExpandedFromUrl = false,
 }: DealCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(isExpandedFromUrl)
   const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
@@ -235,29 +237,7 @@ export default function DealCard({
           zIndex: 2,
         }}
       >
-        <button
-          type="button"
-          onClick={toggleBookmark}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 0,
-            lineHeight: 1,
-          }}
-          title={isSaved ? 'Aus gespeicherten Deals entfernen' : 'Zu gespeicherten Deals hinzufügen'}
-        >
-          <span
-            style={{
-              color: '#4ade80',
-              opacity: isSaved ? 1 : 0.4,
-              fontSize: '1.35rem',
-              fontWeight: isSaved ? '700' : '400',
-            }}
-          >
-            🔖
-          </span>
-        </button>
+
 
         {isOurDeal ? (
           <Link
@@ -280,22 +260,19 @@ export default function DealCard({
             ×
           </Link>
         ) : previewOpen ? (
-          <button
-            type="button"
-            onClick={closePreview}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#e5e7eb',
-              cursor: 'pointer',
-              fontSize: '18px',
-              lineHeight: 1,
-              padding: 0,
-            }}
-            aria-label="Preview schliessen"
-          >
-            ×
-          </button>
+<Link
+  href={pathname}
+  style={{
+    color: '#e5e7eb',
+    textDecoration: 'none',
+    fontSize: '18px',
+    lineHeight: 1,
+    display: 'inline-block',
+  }}
+  aria-label="Preview schliessen"
+>
+  ×
+</Link>
         ) : null}
       </div>
 
@@ -517,26 +494,23 @@ export default function DealCard({
       {isOurDeal && (
         <>
           <div style={{ width: '100%', marginTop: '0.75rem' }}>
-            <button
-              type="button"
-              onClick={redeemDeal}
-              disabled={isExpanded}
-              style={{
-                width: '100%',
-                display: 'block',
-                fontSize: '0.75rem',
-                color: '#000',
-                fontWeight: 700,
-                background: '#4ade80',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '1rem',
-                cursor: isExpanded ? 'not-allowed' : 'pointer',
-                opacity: isExpanded ? 0.65 : 1,
-              }}
-            >
-              {isExpanded ? 'BEREITS EINGELÖST' : 'JETZT UNVERBINDLICH EINLÖSEN'}
-            </button>
+            <Link
+href={`${pathname}?redeemDeal=${deal.id}`}  style={{
+    width: '100%',
+    display: 'block',
+    fontSize: '0.75rem',
+    color: '#000000',
+    fontWeight: '700',
+    background: '#4ade80',
+    borderRadius: '12px',
+    padding: '1rem',
+    textAlign: 'center',
+    textDecoration: 'none',
+    opacity: isExpanded ? 0.65 : 1,
+  }}
+>
+  {isExpanded ? 'BEREITS EINGELÖST' : 'JETZT UNVERBINDLICH EINLÖSEN'}
+</Link>
           </div>
 
           {fullDescription && (

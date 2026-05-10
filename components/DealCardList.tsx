@@ -10,18 +10,28 @@ interface DealCardListProps {
   ourDeal?: Deal | null
   selectedDeals: Deal[]
   previewDealId?: string
+  redeemDealId?: string
 }
 
-export default function DealCardList({ ourDeal, selectedDeals, previewDealId }: DealCardListProps) {
-  const [activePreviewDealId, setActivePreviewDealId] = useState<string | null>(null)
+export default function DealCardList({
+  ourDeal,
+  selectedDeals,
+  previewDealId,
+  redeemDealId,
+}: DealCardListProps) {
 
-  const handlePreviewToggle = (dealId: string, open: boolean) => {
-    setActivePreviewDealId(open ? dealId : null)
-  }
+
+
 
   return (
     <>
-      {ourDeal && <DealCard deal={ourDeal} mode="ourDeal" />}
+      {ourDeal && (
+  <DealCard
+    deal={ourDeal}
+    mode="ourDeal"
+    isExpandedFromUrl={redeemDealId === ourDeal.id}
+  />
+)}
 
       {selectedDeals.length > 0 && (
         <>
@@ -33,8 +43,9 @@ export default function DealCardList({ ourDeal, selectedDeals, previewDealId }: 
               <DealCard
                 key={deal.id}
                 deal={deal}
-isPreviewOpen={previewDealId === deal.id || activePreviewDealId === deal.id}
-onPreviewToggle={handlePreviewToggle}
+isPreviewOpen={previewDealId === deal.id}
+isExpandedFromUrl={redeemDealId === deal.id}
+
 />
             ))}
           </div>
