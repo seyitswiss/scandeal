@@ -12,6 +12,7 @@ interface Props {
   dealId?: string
   previewDeal?: string
   redeemDeal?: string
+  detailsDeal?: string
 }>
 }
 
@@ -135,7 +136,7 @@ function shuffle<T>(array: T[]): T[] {
 
 export default async function ProfilePage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { dealId, previewDeal, redeemDeal } = await searchParams
+  const { dealId, previewDeal, redeemDeal, detailsDeal } = await searchParams
 
   const business = await prisma.business.findUnique({
     where: { slug },
@@ -145,9 +146,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   let ourDeal: Awaited<ReturnType<typeof prisma.deal.findUnique>> | null = null
 
-  if (dealId || redeemDeal) {
+  if (dealId || redeemDeal || detailsDeal) {
     const targetDeal = await prisma.deal.findUnique({
-      where: { id: redeemDeal || dealId },
+      where: { id: detailsDeal || redeemDeal || dealId },
       include: { business: { select: { name: true, slug: true } } },
     })
 
@@ -170,7 +171,9 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const forcedPreviewDeal = previewDeal
   ? allDeals.find((deal) => deal.id === previewDeal)
   : null
-
+const forcedDetailsDeal = detailsDeal
+  ? allDeals.find((deal) => deal.id === detailsDeal)
+  : null
   const scoredDeals = filteredDeals.map((deal: (typeof allDeals)[0]) => ({
     ...deal,
     relevanceScore: getRelevanceScore(business.subCategory || '', deal.subCategory),
@@ -210,6 +213,15 @@ if (
   selectedDeals.unshift({
     ...forcedPreviewDeal,
     relevanceScore: 999,
+  } as (typeof scoredDeals)[0])
+}
+if (
+  forcedDetailsDeal &&
+  !selectedDeals.some((deal) => deal.id === forcedDetailsDeal.id)
+) {
+  selectedDeals.unshift({
+    ...forcedDetailsDeal,
+    relevanceScore: 998,
   } as (typeof scoredDeals)[0])
 }
   selectedDeals.sort((a, b) => {
@@ -385,6 +397,7 @@ if (
   selectedDeals={selectedDeals}
   previewDealId={previewDeal}
   redeemDealId={redeemDeal}
+  detailsDealId={detailsDeal}
 />
               </div>
             </div>

@@ -36,6 +36,7 @@ interface DealCardProps {
   isPreviewOpen?: boolean
   onPreviewToggle?: (dealId: string, open: boolean) => void
   isExpandedFromUrl?: boolean
+  showDetailsFromUrl?: boolean
 }
 
 function formatDate(date: string | Date | null | undefined) {
@@ -89,11 +90,15 @@ export default function DealCard({
   isPreviewOpen: isPreviewOpenProp,
   onPreviewToggle,
   isExpandedFromUrl = false,
+  showDetailsFromUrl = false,
 }: DealCardProps) {
   const [isExpanded, setIsExpanded] = useState(isExpandedFromUrl)
   const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
-  const [showDetails, setShowDetails] = useState(false)
+  const [showDetails, setShowDetails] = useState(showDetailsFromUrl)
+  useEffect(() => {
+  setShowDetails(showDetailsFromUrl)
+}, [showDetailsFromUrl])
 
   const isOurDeal = mode === 'ourDeal'
   const businessSlug = deal.business?.slug
@@ -530,30 +535,32 @@ href={`${pathname}?redeemDeal=${deal.id}`}  style={{
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => setShowDetails((value) => !value)}
-            style={{
-              width: '100%',
-              background: 'none',
-              border: 'none',
-              fontSize: '0.75rem',
-              color: '#9ca3af',
-              marginTop: '0.6rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: 0,
-              textAlign: 'left',
-            }}
-          >
-            <span>ⓘ</span>
-            <span>Details & Bedingungen anzeigen</span>
-            <span style={{ marginLeft: 'auto' }}>{showDetails ? '↑' : '↓'}</span>
-          </button>
+          <Link
+  href={`${pathname}?detailsDeal=${deal.id}`}
+  style={{
+    width: '100%',
+    background: 'none',
+    border: 'none',
+    fontSize: '0.75rem',
+    color: '#9ca3af',
+    marginTop: '0.6rem',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: 0,
+    textAlign: 'left',
+    textDecoration: 'none',
+  }}
+>
+  <span>ⓘ</span>
+  <span>Details & Bedingungen anzeigen</span>
+  <span style={{ marginLeft: 'auto' }}>
+    {showDetails ? '↑' : '↓'}
+  </span>
+</Link>
 
-          {showDetails && (
+           {showDetails && (
             <div
               style={{
                 marginTop: '0.6rem',
@@ -602,8 +609,8 @@ href={`${pathname}?redeemDeal=${deal.id}`}  style={{
                 <span>Mit anderen Angeboten</span>
               </div>
             </div>
-          )}
-        </>
+           )}
+            </>
       )}
     </article>
   )

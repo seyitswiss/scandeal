@@ -11,6 +11,7 @@ interface DealCardListProps {
   selectedDeals: Deal[]
   previewDealId?: string
   redeemDealId?: string
+  detailsDealId?: string
 }
 
 export default function DealCardList({
@@ -18,6 +19,7 @@ export default function DealCardList({
   selectedDeals,
   previewDealId,
   redeemDealId,
+  detailsDealId,
 }: DealCardListProps) {
 
 
@@ -30,6 +32,7 @@ export default function DealCardList({
     deal={ourDeal}
     mode="ourDeal"
     isExpandedFromUrl={redeemDealId === ourDeal.id}
+    showDetailsFromUrl={detailsDealId === ourDeal.id}
   />
 )}
 
@@ -44,7 +47,8 @@ export default function DealCardList({
                 key={deal.id}
                 deal={deal}
 isPreviewOpen={previewDealId === deal.id}
-isExpandedFromUrl={redeemDealId === deal.id}
+  isExpandedFromUrl={redeemDealId === deal.id}
+  showDetailsFromUrl={detailsDealId === deal.id}
 
 />
             ))}

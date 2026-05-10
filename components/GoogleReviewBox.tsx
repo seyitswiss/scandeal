@@ -197,193 +197,53 @@ export default function GoogleReviewBox({
             paddingLeft: '26px',
           }}
         >
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              onClick={() => selectRating(star)}
-              aria-label={`${star} Sterne`}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '2rem',
-                color: '#444',
-                padding: '0',
-                lineHeight: 1,
-              }}
-            >
-              ☆
-            </button>
-          ))}
+          {[1, 2, 3, 4, 5].map((star) => {
+  const lowRatingLink =
+    feedbackUrl ||
+    whatsappUrl ||
+    emailUrl ||
+    '#'
+
+  const targetHref =
+    star >= 4
+      ? normalizedGoogleUrl
+      : lowRatingLink
+
+  return (
+    <a
+      key={star}
+      href={targetHref || '#'}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => {
+        if (star >= 4) {
+          track('link_click', 'google')
+        } else {
+          track('internal_feedback')
+        }
+      }}
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: '2rem',
+        color: '#444',
+        padding: '0',
+        lineHeight: 1,
+        textDecoration: 'none',
+        display: 'inline-block',
+      }}
+    >
+      ☆
+    </a>
+  )
+})}
         </div>
       )}
 
-      {rating !== null && rating <= 3 && (
-        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', minHeight: '8rem' }}>
-          <p style={{ fontSize: '0.95rem', marginBottom: '0.5rem' }}>
-            😕 Danke für dein Feedback
-          </p>
+      
 
-          <textarea
-            className="h-16 resize-none text-sm"
-            value={feedback}
-            onChange={(event) => setFeedback(event.target.value)}
-            placeholder="Dein Feedback..."
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              borderRadius: '6px',
-            }}
-          />
-
-          {feedbackUrl ? (
-            <a
-              href={feedbackUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => track('internal_feedback')}
-              style={{
-                display: 'inline-block',
-                marginTop: '0.5rem',
-                background: '#4285f4',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '0.375rem 0.75rem',
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                textDecoration: 'none',
-              }}
-            >
-              Feedback senden
-            </a>
-          ) : (
-            <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#aaa' }}>
-              Kein Feedback-Kanal hinterlegt.
-            </p>
-          )}
-        </div>
-      )}
-
-      {rating !== null && rating >= 4 && (
-        <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', minHeight: '8rem' }}>
-          <p style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.4rem' }}>
-            🙏 Vielen Dank 🙌
-          </p>
-
-          <p style={{ fontSize: '0.85rem', margin: 0, color: '#9b9494' }}>
-            Du kannst deinen Bewertungstext auch mit KI generieren lassen
-          </p>
-
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.5rem',
-              flexWrap: 'wrap',
-              marginTop: '0.75rem',
-            }}
-          >
-            <button
-              type="button"
-              onClick={generateKiText}
-              style={{
-                background: '#1a73e8',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '0.5rem 0.75rem',
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-              }}
-            >
-              KI Text generieren
-            </button>
-
-            <a
-              href={normalizedGoogleUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => track('link_click', 'google')}
-              style={{
-                background: '#4285f4',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '0.5rem 0.75rem',
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                display: 'inline-block',
-              }}
-            >
-              Direkt zu Google
-            </a>
-          </div>
-
-          {showKiText && (
-            <div style={{ marginTop: '0.75rem' }}>
-              <textarea
-                className="h-20 resize-none text-sm"
-                value={feedback}
-                onChange={(event) => setFeedback(event.target.value)}
-                placeholder="KI-generierter Text erscheint hier..."
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  borderRadius: '6px',
-                  border: '1px solid #706b6b',
-                }}
-              />
-
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '0.5rem',
-                  flexWrap: 'wrap',
-                  marginTop: '0.5rem',
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={copyFeedback}
-                  style={{
-                    background: '#34a853',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '0.5rem 0.85rem',
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {copied ? 'Kopiert' : 'Text kopieren'}
-                </button>
-
-                <a
-                  href={normalizedGoogleUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => track('link_click', 'google')}
-                  style={{
-                    background: '#4285f4',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '0.5rem 0.85rem',
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                    textDecoration: 'none',
-                    display: 'inline-block',
-                  }}
-                >
-                  Zu Google
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      
     </div>
   )
 }
