@@ -157,7 +157,12 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
     setLoading(false)
   }
 
-  const profileUrl = `${window.location.origin}/profile/${formData.slug}`
+  const origin =
+  typeof window !== 'undefined'
+    ? window.location.origin
+    : ''
+
+const profileUrl = `${origin}/profile/${formData.slug}`
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
     profileUrl,
   )}`

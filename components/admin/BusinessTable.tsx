@@ -20,10 +20,29 @@ export default function BusinessTable({ businesses }: BusinessTableProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleCopyLink = (slug: string) => {
-    const profileUrl = `${window.location.origin}/profile/${slug}`
+  const profileUrl = `${window.location.origin}/profile/${slug}`
+
+  if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(profileUrl)
-    alert('Copied!')
+  } else {
+    const textArea = document.createElement('textarea')
+    textArea.value = profileUrl
+
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-999999px'
+
+    document.body.appendChild(textArea)
+
+    textArea.focus()
+    textArea.select()
+
+    document.execCommand('copy')
+
+    document.body.removeChild(textArea)
   }
+
+  alert('Copied!')
+}
 
   // Filter businesses based on search query
   const filteredBusinesses = businesses.filter((business) => {
