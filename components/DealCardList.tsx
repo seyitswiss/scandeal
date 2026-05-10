@@ -9,9 +9,10 @@ type Deal = ComponentProps<typeof DealCard>['deal']
 interface DealCardListProps {
   ourDeal?: Deal | null
   selectedDeals: Deal[]
+  previewDealId?: string
 }
 
-export default function DealCardList({ ourDeal, selectedDeals }: DealCardListProps) {
+export default function DealCardList({ ourDeal, selectedDeals, previewDealId }: DealCardListProps) {
   const [activePreviewDealId, setActivePreviewDealId] = useState<string | null>(null)
 
   const handlePreviewToggle = (dealId: string, open: boolean) => {
@@ -32,9 +33,9 @@ export default function DealCardList({ ourDeal, selectedDeals }: DealCardListPro
               <DealCard
                 key={deal.id}
                 deal={deal}
-                isPreviewOpen={activePreviewDealId === deal.id}
-                onPreviewToggle={handlePreviewToggle}
-              />
+isPreviewOpen={previewDealId === deal.id || activePreviewDealId === deal.id}
+onPreviewToggle={handlePreviewToggle}
+/>
             ))}
           </div>
         </>

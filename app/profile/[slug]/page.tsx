@@ -8,14 +8,14 @@ import LinkSlider from '@/components/LinkSlider'
 
 interface Props {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ dealId?: string }>
+  searchParams: Promise<{ dealId?: string; previewDeal?: string }>
 }
 
-// URL normalization helpers
 function normalizeUrl(url: string | null | undefined): string | null {
   if (!url) return null
   const trimmed = url.trim()
   if (!trimmed) return null
+
   if (
     trimmed.startsWith('http://') ||
     trimmed.startsWith('https://') ||
@@ -24,6 +24,7 @@ function normalizeUrl(url: string | null | undefined): string | null {
   ) {
     return trimmed
   }
+
   return `https://${trimmed}`
 }
 
@@ -44,7 +45,6 @@ function normalizeEmail(email: string | null | undefined): string | null {
   return `mailto:${trimmed}`
 }
 
-// Hardcoded complementary mapping: subCategory → other subCategories with scores
 const relevanceMapping: Record<string, Record<string, number>> = {
   'Hair Salon': {
     Cosmetic: 5,
@@ -106,117 +106,116 @@ const relevanceMapping: Record<string, Record<string, number>> = {
 function getRelevanceScore(businessSubCategory: string, dealSubCategory: string | null): number {
   if (!dealSubCategory) return 1
   const mapping = relevanceMapping[businessSubCategory]
-  if (mapping && mapping[dealSubCategory] !== undefined) {
-    return mapping[dealSubCategory]
-  }
+  if (mapping && mapping[dealSubCategory] !== undefined) return mapping[dealSubCategory]
   return 1
+}
+
+function isDealActive(deal: any) {
+  const now = new Date()
+  if (!deal.isActive) return false
+  if (deal.startDate && new Date(deal.startDate) > now) return false
+  if (deal.endDate && new Date(deal.endDate) < now) return false
+  return true
+}
+
+function shuffle<T>(array: T[]): T[] {
+  const shuffled = [...array]
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+
+  return shuffled
 }
 
 export default async function ProfilePage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { dealId } = await searchParams
+  const { dealId, previewDeal } = await searchParams
 
   const business = await prisma.business.findUnique({
     where: { slug },
   })
 
-  console.log("Business category:", business?.category)
-  console.log("Business subCategory:", business?.subCategory)
+  if (!business) notFound()
 
-  if (!business) {
-    notFound()
-  }
-
-  // Load OUR DEAL if dealId provided and belongs to this business
   let ourDeal: Awaited<ReturnType<typeof prisma.deal.findUnique>> | null = null
+
   if (dealId) {
     const targetDeal = await prisma.deal.findUnique({
       where: { id: dealId },
-      include: { business: { select: { name: true, slug: true } } }
+      include: { business: { select: { name: true, slug: true } } },
     })
+
     if (targetDeal && targetDeal.businessId === business.id) {
       ourDeal = targetDeal
     }
   }
 
-  // 1. Load all deals with business relation
   const allDeals = await prisma.deal.findMany({
-    include: { business: { select: { name: true, slug: true } } }
+    include: { business: { select: { name: true, slug: true } } },
   })
 
-  // Helper: check if deal is active (not inactive and not expired)
-  function isDealActive(deal: any) {
-    const now = new Date()
-    if (!deal.isActive) return false
-    if (deal.startDate && new Date(deal.startDate) > now) return false
-    if (deal.endDate && new Date(deal.endDate) < now) return false
-    return true
-  }
-
-  // 2. HARD FILTERS: exclude same business, same subCategory, and inactive/expired deals
   const filteredDeals = allDeals.filter(
-    (deal: typeof allDeals[0]) =>
+    (deal: (typeof allDeals)[0]) =>
       deal.businessId !== business.id &&
       deal.subCategory !== business.subCategory &&
-      (!ourDeal || deal.id !== ourDeal.id) && // Exclude OUR_DEAL from normal list
-      isDealActive(deal) // Only show active deals
+      (!ourDeal || deal.id !== ourDeal.id) &&
+      isDealActive(deal)
   )
+  const forcedPreviewDeal = previewDeal
+  ? allDeals.find((deal) => deal.id === previewDeal)
+  : null
 
-  // 3. RELEVANCE SCORING: add score to each deal
-  const scoredDeals = filteredDeals.map((deal: typeof allDeals[0]) => ({
+  const scoredDeals = filteredDeals.map((deal: (typeof allDeals)[0]) => ({
     ...deal,
     relevanceScore: getRelevanceScore(business.subCategory || '', deal.subCategory),
   }))
 
-  // 4. Separate premium and normal deals
-  const premiumDeals = scoredDeals.filter((d: typeof scoredDeals[0]) => d.isPremium)
-  const normalDeals = scoredDeals.filter((d: typeof scoredDeals[0]) => !d.isPremium)
+  const premiumDeals = scoredDeals.filter((deal) => deal.isPremium)
+  const normalDeals = scoredDeals.filter((deal) => !deal.isPremium)
 
-  // Helper: shuffle array randomly
-  function shuffle<T>(array: T[]): T[] {
-    const shuffled = [...array]
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-    }
-    return shuffled
-  }
+ const randomPremiumDeals = previewDeal ? premiumDeals : shuffle(premiumDeals)
+const randomNormalDeals = previewDeal ? normalDeals : shuffle(normalDeals)
 
-  // 5. Randomize both arrays
-  const randomPremiumDeals = shuffle(premiumDeals)
-  const randomNormalDeals = shuffle(normalDeals)
-
-  // 6. DIVERSITY + FINAL SELECTION (random)
   const selectedDeals: typeof scoredDeals = []
   const usedSubCategories = new Set<string>()
 
-  // Take max 1 random premium deal with unique subCategory
   for (const deal of randomPremiumDeals) {
-    if (!usedSubCategories.has(deal.subCategory || '')) {
+    const subCategory = deal.subCategory || ''
+    if (!usedSubCategories.has(subCategory)) {
       selectedDeals.push(deal)
-      usedSubCategories.add(deal.subCategory || '')
-      break // Only take 1 premium
+      usedSubCategories.add(subCategory)
+      break
     }
   }
 
-  // Take max 3 random normal deals with unique subCategories
   for (const deal of randomNormalDeals) {
     if (selectedDeals.length >= 4) break
-    if (!usedSubCategories.has(deal.subCategory || '')) {
+
+    const subCategory = deal.subCategory || ''
+    if (!usedSubCategories.has(subCategory)) {
       selectedDeals.push(deal)
-      usedSubCategories.add(deal.subCategory || '')
+      usedSubCategories.add(subCategory)
     }
   }
-
-  // 7. FINAL ORDER: premium first, then by relevance
-  selectedDeals.sort((a: typeof scoredDeals[0], b: typeof scoredDeals[0]) => {
+if (
+  forcedPreviewDeal &&
+  !selectedDeals.some((deal) => deal.id === forcedPreviewDeal.id)
+) {
+  selectedDeals.unshift({
+    ...forcedPreviewDeal,
+    relevanceScore: 999,
+  } as (typeof scoredDeals)[0])
+}
+  selectedDeals.sort((a, b) => {
     if (a.isPremium && !b.isPremium) return -1
     if (!a.isPremium && b.isPremium) return 1
     return b.relevanceScore - a.relevanceScore
   })
 
-  // Parse custom links
   let customLinks: { label: string; url: string }[] = []
+
   if (business.customLinks) {
     try {
       customLinks = JSON.parse(business.customLinks)
@@ -225,17 +224,19 @@ export default async function ProfilePage({ params, searchParams }: Props) {
     }
   }
 
-  // Normalize URLs and filter empty/default values
   const rawWebsite = business.website?.trim() || ''
   const rawPhone = business.phone?.trim() || ''
   const rawWhatsapp = business.whatsapp?.trim() || ''
   const rawGoogleReviewUrl = business.googleReviewUrl?.trim() || ''
 
-  // Only normalize if not empty/default
   const websiteUrl = rawWebsite && rawWebsite !== 'https://' ? normalizeUrl(rawWebsite) : null
   const phoneUrl = rawPhone && rawPhone !== 'tel:+41' ? normalizePhone(rawPhone) : null
   const whatsappUrl = rawWhatsapp && rawWhatsapp !== 'https://wa.me/' ? normalizeUrl(rawWhatsapp) : null
-  const googleReviewUrl = rawGoogleReviewUrl && rawGoogleReviewUrl !== 'https://search.google.com/local/writereview?placeid=' ? normalizeUrl(rawGoogleReviewUrl) : null
+  const googleReviewUrl =
+    rawGoogleReviewUrl &&
+    rawGoogleReviewUrl !== 'https://search.google.com/local/writereview?placeid='
+      ? normalizeUrl(rawGoogleReviewUrl)
+      : null
 
   const instagramUrl = normalizeUrl(business.instagram)
   const googleMapsUrl = normalizeUrl(business.googleMapsUrl)
@@ -245,123 +246,146 @@ export default async function ProfilePage({ params, searchParams }: Props) {
   const tripadvisorUrl = normalizeUrl(business.tripadvisor)
   const tiktokUrl = normalizeUrl(business.tiktok)
 
-  // Links for horizontal scroll
   const links = [
-    { label: "Website", icon: "/slideicons/slide_webseite.jpeg", href: websiteUrl },
-    { label: "Route", icon: "/slideicons/slide_googlemaps.jpeg", href: googleMapsUrl },
-    { label: "WhatsApp", icon: "/slideicons/slide_whatsapp.jpeg", href: whatsappUrl },
-    { label: "Call", icon: "/slideicons/slide_mobil.jpeg", href: phoneUrl },
-    { label: "Instagram", icon: "/slideicons/slide_insta.jpeg", href: instagramUrl },
-    { label: "Facebook", icon: "/slideicons/slide_fb.jpeg", href: facebookUrl },
-    { label: "LinkedIn", icon: "/slideicons/slide_linkedin.jpeg", href: linkedinUrl },
-    { label: "TripAdvisor", icon: "/slideicons/slide_tripadvisor.jpeg", href: tripadvisorUrl },
-    { label: "TikTok", icon: "/slideicons/slide_tiktok.jpeg", href: tiktokUrl },
-    { label: "Email", icon: "/slideicons/slide_email.jpeg", href: emailUrl },
-  ].filter(
-    (link): link is { label: string; icon: string; href: string } =>
-      Boolean(link.href)
-  )
+    { label: 'Website', icon: '/slideicons/slide_webseite.jpeg', href: websiteUrl },
+    { label: 'Route', icon: '/slideicons/slide_googlemaps.jpeg', href: googleMapsUrl },
+    { label: 'WhatsApp', icon: '/slideicons/slide_whatsapp.jpeg', href: whatsappUrl },
+    { label: 'Call', icon: '/slideicons/slide_mobil.jpeg', href: phoneUrl },
+    { label: 'Instagram', icon: '/slideicons/slide_insta.jpeg', href: instagramUrl },
+    { label: 'Facebook', icon: '/slideicons/slide_fb.jpeg', href: facebookUrl },
+    { label: 'LinkedIn', icon: '/slideicons/slide_linkedin.jpeg', href: linkedinUrl },
+    { label: 'TripAdvisor', icon: '/slideicons/slide_tripadvisor.jpeg', href: tripadvisorUrl },
+    { label: 'TikTok', icon: '/slideicons/slide_tiktok.jpeg', href: tiktokUrl },
+    { label: 'Email', icon: '/slideicons/slide_email.jpeg', href: emailUrl },
+  ].filter((link): link is { label: string; icon: string; href: string } => Boolean(link.href))
 
   return (
     <ProfileTracker businessId={business.id}>
-      <div className="bg-black text-white min-h-screen">
+      <div className="min-h-screen bg-black text-white">
         {/* TOP BAR */}
-        <div className="fixed top-0 left-0 w-full h-10 bg-black text-white flex items-center px-4 z-[9999]">
+        <header className="fixed left-0 top-0 z-[9999] flex h-10 w-full items-center bg-black px-4 text-white">
           <img src="/icons/scandeal.logo.svg" alt="Scandeal" style={{ height: '24px' }} />
-        </div>
+        </header>
 
-      {/* BOTTOM BAR */}
-<div className="fixed bottom-0 left-0 w-full h-12 bg-black text-white flex items-center justify-center z-[9999]">
-  <span className="text-sm">Scandeal · Hilfe</span>
-</div>
+        {/* BOTTOM BAR */}
+        <footer className="fixed bottom-0 left-0 z-[9999] flex h-12 w-full items-center justify-center bg-black text-white">
+          <span className="text-sm">Scandeal · Hilfe</span>
+        </footer>
 
-<div style={{ paddingTop: '56px', paddingBottom: '96px' }}>
-  {/* OP / BUSINESS SECTION */}
-  <div style={{ width: '100%' }}>
-    <div className="max-w-[640px] mx-auto px-4 pt-6 pb-0">
-      <div style={{ padding: '0.5rem 0.75rem' }}>
-        <div className="-ml-1 py-2">
-          <div className="flex items-start gap-3">
-            <img
-              src={business.logoUrl || '/icons/default.svg'}
-              alt={business.name}
-              className="w-24 h-24 rounded-2xl object-cover shrink-0"
-            />
+        <main style={{ paddingTop: '56px', paddingBottom: '96px' }}>
+          {/* OP / BUSINESS SECTION */}
+          <section style={{ width: '100%' }}>
+            <div className="mx-auto max-w-[640px] px-4 pt-6">
+              <div style={{ padding: '0.5rem 0.75rem' }}>
+                {/* BUSINESS HEADER */}
+                <div className="-ml-1 py-2">
+                  <div className="flex items-start gap-3">
+                    <img
+                      src={business.logoUrl || '/icons/default.svg'}
+                      alt={business.name}
+                      className="h-24 w-24 shrink-0 rounded-2xl object-cover"
+                    />
 
-            <div className="flex min-w-0 flex-1 flex-col">
-              <h1 className="truncate text-xl font-semibold text-white">
-                {business.name}
-              </h1>
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <h1 className="truncate text-xl font-semibold text-white">{business.name}</h1>
 
-              {business.description && (
-                <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-400">
-                  {business.description}
-                </p>
-              )}
+                      {business.description && (
+                        <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-400">
+                          {business.description}
+                        </p>
+                      )}
 
-              
-              <span className="mt-1 text-sm text-gray-300">
-                ⭐ 4.8 (128) · 📍 Zürich
-              </span>
+                      <span className="mt-1 text-sm text-gray-300">⭐ 4.8 (128) · 📍 Zürich</span>
 
-              <span className="mt-1 text-sm text-green-400">
-                🟢 Geöffnet · schliesst um 22:00
-              </span>
-            </div>
-          </div>
-        </div>
+                      <span className="mt-1 text-sm text-green-400">
+                        🟢 Geöffnet · schliesst um 22:00
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* LINK SLIDER */}
                 <div style={{ marginTop: '0.375rem' }}>
-              <LinkSlider links={links} businessId={business.id} />
-            </div>
+                  <LinkSlider links={links} businessId={business.id} />
+                </div>
 
-            <div style={{ marginTop: '0.5rem' }}>
-              <GoogleReviewBox
-                businessName={business.name}
-                googleReviewUrl={googleReviewUrl}
-                whatsappUrl={whatsappUrl}
-                emailUrl={emailUrl}
-                businessId={business.id}
-              />
-            </div>
+                {/* GOOGLE REVIEW BOX */}
+                <div style={{ marginTop: '0.5rem' }}>
+                  <GoogleReviewBox
+                    businessName={business.name}
+                    googleReviewUrl={googleReviewUrl}
+                    whatsappUrl={whatsappUrl}
+                    emailUrl={emailUrl}
+                    businessId={business.id}
+                  />
+                </div>
 
-            {customLinks.length > 0 && (
-              <div style={{ marginTop: '1rem' }}>
-                {customLinks.map((link, index) => {
-                  const normalized = normalizeUrl(link.url)
-                  if (!normalized) return null
-                  return (
-                    <TrackedLink
-                      key={index}
-                      href={normalized}
-                      businessId={business.id}
-                      source="website"
-                      style={{ display: 'block', textAlign: 'center', padding: '0.75rem', background: '#111', borderRadius: '12px', border: '1px solid #222', marginBottom: '0.5rem', textDecoration: 'none', color: '#f8fafc', fontSize: '0.95rem' }}
-                    >
-                      {link.label}
-                    </TrackedLink>
-                  )
-                })}
+                {/* CUSTOM LINKS */}
+                {customLinks.length > 0 && (
+                  <div style={{ marginTop: '1rem' }}>
+                    {customLinks.map((link, index) => {
+                      const normalized = normalizeUrl(link.url)
+                      if (!normalized) return null
+
+                      return (
+                        <TrackedLink
+                          key={index}
+                          href={normalized}
+                          businessId={business.id}
+                          source="website"
+                          style={{
+                            display: 'block',
+                            textAlign: 'center',
+                            padding: '0.75rem',
+                            background: '#111',
+                            borderRadius: '12px',
+                            border: '1px solid #222',
+                            marginBottom: '0.5rem',
+                            textDecoration: 'none',
+                            color: '#f8fafc',
+                            fontSize: '0.95rem',
+                          }}
+                        >
+                          {link.label}
+                        </TrackedLink>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-      </div>
+            </div>
+          </section>
 
-      {/* DEALS SECTION */}
-      <div style={{ width: '100%', color: '#fff' }}>
-        <div style={{ maxWidth: '680px', margin: '0 auto', paddingTop: '8px', paddingBottom: '16px', paddingLeft: '16px', paddingRight: '16px' }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            gap: '16px',
-          }}>
-              <DealCardList ourDeal={ourDeal} selectedDeals={selectedDeals} />
-          </div>
-        </div>
+          {/* DEALS SECTION */}
+          <section style={{ width: '100%', color: '#fff' }}>
+            <div
+              style={{
+                maxWidth: '680px',
+                margin: '0 auto',
+                paddingTop: '8px',
+                paddingBottom: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'stretch',
+                  gap: '16px',
+                }}
+              >
+                <DealCardList
+  ourDeal={ourDeal}
+  selectedDeals={selectedDeals}
+  previewDealId={previewDeal}
+/>
+              </div>
+            </div>
+          </section>
+        </main>
       </div>
-    </div>
-  </div>
     </ProfileTracker>
   )
 }
