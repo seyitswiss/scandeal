@@ -64,7 +64,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
     setLoading(false)
   }
 
-  async function handleGenerateAI() {
+  async function handleGenerateAI(type: 'text' | 'image' | 'all') {
     setGeneratingAI(true)
     try {
       const res = await fetch('/api/deals/generate', {
@@ -81,12 +81,16 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
         const generated = await res.json()
         setFormData((prev) => ({
           ...prev,
-          title: generated.title || prev.title,
-          highlight: generated.highlight || prev.highlight,
-          description: generated.description || prev.description,
-          image: generated.image || prev.image,
+          ...(type === 'text' || type === 'all' ? {
+            title: generated.title || prev.title,
+            highlight: generated.highlight || prev.highlight,
+            description: generated.description || prev.description,
+          } : {}),
+          ...(type === 'image' || type === 'all' ? {
+            image: generated.image || prev.image,
+          } : {}),
         }))
-        if (generated.image) {
+        if ((type === 'image' || type === 'all') && generated.image) {
           setImagePreview(generated.image)
         }
       } else {
@@ -167,27 +171,35 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold">✨ Mit KI generieren</h2>
-                <p className="text-sm text-gray-600 mt-1">Aktualisiere Titel, Highlight, Beschreibung und Bild automatisch.</p>
+                <p className="text-sm text-gray-600 mt-1">Aktualisiere Text, Bild oder beides automatisch.</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={handleGenerateAI}
+                  onClick={() => handleGenerateAI('text')}
                   disabled={generatingAI}
-                  className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+                  className="bg-blue-600 text-white py-2 px-3 rounded hover:bg-blue-700 disabled:opacity-50 text-sm"
                 >
-                  {generatingAI ? '⏳ Generierung...' : 'KI generieren'}
+                  {generatingAI ? '⏳' : 'Text generieren'}
                 </button>
-                {formData.title && (
+                {!formData.isPremium && (
                   <button
                     type="button"
-                    onClick={handleGenerateAI}
+                    onClick={() => handleGenerateAI('image')}
                     disabled={generatingAI}
-                    className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="bg-green-600 text-white py-2 px-3 rounded hover:bg-green-700 disabled:opacity-50 text-sm"
                   >
-                    {generatingAI ? '⏳' : 'Neu generieren'}
+                    {generatingAI ? '⏳' : 'Bild generieren'}
                   </button>
                 )}
+                <button
+                  type="button"
+                  onClick={() => handleGenerateAI('all')}
+                  disabled={generatingAI}
+                  className="bg-purple-600 text-white py-2 px-3 rounded hover:bg-purple-700 disabled:opacity-50 text-sm"
+                >
+                  {generatingAI ? '⏳' : 'Alles generieren'}
+                </button>
               </div>
             </div>
 
