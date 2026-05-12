@@ -1,3 +1,6 @@
+import fs from 'fs/promises'
+import path from 'path'
+
 /**
  * Deal generation helper for AI-generated content and images
  * Generates: title, highlight, description, image
@@ -178,22 +181,44 @@ async function generateDealImage(
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'dall-e-3',
+        model: 'gpt-image-1',
         prompt: imagePrompt,
         n: 1,
         size: '1024x1024',
-        quality: 'standard',
-        style: 'natural',
+        quality: 'medium',
+        
       }),
     })
 
     if (!response.ok) {
-      console.error('DALL-E error:', response.statusText)
+  const errorText = await response.text()
+  console.error('DALL-E error:', response.status, response.statusText, errorText)
+  return undefined
+}
+
+    const data = await response.json()
+
+    const base64Image = data.data?.[0]?.b64_json
+
+    if (!base64Image) {
+      console.error('No base64 image returned from image generation')
       return undefined
     }
 
-    const data = await response.json()
-    return data.data?.[0]?.url
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'deals')
+    await fs.mkdir(uploadDir, { recursive: true })
+
+    const fileName = `ai-deal-${Date.now()}.png`
+    const filePath = path.join(uploadDir, fileName)
+    const buffer = Buffer.from(base64Image, 'base64')
+
+    await fs.writeFile(filePath, buffer)
+
+    const localPath = `/uploads/deals/${fileName}`
+
+    console.log('Saved AI deal image:', localPath)
+
+    return localPath
   } catch (error) {
     console.error('Image generation error:', error)
     return undefined
