@@ -9,6 +9,7 @@ interface DealData {
   description: string | null
   discountText: string | null
   highlight: string | null
+  image: string | null
   category: string | null
   subCategory: string | null
   isPremium: boolean
@@ -25,11 +26,13 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [imagePreview, setImagePreview] = useState(deal.image || '')
   const [formData, setFormData] = useState({
     title: deal.title,
     description: deal.description || '',
     discountText: deal.discountText || '',
     highlight: deal.highlight || '',
+    image: deal.image || '',
     category: deal.category || '',
     subCategory: deal.subCategory || '',
     isPremium: deal.isPremium,
@@ -54,6 +57,26 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
       setSaved(true)
       router.push('/admin/deals')
     }
+  }
+
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string
+
+      setFormData((prev) => ({
+        ...prev,
+        image: dataUrl,
+      }))
+
+      setImagePreview(dataUrl)
+    }
+
+    reader.readAsDataURL(file)
   }
 
   return (
@@ -104,6 +127,29 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
               placeholder="z.B. Coffee + pastry combo / Gratis Dessert bei Hauptgang"
               value={formData.highlight}
               onChange={(e) => setFormData({ ...formData, highlight: e.target.value })}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {imagePreview && (
+            <div className="overflow-hidden rounded-lg border bg-white">
+              <img
+                src={imagePreview}
+                alt="Deal Preview"
+                className="w-full h-auto"
+              />
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Bild ändern
+            </label>
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
               className="w-full p-2 border rounded"
             />
           </div>
