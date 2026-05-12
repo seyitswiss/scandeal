@@ -1,6 +1,6 @@
 // filepath: app/admin/deals/[id]/edit/page.tsx
 import { prisma } from '@/lib/prisma'
-import EditDealForm from '@/components/admin/EditDealForm'
+import EditDealForm from './EditDealForm'
 
 export default async function EditDealPage({ 
   params 
