@@ -54,3 +54,15 @@ export async function PUT(
 
   return NextResponse.json(business)
 }
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+
+  await prisma.business.delete({
+    where: { id },
+  })
+
+  return NextResponse.json({ success: true })
+}

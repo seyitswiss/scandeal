@@ -608,7 +608,45 @@ const profileUrl = `${origin}/profile/${formData.slug}`
           {loading ? 'Saving...' : 'Update Business'}
          </button>
          </form>
+<div className="border border-red-300 rounded-lg p-4 bg-red-50 mt-8">
+  <h2 className="text-lg font-semibold text-red-700 mb-2">
+    Gefahrenzone
+  </h2>
 
+  <p className="text-sm text-red-600 mb-4">
+    Dieses Business inklusive OP, Deals und Statistiken wird gelöscht.
+  </p>
+
+  <button
+    type="button"
+    onClick={async () => {
+      const confirmed = confirm(
+        'Business wirklich löschen? Dadurch werden OP, Deals und Statistiken gelöscht.'
+      )
+
+      if (!confirmed) return
+
+      const secondConfirm = confirm(
+        'Letzte Bestätigung: Dieser Vorgang kann nicht rückgängig gemacht werden.'
+      )
+
+      if (!secondConfirm) return
+
+      const res = await fetch(`/api/businesses/${business.id}`, {
+        method: 'DELETE',
+      })
+
+      if (res.ok) {
+        router.push('/admin/businesses')
+      } else {
+        alert('Business konnte nicht gelöscht werden.')
+      }
+    }}
+    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+  >
+    Business löschen
+  </button>
+</div>
        <div className="mt-8 border p-4 rounded">
         <h2 className="text-lg font-bold mb-4">QR &amp; Links</h2>
         <div className="grid gap-4 md:grid-cols-3">
