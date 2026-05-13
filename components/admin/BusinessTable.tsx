@@ -10,6 +10,7 @@ interface Business {
   slug: string
   category: string | null
   subCategory: string | null
+  isActive: boolean
 }
 
 interface BusinessTableProps {
@@ -17,7 +18,39 @@ interface BusinessTableProps {
 }
 
 export default function BusinessTable({ businesses }: BusinessTableProps) {
+  const [businessList, setBusinessList] = useState<Business[]>(businesses)
   const [searchQuery, setSearchQuery] = useState('')
+  const [updatingId, setUpdatingId] = useState<string | null>(null)
+
+  async function handleToggleActive(business: Business) {
+    setUpdatingId(business.id)
+
+    try {
+      const res = await fetch(`/api/businesses/${business.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !business.isActive }),
+      })
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'Failed to update business' }))
+        alert(error.error || 'Failed to update business')
+        return
+      }
+
+      const updated = await res.json()
+      setBusinessList((current) =>
+        current.map((item) =>
+          item.id === business.id ? { ...item, isActive: updated.isActive } : item
+        )
+      )
+    } catch (error) {
+      console.error('Update business error:', error)
+      alert('Failed to update business')
+    } finally {
+      setUpdatingId(null)
+    }
+  }
 
   const handleCopyLink = (slug: string) => {
   const profileUrl = `${window.location.origin}/profile/${slug}`
@@ -45,7 +78,7 @@ export default function BusinessTable({ businesses }: BusinessTableProps) {
 }
 
   // Filter businesses based on search query
-  const filteredBusinesses = businesses.filter((business) => {
+  const filteredBusinesses = businessList.filter((business) => {
     const query = searchQuery.toLowerCase()
     return (
       business.name?.toLowerCase().includes(query) ||
@@ -75,6 +108,7 @@ export default function BusinessTable({ businesses }: BusinessTableProps) {
               <th className="text-left p-3 border">Name</th>
               <th className="text-left p-3 border">Category</th>
               <th className="text-left p-3 border">SubCategory</th>
+              <th className="text-left p-3 border">Status</th>
               <th className="text-left p-3 border">Actions</th>
             </tr>
           </thead>
@@ -85,7 +119,12 @@ export default function BusinessTable({ businesses }: BusinessTableProps) {
                 <td className="p-3 border">{business.category || '-'}</td>
                 <td className="p-3 border">{business.subCategory || '-'}</td>
                 <td className="p-3 border">
-                  <div className="flex gap-3">
+                  <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${business.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-700'}`}>
+                    {business.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </td>
+                <td className="p-3 border">
+                  <div className="flex flex-wrap gap-2"> 
                     <Link
                       href={`/profile/${business.slug}`}
                       target="_blank"
@@ -112,6 +151,14 @@ export default function BusinessTable({ businesses }: BusinessTableProps) {
                     >
                       Edit
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleActive(business)}
+                      disabled={updatingId === business.id}
+                      className={`px-3 py-1 text-white rounded text-sm ${business.isActive ? 'bg-gray-600 hover:bg-gray-700' : 'bg-green-600 hover:bg-green-700'}`}
+                    >
+                      {business.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
                   </div>
                 </td>
               </tr>

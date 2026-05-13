@@ -16,6 +16,7 @@ model Business {
   website         String?
   category        String?
   subCategory     String?
+  isActive        Boolean  @default(true)
   logoUrl         String?
   // Location
   address         String?
