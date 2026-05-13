@@ -176,7 +176,7 @@ function NewDealForm() {
     })
 
     if (res.ok) {
-      router.push('/admin/deals/new')
+      router.push('/admin/deals')
     } else {
       alert('Failed to create deal')
     }
