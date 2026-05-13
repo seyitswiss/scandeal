@@ -24,6 +24,13 @@ export default async function EditDealPage({
       isActive: true,
       startDate: true,
       endDate: true,
+
+      redeemableWhen: true,
+      redeemableFor: true,
+      requirements: true,
+      combinability: true,
+      conditionDetails: true,
+
       businessId: true,
       business: {
         select: {
@@ -44,8 +51,8 @@ export default async function EditDealPage({
 
   const normalizedDeal = {
     ...deal,
-    startDate: deal.startDate ? String(deal.startDate) : null,
-    endDate: deal.endDate ? String(deal.endDate) : null,
+    startDate: deal.startDate ? deal.startDate.toISOString().slice(0, 16) : null,
+    endDate: deal.endDate ? deal.endDate.toISOString().slice(0, 16) : null,
   }
 
   return <EditDealForm deal={normalizedDeal} />

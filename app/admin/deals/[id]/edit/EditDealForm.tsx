@@ -17,7 +17,14 @@ interface DealData {
   isActive: boolean
   startDate: string | null
   endDate: string | null
-  businessId: string
+
+  redeemableWhen: string | null
+  redeemableFor: string | null
+  requirements: string | null
+  combinability: string | null
+  conditionDetails: string | null
+
+businessId: string
   business: {
     id: string
     name: string
@@ -45,6 +52,12 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
     isActive: deal.isActive ?? false,
     startDate: deal.startDate ? deal.startDate.slice(0, 16) : '',
     endDate: deal.endDate ? deal.endDate.slice(0, 16) : '',
+
+    redeemableWhen: deal.redeemableWhen || '',
+    redeemableFor: deal.redeemableFor || '',
+    requirements: deal.requirements || '',
+    combinability: deal.combinability || '',
+    conditionDetails: deal.conditionDetails || '',
   })
 
   async function handleSubmit(e: React.FormEvent) {
@@ -306,7 +319,85 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
           <h2 className="text-lg font-semibold mb-3">Business</h2>
           <p className="text-sm text-gray-600">{deal.business.name}</p>
         </div>
+{/* Einlösung & Bedingungen */}
+<div className="border p-4 rounded-lg">
+  <h2 className="text-lg font-semibold mb-3">Einlösung & Bedingungen</h2>
 
+  <div className="grid gap-3 sm:grid-cols-2">
+    <div>
+      <label className="block text-sm font-medium mb-1">Einlösbar</label>
+      <select
+        value={formData.redeemableWhen}
+        onChange={(e) => setFormData({ ...formData, redeemableWhen: e.target.value })}
+        className="w-full p-2 border rounded"
+      >
+        <option value="">Bitte wählen</option>
+        <option value="Täglich">Täglich</option>
+        <option value="Mo – Fr">Mo – Fr</option>
+        <option value="Wochenende">Wochenende</option>
+        <option value="Nach Vereinbarung">Nach Vereinbarung</option>
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">Einlösbar für</label>
+      <select
+        value={formData.redeemableFor}
+        onChange={(e) => setFormData({ ...formData, redeemableFor: e.target.value })}
+        className="w-full p-2 border rounded"
+      >
+        <option value="">Bitte wählen</option>
+        <option value="1 Person">1 Person</option>
+        <option value="2 Personen">2 Personen</option>
+        <option value="Familie">Familie</option>
+        <option value="Gruppe">Gruppe</option>
+        <option value="Pro Kunde 1x">Pro Kunde 1x</option>
+        <option value="Unbegrenzt">Unbegrenzt</option>
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">Voraussetzung</label>
+      <select
+        value={formData.requirements}
+        onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
+        className="w-full p-2 border rounded"
+      >
+        <option value="">Keine</option>
+        <option value="Termin erforderlich">Termin erforderlich</option>
+        <option value="Reservation erforderlich">Reservation erforderlich</option>
+        <option value="Nur vor Ort einlösbar">Nur vor Ort einlösbar</option>
+        <option value="Nur für Neukunden">Nur für Neukunden</option>
+        <option value="Mindestbestellwert erforderlich">Mindestbestellwert erforderlich</option>
+        <option value="Gutschein vorzeigen">Gutschein vorzeigen</option>
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">Kombinierbarkeit</label>
+      <select
+        value={formData.combinability}
+        onChange={(e) => setFormData({ ...formData, combinability: e.target.value })}
+        className="w-full p-2 border rounded"
+      >
+        <option value="">Bitte wählen</option>
+        <option value="Nicht mit anderen Angeboten kombinierbar">Nicht mit anderen Angeboten kombinierbar</option>
+        <option value="Mit anderen Angeboten kombinierbar">Mit anderen Angeboten kombinierbar</option>
+        <option value="Nach Absprache">Nach Absprache</option>
+      </select>
+    </div>
+  </div>
+
+  <div className="mt-3">
+    <label className="block text-sm font-medium mb-1">Zusätzliche Bedingungen</label>
+    <textarea
+      value={formData.conditionDetails}
+      onChange={(e) => setFormData({ ...formData, conditionDetails: e.target.value })}
+      placeholder="Optional"
+      className="w-full p-2 border rounded min-h-[80px]"
+    />
+  </div>
+</div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="border p-4 rounded-lg">
             <h3 className="text-sm font-semibold mb-3">Status</h3>

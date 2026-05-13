@@ -51,6 +51,12 @@ model Deal {
   isActive     Boolean   @default(true)
   startDate    DateTime?
   endDate      DateTime?
+  redeemableWhen   String?
+  redeemableFor    String?
+  requirements     String?
+  combinability    String?
+  conditionDetails String?
+  
   businessId   String
   business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
   createdAt    DateTime  @default(now())

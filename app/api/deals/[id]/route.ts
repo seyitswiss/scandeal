@@ -49,6 +49,12 @@ export async function PUT(
         isActive: Boolean(body.isActive),
         startDate: body.startDate ? new Date(body.startDate) : null,
         endDate: body.endDate ? new Date(body.endDate) : null,
+
+        redeemableWhen: body.redeemableWhen || null,
+        redeemableFor: body.redeemableFor || null,
+        requirements: body.requirements || null,
+        combinability: body.combinability || null,
+        conditionDetails: body.conditionDetails || null,
       },
     })
 

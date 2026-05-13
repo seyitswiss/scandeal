@@ -17,6 +17,13 @@ export async function POST(request: Request) {
       isActive: body.isActive !== false,
       startDate: body.startDate ? new Date(body.startDate) : null,
       endDate: body.endDate ? new Date(body.endDate) : null,
+
+      redeemableWhen: body.redeemableWhen || null,
+      redeemableFor: body.redeemableFor || null,
+      requirements: body.requirements || null,
+      combinability: body.combinability || null,
+      conditionDetails: body.conditionDetails || null,
+
       businessId: body.businessId,
     },
   })

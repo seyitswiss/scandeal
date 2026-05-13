@@ -32,6 +32,12 @@ interface DealCardProps {
     video?: string | null
     mp4?: string | null
     subCategory?: string | null
+
+    redeemableWhen?: string | null
+    redeemableFor?: string | null
+    requirements?: string | null
+    combinability?: string | null
+    conditionDetails?: string | null
   }
   mode?: 'normal' | 'ourDeal'
   isPreviewOpen?: boolean
@@ -627,25 +633,46 @@ href={`${pathname}?redeemDeal=${deal.id}${shownDealsQuery}`}  style={{
                 <span>{formattedEndDate || 'Nach Angabe'}</span>
               </div>
 
-              <div style={detailRowStyle}>
-                <span>🕒 Einlösbar</span>
-                <span>Mo – Fr</span>
-              </div>
+              {deal.redeemableWhen && (
+  <div style={detailRowStyle}>
+    <span>🕒 Einlösbar</span>
+    <span>{deal.redeemableWhen}</span>
+  </div>
+)}
 
-              <div style={detailRowStyle}>
-                <span>👤 Einlösbar für</span>
-                <span>1 Person</span>
-              </div>
+{deal.redeemableFor && (
+  <div style={detailRowStyle}>
+    <span>👤 Einlösbar für</span>
+    <span>{deal.redeemableFor}</span>
+  </div>
+)}
 
-              <div style={detailRowStyle}>
-                <span>✔️ Voraussetzung</span>
-                <span>Termin erforderlich</span>
-              </div>
+{deal.requirements && (
+  <div style={detailRowStyle}>
+    <span>✔️ Voraussetzung</span>
+    <span>{deal.requirements}</span>
+  </div>
+)}
 
-              <div style={detailRowStyle}>
-                <span>❌ Nicht kombinierbar</span>
-                <span>Mit anderen Angeboten</span>
-              </div>
+{deal.combinability && (
+  <div style={detailRowStyle}>
+    <span>❌ Kombinierbarkeit</span>
+    <span>{deal.combinability}</span>
+  </div>
+)}
+
+{deal.conditionDetails && (
+  <div
+    style={{
+      marginTop: '0.75rem',
+      fontSize: '0.75rem',
+      color: '#9ca3af',
+      lineHeight: 1.5,
+    }}
+  >
+    {deal.conditionDetails}
+  </div>
+)}
             </div>
            )}
             </>
