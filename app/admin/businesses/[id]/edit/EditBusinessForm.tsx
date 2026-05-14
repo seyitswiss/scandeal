@@ -24,6 +24,12 @@ interface BusinessData {
   postalCode: string | null
   googleMapsUrl: string | null
   googleReviewUrl: string | null
+  googlePlaceId: string | null
+  latitude: number | null
+  longitude: number | null
+  googleRating: number | null
+  googleReviews: number | null
+  googleCity: string | null
   instagram: string | null
   linkedin: string | null
   tripadvisor: string | null
@@ -110,7 +116,15 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
     postalCode: business.postalCode || '',
     googleMapsUrl: business.googleMapsUrl || '',
     googleReviewUrl: business.googleReviewUrl || '',
-    // Social/Contact
+
+    googlePlaceId: business.googlePlaceId || '',
+    latitude: business.latitude ?? '',
+    longitude: business.longitude ?? '',
+    googleRating: business.googleRating ?? '',
+    googleReviews: business.googleReviews ?? '',
+    googleCity: business.googleCity || '',
+
+// Social/Contact
     website: business.website || '',
     instagram: business.instagram || '',
     linkedin: business.linkedin || '',
@@ -154,6 +168,10 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
   }
+function extractGooglePlaceId(url: string) {
+  const match = url.match(/[?&]placeid=([^&]+)/)
+  return match ? decodeURIComponent(match[1]) : ''
+}
 
   function handleNameChange(name: string) {
     setFormData({
@@ -391,17 +409,99 @@ const profileUrl = `${origin}/profile/${formData.slug}`
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Google Review Link</label>
-              <input
-                type="text"
-                value={formData.googleReviewUrl}
-                onChange={(e) => setFormData({ ...formData, googleReviewUrl: e.target.value })}
-                className="w-full p-2 border rounded"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                <a href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" target="_blank" rel="noopener noreferrer" className="underline">Find Place ID</a>
-              </p>
+           <div>
+  <label className="block text-sm font-medium mb-1">Google Review Link</label>
+  <input
+    type="text"
+    value={formData.googleReviewUrl}
+    onChange={(e) => {
+      const value = e.target.value
+      const placeId = extractGooglePlaceId(value)
+
+      setFormData({
+        ...formData,
+        googleReviewUrl: value,
+        googlePlaceId: placeId || formData.googlePlaceId,
+      })
+    }}
+    className="w-full p-2 border rounded"
+  />
+
+  <p className="text-xs text-gray-500 mt-1">
+    <a
+      href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline"
+    >
+      Find Place ID
+    </a>
+  </p>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+  <div>
+    <label className="block text-sm font-medium mb-1">Google Place ID</label>
+    <input
+      type="text"
+      value={formData.googlePlaceId}
+      onChange={(e) => setFormData({ ...formData, googlePlaceId: e.target.value })}
+      className="w-full p-2 border rounded"
+      placeholder="ChIJ..."
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium mb-1">Google City</label>
+    <input
+      type="text"
+      value={formData.googleCity}
+      onChange={(e) => setFormData({ ...formData, googleCity: e.target.value })}
+      className="w-full p-2 border rounded"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium mb-1">Latitude</label>
+    <input
+      type="number"
+      step="any"
+      value={formData.latitude}
+      onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+      className="w-full p-2 border rounded"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium mb-1">Longitude</label>
+    <input
+      type="number"
+      step="any"
+      value={formData.longitude}
+      onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+      className="w-full p-2 border rounded"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium mb-1">Google Rating</label>
+    <input
+      type="number"
+      step="0.1"
+      value={formData.googleRating}
+      onChange={(e) => setFormData({ ...formData, googleRating: e.target.value })}
+      className="w-full p-2 border rounded"
+    />
+  </div>
+
+  <div>
+    <label className="block text-sm font-medium mb-1">Google Reviews</label>
+    <input
+      type="number"
+      value={formData.googleReviews}
+      onChange={(e) => setFormData({ ...formData, googleReviews: e.target.value })}
+      className="w-full p-2 border rounded"
+    />
+  </div>
+</div>
             </div>
           </div>
          </div>

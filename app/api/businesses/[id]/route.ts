@@ -41,6 +41,14 @@ export async function PUT(
       postalCode: body.postalCode || null,
       googleMapsUrl: body.googleMapsUrl || null,
       googleReviewUrl: body.googleReviewUrl || null,
+
+      googlePlaceId: body.googlePlaceId || null,
+      latitude: body.latitude ? Number(body.latitude) : null,
+      longitude: body.longitude ? Number(body.longitude) : null,
+      googleRating: body.googleRating ? Number(body.googleRating) : null,
+      googleReviews: body.googleReviews ? Number(body.googleReviews) : null,
+      googleCity: body.googleCity || null,
+
       instagram: body.instagram || null,
       linkedin: body.linkedin || null,
       tripadvisor: body.tripadvisor || null,

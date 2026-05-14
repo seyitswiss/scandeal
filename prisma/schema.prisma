@@ -22,6 +22,12 @@ model Business {
   postalCode      String?
   googleMapsUrl   String?
   googleReviewUrl String?
+  googlePlaceId   String?
+  latitude        Float?
+  longitude       Float?
+  googleRating    Float?
+  googleReviews   Int?
+  googleCity      String?
   // Social
   instagram       String?
   linkedin        String?

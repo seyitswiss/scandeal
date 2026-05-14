@@ -370,11 +370,17 @@ const forcedDetailsDeal = detailsDeal
                         </p>
                       )}
 
-                      <span className="mt-1 text-sm text-gray-300">⭐ 4.8 (128) · 📍 Zürich</span>
+                      {(business.googleRating || business.googleReviews || business.googleCity) && (
+  <span className="mt-1 text-sm text-gray-300">
+    {business.googleRating ? `⭐ ${business.googleRating}` : ''}
+    {business.googleReviews ? ` (${business.googleReviews})` : ''}
+    {business.googleCity ? ` · 📍 ${business.googleCity}` : ''}
+  </span>
+)}
 
-                      <span className="mt-1 text-sm text-green-400">
-                        🟢 Geöffnet · schliesst um 22:00
-                      </span>
+<span className="mt-1 text-sm text-green-400">
+  🟢 Google Infos vorbereitet
+</span>
                     </div>
                   </div>
                 </div>
