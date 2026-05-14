@@ -378,9 +378,18 @@ const forcedDetailsDeal = detailsDeal
   </span>
 )}
 
-<span className="mt-1 text-sm text-green-400">
-  🟢 Google Infos vorbereitet
-</span>
+{business.googleOpeningText && (
+  <span
+    className={
+  business.googleOpeningNow
+    ? 'mt-1 text-sm text-green-400'
+    : 'mt-1 text-sm text-gray-300'
+}
+  >
+    {business.googleOpeningNow ? '🟢 ' : '🕒 '}
+    {business.googleOpeningText}
+  </span>
+)}
                     </div>
                   </div>
                 </div>

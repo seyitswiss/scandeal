@@ -54,6 +54,7 @@ googleOpeningNow:
     ? body.googleOpeningNow
     : null,
 googleOpeningHours: body.googleOpeningHours || null,
+googleOpeningText: body.googleOpeningText || null,
 
 instagram: body.instagram || null,
       linkedin: body.linkedin || null,
