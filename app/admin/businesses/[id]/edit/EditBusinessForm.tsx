@@ -28,9 +28,13 @@ interface BusinessData {
   latitude: number | null
   longitude: number | null
   googleRating: number | null
-  googleReviews: number | null
-  googleCity: string | null
-  instagram: string | null
+googleReviews: number | null
+googleCity: string | null
+
+googleOpeningNow: boolean | null
+googleOpeningHours: string | null
+googleOpeningText: string | null
+instagram: string | null
   linkedin: string | null
   tripadvisor: string | null
   whatsapp: string | null
@@ -123,6 +127,9 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
     googleRating: business.googleRating ?? '',
     googleReviews: business.googleReviews ?? '',
     googleCity: business.googleCity || '',
+    googleOpeningNow: business.googleOpeningNow ?? null,
+googleOpeningHours: business.googleOpeningHours || '',
+googleOpeningText: business.googleOpeningText || '',
 
 // Social/Contact
     website: business.website || '',
@@ -244,7 +251,50 @@ const profileUrl = `${origin}/profile/${formData.slug}`
     navigator.clipboard.writeText(profileUrl)
     alert('Copied!')
   }
+async function loadGooglePlaceData(placeId: string) {
+  if (!placeId) return
 
+  try {
+    const res = await fetch('/api/google-place', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ placeId }),
+    })
+
+    if (!res.ok) {
+      throw new Error('Google data failed')
+    }
+
+    const data = await res.json()
+
+    setFormData((prev) => ({
+      ...prev,
+      googleRating: data.rating ?? prev.googleRating,
+      googleReviews: data.reviews ?? prev.googleReviews,
+      latitude: data.latitude ?? prev.latitude,
+      longitude: data.longitude ?? prev.longitude,
+      address: data.address || prev.address,
+      googleCity: data.city || prev.googleCity,
+      googleOpeningNow:
+  data.openNow !== null
+    ? data.openNow
+    : prev.googleOpeningNow,
+
+googleOpeningHours:
+  data.weekdayDescriptions?.join(' | ') ||
+  prev.googleOpeningHours,
+
+googleOpeningText:
+  data.openingText ||
+  prev.googleOpeningText,
+    }))
+  } catch (error) {
+    console.error(error)
+    alert('Google Daten konnten nicht geladen werden.')
+  }
+}
   const handleCreateDeal = () => {
     router.push(`/admin/deals/new?businessId=${business.id}`)
   }
@@ -446,7 +496,15 @@ const profileUrl = `${origin}/profile/${formData.slug}`
       onChange={(e) => setFormData({ ...formData, googlePlaceId: e.target.value })}
       className="w-full p-2 border rounded"
       placeholder="ChIJ..."
+      
     />
+    <button
+  type="button"
+  onClick={() => loadGooglePlaceData(formData.googlePlaceId)}
+  className="mt-2 w-full bg-green-600 text-white py-2 px-3 rounded hover:bg-green-700 text-sm"
+>
+  Google Daten laden
+</button>
   </div>
 
   <div>

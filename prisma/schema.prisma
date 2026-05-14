@@ -28,6 +28,9 @@ model Business {
   googleRating    Float?
   googleReviews   Int?
   googleCity      String?
+  googleOpeningNow    Boolean?
+  googleOpeningText   String?
+googleOpeningHours  String?
   // Social
   instagram       String?
   linkedin        String?

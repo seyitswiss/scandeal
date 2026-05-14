@@ -30,10 +30,16 @@ export async function POST(request: Request) {
       latitude: body.latitude ? Number(body.latitude) : null,
       longitude: body.longitude ? Number(body.longitude) : null,
       googleRating: body.googleRating ? Number(body.googleRating) : null,
-      googleReviews: body.googleReviews ? Number(body.googleReviews) : null,
-      googleCity: body.googleCity || null,
+   googleReviews: body.googleReviews ? Number(body.googleReviews) : null,
+googleCity: body.googleCity || null,
 
-      instagram: body.instagram || null,
+googleOpeningNow:
+  typeof body.googleOpeningNow === 'boolean'
+    ? body.googleOpeningNow
+    : null,
+googleOpeningHours: body.googleOpeningHours || null,
+
+instagram: body.instagram || null,
       linkedin: body.linkedin || null,
       tripadvisor: body.tripadvisor || null,
       whatsapp: body.whatsapp || null,
