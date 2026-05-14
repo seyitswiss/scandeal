@@ -62,13 +62,32 @@ if (openNow) {
   if (nextOpenTime) {
     const openDate = new Date(nextOpenTime)
 
-    openingText = `Öffnet um ${openDate.toLocaleTimeString('de-CH', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })}`
-  } else {
+    const now = new Date()
+
+    const openDay = openDate.toLocaleDateString('de-CH', {
+  weekday: 'long',
+})
+
+    const isToday = openDate.toDateString() === now.toDateString()
+
+    const tomorrow = new Date(now)
+tomorrow.setDate(now.getDate() + 1)
+
+    const isTomorrow = openDate.toDateString() === tomorrow.toDateString()
+
+    const openTime = openDate.toLocaleTimeString('de-CH', {
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
+openingText = isToday
+  ? `Öffnet um ${openTime}`
+  : isTomorrow
+    ? `Öffnet morgen um ${openTime}`
+    : `Öffnet ${openDay} um ${openTime}`
+     } else {
     openingText = 'Geschlossen'
-  }
+ }
 }
 const weekdayDescriptions = openingHours?.weekdayDescriptions || []
 const addressParts = address.split(',').map((part: string) => part.trim())
