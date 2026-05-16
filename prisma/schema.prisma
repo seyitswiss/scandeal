@@ -38,6 +38,7 @@ googleOpeningHours  String?
   whatsapp        String?
   email           String?
   tiktok          String?
+  youtube         String?
   facebook        String?
   // Custom links (JSON string)
   customLinks     String?

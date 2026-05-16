@@ -126,7 +126,29 @@ function isDealActive(deal: any) {
   if (deal.endDate && new Date(deal.endDate) < now) return false
   return true
 }
+function calculateDistanceKm(
+  lat1: number | null | undefined,
+  lon1: number | null | undefined,
+  lat2: number | null | undefined,
+  lon2: number | null | undefined
+): number | null {
+  if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return null
 
+  const earthRadiusKm = 6371
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLon = ((lon2 - lon1) * Math.PI) / 180
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2)
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+  return earthRadiusKm * c
+}
 function shuffle<T>(array: T[]): T[] {
   const shuffled = [...array]
 
@@ -183,6 +205,8 @@ if (targetDeal) {
         name: true,
         slug: true,
         logoUrl: true,
+latitude: true,
+longitude: true,
       },
     },
   },
@@ -204,6 +228,12 @@ const forcedDetailsDeal = detailsDeal
   const scoredDeals = filteredDeals.map((deal: (typeof allDeals)[0]) => ({
     ...deal,
     relevanceScore: getRelevanceScore(business.subCategory || '', deal.subCategory),
+distanceKm: calculateDistanceKm(
+  business.latitude,
+  business.longitude,
+  deal.business?.latitude,
+  deal.business?.longitude
+),
   }))
 
   const premiumDeals = scoredDeals.filter((deal) => deal.isPremium)
@@ -334,6 +364,7 @@ const hasUrlState =
   const linkedinUrl = normalizeUrl(business.linkedin)
   const tripadvisorUrl = normalizeUrl(business.tripadvisor)
   const tiktokUrl = normalizeUrl(business.tiktok)
+const youtubeUrl = normalizeUrl(business.youtube)
 let reviewSuggestion = ''
 
 if (reviewTone) {
@@ -373,7 +404,8 @@ if (reviewTone) {
     { label: 'LinkedIn', icon: '/slideicons/slide_linkedin.jpeg', href: linkedinUrl },
     { label: 'TripAdvisor', icon: '/slideicons/slide_tripadvisor.jpeg', href: tripadvisorUrl },
     { label: 'TikTok', icon: '/slideicons/slide_tiktok.jpeg', href: tiktokUrl },
-    { label: 'Email', icon: '/slideicons/slide_email.jpeg', href: emailUrl },
+{ label: 'YouTube', icon: '/slideicons/slide_youtube.jpeg', href: youtubeUrl },
+{ label: 'Email', icon: '/slideicons/slide_email.jpeg', href: emailUrl },
   ].filter((link): link is { label: string; icon: string; href: string } => Boolean(link.href))
 
   return (

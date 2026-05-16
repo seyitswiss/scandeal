@@ -44,7 +44,8 @@ export default function NewBusinessPage() {
     phone: 'tel:+41',
     email: '',
     tiktok: '',
-    facebook: '',
+youtube: '',
+facebook: '',
     // Custom links
     customLink1Label: '',
     customLink1Url: '',
@@ -499,6 +500,15 @@ onChange={(e) => {
                 className="w-full p-2 border rounded"
               />
             </div>
+            <div>
+  <label className="block text-sm font-medium mb-1">YouTube</label>
+  <input
+    type="text"
+    value={formData.youtube}
+    onChange={(e) => setFormData({ ...formData, youtube: e.target.value })}
+    className="w-full p-2 border rounded"
+  />
+</div>
           </div>
         </div>
 

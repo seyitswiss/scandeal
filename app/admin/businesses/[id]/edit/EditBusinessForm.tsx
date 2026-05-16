@@ -40,7 +40,8 @@ instagram: string | null
   whatsapp: string | null
   email: string | null
   tiktok: string | null
-  facebook: string | null
+youtube: string | null
+facebook: string | null
   customLinks: string | null
 }
 
@@ -140,7 +141,8 @@ googleOpeningText: business.googleOpeningText || '',
     phone: business.phone || '',
     email: business.email || '',
     tiktok: business.tiktok || '',
-    facebook: business.facebook || '',
+youtube: business.youtube || '',
+facebook: business.facebook || '',
     // Custom links
     customLink1Label: '',
     customLink1Url: '',
@@ -664,6 +666,18 @@ googleOpeningText:
                 className="w-full p-2 border rounded"
               />
             </div>
+            <div>
+  <label className="block text-sm font-medium mb-1">YouTube</label>
+
+  <input
+    type="text"
+    value={formData.youtube}
+    onChange={(e) =>
+      setFormData({ ...formData, youtube: e.target.value })
+    }
+    className="w-full p-2 border rounded"
+  />
+</div>
           </div>
          </div>
 
