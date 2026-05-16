@@ -33,7 +33,22 @@ export async function POST(req: Request) {
 
     const randomFocus =
       focuses[Math.floor(Math.random() * focuses.length)]
+let intensityStyle = ''
 
+if (intensity === 1) {
+  intensityStyle =
+    'kurz, eher zurückhaltend, freundlich, schlicht und natürlich'
+}
+
+if (intensity === 2) {
+  intensityStyle =
+    'wärmer, persönlicher, zufriedener Kunde, angenehm formuliert'
+}
+
+if (intensity === 3) {
+  intensityStyle =
+    'starke Empfehlung, begeistert aber glaubwürdig, emotionaler'
+}
     const prompt = `
 Schreibe eine kurze natürliche Google-Empfehlung.
 
@@ -62,6 +77,9 @@ ${subCategory || ''}
 
 Intensität:
 ${intensity}/5
+
+Schreibstil:
+${intensityStyle}
 
 Ton:
 ${randomTone}

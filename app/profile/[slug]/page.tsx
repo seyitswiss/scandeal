@@ -5,8 +5,7 @@ import DealCardList from '@/components/DealCardList'
 import ProfileTracker from '@/components/ProfileTracker'
 import TrackedLink from '@/components/TrackedLink'
 import LinkSlider from '@/components/LinkSlider'
-
-
+import GoogleReviewCard from '@/components/GoogleReviewCard'
 
 
 interface Props {
@@ -152,6 +151,7 @@ const {
   const business = await prisma.business.findUnique({
     where: { slug },
   })
+
 
   if (!business) notFound()
 
@@ -435,93 +435,13 @@ if (reviewTone) {
                     </div>
                   </div>
                 </div>
-{/* GOOGLE REVIEW TEST */}
-<div className="mt-3 grid grid-cols-2 gap-3">
-  {/* LEFT */}
-  <div className="rounded-2xl border border-green-500 bg-[#111] p-4">
-  <h2 className="font-semibold text-white">
-    ⭐ Google Bewertung
-  </h2>
-
-  {googleReviewUrl ? (
-    <a
-      href={googleReviewUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="mt-3 inline-flex rounded-xl border border-green-500 px-4 py-2 text-sm text-white"
-    >
-      Google öffnen
-    </a>
-  ) : (
-    <p className="mt-3 text-sm text-gray-500">
-      Kein Google Link
-    </p>
-  )}
-
-  <div className="mt-4 space-y-2 text-xs leading-relaxed text-gray-400">
-    <p>1. Unterstützungsintensität wählen</p>
-    <p>2. KI-Text generieren</p>
-    <p>3. Text kopieren</p>
-    <p>4. Google öffnen</p>
-    <p>5. Sterne auswählen</p>
-    <p>6. Text einfügen</p>
-    <p>7. Veröffentlichen</p>
-  </div>
-</div>
-
- {/* RIGHT */}
-<div className="rounded-2xl border border-[#222] bg-[#111] p-4">
-  <h2 className="font-semibold text-white">
-    ✨ KI Assistent
-  </h2>
-
-  <p className="mt-3 text-sm text-gray-400">
-    Wähle deine Unterstützungsintensität
-  </p>
-
-  {reviewTone && (
-    <p className="mt-3 rounded-xl bg-black/40 p-3 text-sm text-white">
-  {reviewSuggestion || 'Bewertung wird geladen...'}
-</p>
-  )}
-
-  <div className="mt-4 flex gap-3">
-    <a
-      href={`?reviewTone=1`}
-      className={`flex h-11 w-11 items-center justify-center rounded-full border text-base font-semibold text-white ${
-        reviewTone === '1'
-          ? 'border-green-500 bg-green-500/20'
-          : 'border-gray-600'
-      }`}
-    >
-      1
-    </a>
-
-    <a
-      href={`?reviewTone=2`}
-      className={`flex h-11 w-11 items-center justify-center rounded-full border text-base font-semibold text-white ${
-        reviewTone === '2'
-          ? 'border-green-500 bg-green-500/20'
-          : 'border-gray-600'
-      }`}
-    >
-      2
-    </a>
-
-    <a
-      href={`?reviewTone=3`}
-      className={`flex h-11 w-11 items-center justify-center rounded-full border text-base font-semibold text-white ${
-        reviewTone === '3'
-          ? 'border-green-500 bg-green-500/20'
-          : 'border-gray-600'
-      }`}
-    >
-      3
-    </a>
-  </div>
-</div>
-</div>
-
+<GoogleReviewCard
+  businessSlug={business.slug}
+  businessName={business.name}
+  googleReviewUrl={googleReviewUrl}
+  reviewTone={reviewTone}
+  reviewSuggestion={reviewSuggestion}
+/>
 {/* LINK SLIDER */}
                 <div style={{ marginTop: '0.375rem' }}>
                   <LinkSlider links={links} businessId={business.id} />
