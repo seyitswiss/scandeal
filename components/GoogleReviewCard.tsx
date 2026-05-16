@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
+
 interface Props {
   businessSlug: string
   businessName: string
@@ -60,13 +61,7 @@ export default function GoogleReviewCard({
         }}
       >
         <div className="relative z-10 flex w-full items-center justify-between gap-4">
-            <button
-  type="button"
-  onClick={hideForSevenDays}
-  className="absolute -left-2 -top-3 z-30 text-sm text-gray-400 transition hover:text-white"
->
-  ✕
-</button>
+
           {/* LEFT */}
           <div>
             <div className="flex items-start gap-3">
@@ -92,24 +87,23 @@ export default function GoogleReviewCard({
             </div>
 
             <p className="mt-4 max-w-[240px] text-[15px] leading-relaxed text-gray-300">
-              Teile deine ehrliche Erfahrung direkt auf Google.
+              Teile deine Erfahrung direkt auf Google —
+inklusive KI-Inspiration.
             </p>
           </div>
 
           {/* BUTTON */}
-          {googleReviewUrl && (
-            <div className="rounded-[22px] bg-[conic-gradient(from_180deg_at_50%_50%,#EA4335_0deg,#4285F4_90deg,#34A853_180deg,#FBBC05_270deg,#EA4335_360deg)] p-[2px] shadow-lg">
-              <a
-  href={googleReviewUrl}
-  target="_blank"
-  rel="noopener noreferrer"
-  onClick={markReviewStarted}
-                className="flex h-14 min-w-[120px] items-center justify-center rounded-[20px] bg-white px-5 text-lg font-semibold text-black"
-              >
-                direkt Öffnen
-              </a>
-            </div>
-          )}
+{googleReviewUrl && (
+<div className="overflow-hidden rounded-[18px] bg-[conic-gradient(from_180deg_at_50%_50%,#EA4335_0deg,#4285F4_90deg,#34A853_180deg,#FBBC05_270deg,#EA4335_360deg)] p-[2px] shadow-lg [transform:translateZ(0)]">    <a
+      href={googleReviewUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={markReviewStarted}
+className="flex h-11 min-w-[110px] items-center justify-center rounded-[15px] bg-white px-3 text-base font-semibold text-black"    >
+      Öffnen
+    </a>
+  </div>
+)}
         </div>
 
         {/* KI LINK */}
@@ -119,7 +113,7 @@ export default function GoogleReviewCard({
               href="?reviewTone=1#review-ai"
               className="text-sm text-gray-300 transition hover:text-white"
             >
-              ✨ Keine Ahnung was schreiben? Lass dich inspirieren.
+              ✨  KI-Inspiration hier öffnen
             </a>
           </div>
         )}
@@ -188,8 +182,7 @@ export default function GoogleReviewCard({
                 src="/review/ki-lamp.png"
                 alt=""
                 aria-hidden="true"
-                className="h-16 w-16 shrink-0 object-contain"
-              />
+                className="mt-4 h-16 w-16 shrink-0 object-contain mix-blend-lighten"              />
 
               <div>
                 <div className="inline-flex rounded-lg border border-blue-500/60 px-3 py-1 text-sm font-semibold text-blue-400">
