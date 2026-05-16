@@ -150,7 +150,7 @@ export default function DealCard({
 
   const profileHref = businessSlug ? `/profile/${businessSlug}` : '#'
  const dealHref = businessSlug
-  ? `/profile/${businessSlug}?dealId=${deal.id}`
+  ? `/profile/${businessSlug}?dealId=${deal.id}#our-deal`
   : '#'
 
   useEffect(() => {
@@ -245,8 +245,8 @@ export default function DealCard({
   }
 
   return (
-    <article style={cardStyle}>
-      <div
+<article id={`deal-${deal.id}`} style={cardStyle}>      
+  <div
         style={{
           position: 'absolute',
           top: '10px',
@@ -281,7 +281,11 @@ export default function DealCard({
           </Link>
         ) : previewOpen ? (
 <Link
-  href={shownDealsQuery ? `${pathname}?shownDeals=${shownDealIds?.join(',')}` : pathname}
+  href={
+  shownDealsQuery
+    ? `${pathname}?shownDeals=${shownDealIds?.join(',')}#deal-${deal.id}`
+    : `${pathname}#deal-${deal.id}`
+}
   style={{
     color: '#e5e7eb',
     textDecoration: 'none',
@@ -474,8 +478,7 @@ overflow: 'hidden',
       {!isOurDeal && !previewOpen && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.4rem' }}>
 <Link
-  href={`${pathname}?previewDeal=${deal.id}${shownDealsQuery}`}
-  style={{
+href={`${pathname}?previewDeal=${deal.id}${shownDealsQuery}#deal-${deal.id}`}  style={{
     fontSize: '0.8rem',
     color: '#000',
     fontWeight: 700,
@@ -580,7 +583,7 @@ href={`${pathname}?redeemDeal=${deal.id}${shownDealsQuery}`}  style={{
           )}
 
           <Link
-  href={`${pathname}?detailsDeal=${deal.id}${shownDealsQuery}`}
+  href={`${pathname}?detailsDeal=${deal.id}${shownDealsQuery}#our-deal`}
   style={{
     width: '100%',
     background: 'none',

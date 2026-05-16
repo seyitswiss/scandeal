@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+
 
 
 interface Props {
@@ -18,35 +18,7 @@ export default function GoogleReviewCard({
   reviewTone,
   reviewSuggestion,
 }: Props) {
-  const [isHidden, setIsHidden] = useState(false)
-
-  const hiddenKey = `scandeal_review_hidden_${businessSlug}`
-  const doneKey = `scandeal_review_done_${businessSlug}`
-
-  useEffect(() => {
-    const done = localStorage.getItem(doneKey)
-    if (done === 'true') {
-      setIsHidden(true)
-      return
-    }
-
-    const hiddenUntil = localStorage.getItem(hiddenKey)
-    if (hiddenUntil && Date.now() < Number(hiddenUntil)) {
-      setIsHidden(true)
-    }
-  }, [doneKey, hiddenKey])
-
-  function hideForSevenDays() {
-    const sevenDays = 7 * 24 * 60 * 60 * 1000
-    localStorage.setItem(hiddenKey, String(Date.now() + sevenDays))
-    setIsHidden(true)
-  }
-
-  function markReviewStarted() {
-    localStorage.setItem(doneKey, 'true')
-  }
-
-  if (isHidden) return null
+  
 
   return (
     <div className="mt-3 overflow-hidden rounded-3xl border border-[#222] bg-[#111]">
@@ -94,12 +66,11 @@ inklusive KI-Inspiration.
 
           {/* BUTTON */}
 {googleReviewUrl && (
-<div className="overflow-hidden rounded-[18px] bg-[conic-gradient(from_180deg_at_50%_50%,#EA4335_0deg,#4285F4_90deg,#34A853_180deg,#FBBC05_270deg,#EA4335_360deg)] p-[2px] shadow-lg [transform:translateZ(0)]">    <a
-      href={googleReviewUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={markReviewStarted}
-className="flex h-11 min-w-[110px] items-center justify-center rounded-[15px] bg-white px-3 text-base font-semibold text-black"    >
+<div className="overflow-hidden rounded-[18px] bg-[conic-gradient(from_180deg_at_50%_50%,#EA4335_0deg,#4285F4_90deg,#34A853_180deg,#FBBC05_270deg,#EA4335_360deg)] p-[2px] shadow-lg [transform:translateZ(0)]">   
+     <a
+  href={googleReviewUrl}
+  className="flex h-11 min-w-[109px] items-center justify-center rounded-[15px] bg-white pl-1 pr-2 text-base font-semibold text-black"
+>
       Öffnen
     </a>
   </div>
@@ -188,7 +159,9 @@ className="flex h-11 min-w-[110px] items-center justify-center rounded-[15px] bg
                 <div className="inline-flex rounded-lg border border-blue-500/60 px-3 py-1 text-sm font-semibold text-blue-400">
                   KI Inspiration
                 </div>
-
+<p className="mt-2 text-xs text-gray-400">
+  Text kopieren • Öffnen • einfügen
+</p>
                 <p className="mt-3 text-[15px] leading-relaxed text-gray-300">
                   {reviewSuggestion ||
                     'KI Inspiration wird geladen...'}

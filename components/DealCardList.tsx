@@ -27,26 +27,41 @@ export default function DealCardList({
       ? shownDealIds
       : selectedDeals.map((deal) => deal.id)
 
-
-
   return (
-    <>
+    <div id="deals-section" style={{ scrollMarginTop: '72px' }}>
       {ourDeal && (
-  <DealCard
-    deal={ourDeal}
-    mode="ourDeal"
-    isExpandedFromUrl={redeemDealId === ourDeal.id}
-    showDetailsFromUrl={detailsDealId === ourDeal.id}
-    shownDealIds={currentShownDealIds}
-  />
+  <div id="our-deal" style={{ scrollMarginTop: '120px' }}>
+    <DealCard
+          deal={ourDeal}
+          mode="ourDeal"
+          isExpandedFromUrl={redeemDealId === ourDeal.id}
+          showDetailsFromUrl={detailsDealId === ourDeal.id}
+        shownDealIds={currentShownDealIds}
+/>
+  </div>
 )}
 
       {selectedDeals.length > 0 && (
         <>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '0.5rem', textAlign: 'center', color: '#f8fafc' }}>
+          <h2
+            style={{
+              fontSize: '1.1rem',
+              fontWeight: '700',
+              marginBottom: '0.5rem',
+              textAlign: 'center',
+              color: '#f8fafc',
+            }}
+          >
             Deals für Dich
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+            }}
+          >
             {selectedDeals.map((deal) => (
               <DealCard
                 key={deal.id}
@@ -60,6 +75,6 @@ export default function DealCardList({
           </div>
         </>
       )}
-    </>
+    </div>
   )
 }
