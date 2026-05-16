@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
+import { cookies } from 'next/headers'
 import DealCardList from '@/components/DealCardList'
 
 import ProfileTracker from '@/components/ProfileTracker'
@@ -17,6 +18,7 @@ interface Props {
     detailsDeal?: string
     shownDeals?: string
     reviewTone?: string
+hideReview?: string
   }>
 }
 
@@ -169,6 +171,7 @@ const {
   detailsDeal,
   shownDeals,
   reviewTone,
+hideReview,
 } = await searchParams
   const business = await prisma.business.findUnique({
     where: { slug },
@@ -176,6 +179,9 @@ const {
 
 
   if (!business) notFound()
+    const cookieStore = await cookies()
+const reviewHidden =
+  cookieStore.get(`scandeal_review_hidden_${business.slug}`)?.value === 'true'
 
   let ourDeal: Awaited<ReturnType<typeof prisma.deal.findUnique>> | null = null
 
@@ -467,13 +473,26 @@ if (reviewTone) {
                     </div>
                   </div>
                 </div>
-<GoogleReviewCard
-  businessSlug={business.slug}
-  businessName={business.name}
-  googleReviewUrl={googleReviewUrl}
-  reviewTone={reviewTone}
-  reviewSuggestion={reviewSuggestion}
-/>
+{!hideReview && !reviewHidden && (
+  <div className="relative">
+    <a
+      href={`/api/review-hide?slug=${business.slug}&redirect=${encodeURIComponent(
+  `/profile/${business.slug}?shownDeals=${selectedDeals.map((deal) => deal.id).join(',')}`
+)}`}
+      className="absolute -left-2 -top-2 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black text-lg text-white shadow-lg"
+    >
+      ✕
+    </a>
+
+    <GoogleReviewCard
+      businessSlug={business.slug}
+      businessName={business.name}
+      googleReviewUrl={googleReviewUrl}
+      reviewTone={reviewTone}
+      reviewSuggestion={reviewSuggestion}
+    />
+  </div>
+)}
 {/* LINK SLIDER */}
                 <div style={{ marginTop: '0.375rem' }}>
                   <LinkSlider links={links} businessId={business.id} />
