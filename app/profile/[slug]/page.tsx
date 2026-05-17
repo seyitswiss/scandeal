@@ -401,17 +401,17 @@ if (reviewTone) {
   }
 }
   const links = [
-    { label: 'Website', icon: '/slideicons/slide_webseite.jpeg', href: websiteUrl },
-    { label: 'Route', icon: '/slideicons/slide_googlemaps.jpeg', href: googleMapsUrl },
-    { label: 'WhatsApp', icon: '/slideicons/slide_whatsapp.jpeg', href: whatsappUrl },
-    { label: 'Call', icon: '/slideicons/slide_mobil.jpeg', href: phoneUrl },
-    { label: 'Instagram', icon: '/slideicons/slide_insta.jpeg', href: instagramUrl },
-    { label: 'Facebook', icon: '/slideicons/slide_fb.jpeg', href: facebookUrl },
-    { label: 'LinkedIn', icon: '/slideicons/slide_linkedin.jpeg', href: linkedinUrl },
-    { label: 'TripAdvisor', icon: '/slideicons/slide_tripadvisor.jpeg', href: tripadvisorUrl },
-    { label: 'TikTok', icon: '/slideicons/slide_tiktok.jpeg', href: tiktokUrl },
-{ label: 'YouTube', icon: '/slideicons/slide_youtube.jpeg', href: youtubeUrl },
-{ label: 'Email', icon: '/slideicons/slide_email.jpeg', href: emailUrl },
+    { label: 'Website', icon: '/slideicons/slide_card_webseite.jpeg', href: websiteUrl },
+    { label: 'Route', icon: '/slideicons/slide_card_maps.jpeg', href: googleMapsUrl },
+    { label: 'WhatsApp', icon: '/slideicons/slide_card_whatsapp.jpeg', href: whatsappUrl },
+    { label: 'Call', icon: '/slideicons/slide_card_mobil.jpeg', href: phoneUrl },
+    { label: 'Instagram', icon: '/slideicons/slide_card_insta.jpeg', href: instagramUrl },
+    { label: 'Facebook', icon: '/slideicons/slide_card_fb.jpeg', href: facebookUrl },
+    { label: 'LinkedIn', icon: '/slideicons/slide_card_in.jpeg', href: linkedinUrl },
+    { label: 'TripAdvisor', icon: '/slideicons/slide_card_tripadvisor.jpeg', href: tripadvisorUrl },
+    { label: 'TikTok', icon: '/slideicons/slide_card_tiktok.jpeg', href: tiktokUrl },
+    { label: 'YouTube', icon: '/slideicons/slide_card_youtube.jpeg', href: youtubeUrl },
+    { label: 'Email', icon: '/slideicons/slide_card_email.jpeg', href: emailUrl },
   ].filter((link): link is { label: string; icon: string; href: string } => Boolean(link.href))
 
   return (
@@ -451,11 +451,26 @@ if (reviewTone) {
                       )}
 
                       {(business.googleRating || business.googleReviews || business.googleCity) && (
-  <span className="mt-1 text-sm text-gray-300">
+  <div className="mt-1 text-sm text-gray-300">
     {business.googleRating ? `⭐ ${business.googleRating}` : ''}
     {business.googleReviews ? ` (${business.googleReviews})` : ''}
-    {business.googleCity ? ` · 📍 ${business.googleCity}` : ''}
-  </span>
+
+    {business.googleCity && googleMapsUrl && (
+      <>
+        {' · '}
+        <a
+          href={googleMapsUrl}
+          className="text-gray-300"
+        >
+          📍 {business.googleCity}
+        </a>
+      </>
+    )}
+
+    {business.googleCity && !googleMapsUrl && (
+      <> · 📍 {business.googleCity}</>
+    )}
+  </div>
 )}
 
 {business.googleOpeningText && (

@@ -47,8 +47,7 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
               <img
                 src={link.icon}
                 alt={link.label}
-                className="h-16 w-40 rounded-xl border border-neutral-800 object-cover"
-                draggable={false}
+className="h-24 w-20 rounded-xl border border-neutral-800 object-cover"draggable={false}
               />
             </TrackedLink>
           ) : (
@@ -57,12 +56,12 @@ export default function LinkSlider({ links, businessId }: LinkSliderProps) {
               href={link.href}
               businessId={businessId}
               source={link.label.toLowerCase()}
-              className="flex shrink-0 items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2"
+              className="flex shrink-0 items-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-2"
             >
               <img
                 src={link.icon}
                 alt={link.label}
-                className="h-5 w-5"
+                className="h-4 w-4"
                 draggable={false}
               />
 
