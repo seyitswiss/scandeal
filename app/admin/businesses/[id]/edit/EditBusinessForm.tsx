@@ -156,7 +156,9 @@ shopLink: business.shopLink || '',
 uberEatsLink: business.uberEatsLink || '',
 justEatLink: business.justEatLink || '',
 directOrderLink: business.directOrderLink || '',
-priorityLinks: business.priorityLinks || '',
+priorityLinks: business.priorityLinks
+  ? JSON.parse(business.priorityLinks)
+  : [] as string[],
     // Custom links
     customLink1Label: '',
     customLink1Url: '',
@@ -224,6 +226,7 @@ function extractGooglePlaceId(url: string) {
     const payload = {
       ...formData,
       customLinks: buildCustomLinks(),
+      priorityLinks: JSON.stringify(formData.priorityLinks),
     }
 
     const res = await fetch(`/api/businesses/${business.id}`, {
@@ -693,6 +696,48 @@ googleOpeningText:
   />
 </div>
           </div>
+          <div className="col-span-2 border-t pt-4">
+  <h3 className="font-semibold mb-3">Slider Priorität</h3>
+
+  {[0, 1, 2, 3].map((index) => (
+    <div key={index} className="mb-3">
+      <label className="block text-sm font-medium mb-1">
+        Priorität {index + 1}
+      </label>
+
+      <select
+        value={formData.priorityLinks[index] || ''}
+        onChange={(e) => {
+          const next = [...formData.priorityLinks]
+          next[index] = e.target.value
+
+          setFormData({
+            ...formData,
+            priorityLinks: next,
+          })
+        }}
+        className="w-full p-2 border rounded"
+      >
+        <option value="">Keine Auswahl</option>
+        <option value="menu">Menü</option>
+        <option value="booking">Termin buchen</option>
+        <option value="shop">Shop</option>
+        <option value="directOrder">Direkt bestellen</option>
+        <option value="uberEats">Uber Eats</option>
+        <option value="justEat">Just Eat</option>
+        <option value="route">Route</option>
+        <option value="call">Call</option>
+        <option value="website">Website</option>
+        <option value="whatsapp">WhatsApp</option>
+        <option value="instagram">Instagram</option>
+        <option value="facebook">Facebook</option>
+        <option value="tiktok">TikTok</option>
+        <option value="youtube">YouTube</option>
+        <option value="email">Email</option>
+      </select>
+    </div>
+  ))}
+</div>
          </div>
 {/* Business Actions */}
 <div className="border p-4 rounded">

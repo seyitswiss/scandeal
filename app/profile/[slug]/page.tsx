@@ -406,7 +406,10 @@ if (reviewTone) {
     console.error(error)
   }
 }
-  const links = [
+const priorityLinks = business.priorityLinks
+  ? JSON.parse(business.priorityLinks)
+  : []
+  const allLinks = [
     { label: 'Website', icon: '/slideicons/slide_card_webseite.jpeg', href: websiteUrl },
     { label: 'Route', icon: '/slideicons/slide_card_maps.jpeg', href: googleMapsUrl },
     { label: 'WhatsApp', icon: '/slideicons/slide_card_whatsapp.jpeg', href: whatsappUrl },
@@ -425,6 +428,104 @@ if (reviewTone) {
 { label: 'BESTELLEN', icon: '/slideicons/slide_card_direkt.jpeg', href: directOrderLinkUrl },
     { label: 'Email', icon: '/slideicons/slide_card_email.jpeg', href: emailUrl },
   ].filter((link): link is { label: string; icon: string; href: string } => Boolean(link.href))
+
+const priorityOrder: Record<string, number> = {
+  menu: 0,
+  booking: 1,
+  shop: 2,
+  directOrder: 3,
+  uberEats: 4,
+  justEat: 5,
+  route: 6,
+  call: 7,
+  website: 8,
+  whatsapp: 9,
+  instagram: 10,
+  facebook: 11,
+  tiktok: 12,
+  youtube: 13,
+  email: 14,
+}
+
+const links = [...allLinks].sort((a, b) => {
+  const aIndex = priorityLinks.indexOf(
+    Object.keys(priorityOrder).find(
+      (key) => priorityOrder[key] === priorityOrder[
+        a.label === 'MENÜ'
+          ? 'menu'
+          : a.label === 'BOOKING'
+          ? 'booking'
+          : a.label === 'SHOP'
+          ? 'shop'
+          : a.label === 'BESTELLEN'
+          ? 'directOrder'
+          : a.label === 'UBER EATS'
+          ? 'uberEats'
+          : a.label === 'JUST EAT'
+          ? 'justEat'
+          : a.label === 'Route'
+          ? 'route'
+          : a.label === 'Call'
+          ? 'call'
+          : a.label === 'Website'
+          ? 'website'
+          : a.label === 'WhatsApp'
+          ? 'whatsapp'
+          : a.label === 'Instagram'
+          ? 'instagram'
+          : a.label === 'Facebook'
+          ? 'facebook'
+          : a.label === 'TikTok'
+          ? 'tiktok'
+          : a.label === 'YouTube'
+          ? 'youtube'
+          : 'email'
+      ]
+    ) || ''
+  )
+
+  const bIndex = priorityLinks.indexOf(
+    Object.keys(priorityOrder).find(
+      (key) => priorityOrder[key] === priorityOrder[
+        b.label === 'MENÜ'
+          ? 'menu'
+          : b.label === 'BOOKING'
+          ? 'booking'
+          : b.label === 'SHOP'
+          ? 'shop'
+          : b.label === 'BESTELLEN'
+          ? 'directOrder'
+          : b.label === 'UBER EATS'
+          ? 'uberEats'
+          : b.label === 'JUST EAT'
+          ? 'justEat'
+          : b.label === 'Route'
+          ? 'route'
+          : b.label === 'Call'
+          ? 'call'
+          : b.label === 'Website'
+          ? 'website'
+          : b.label === 'WhatsApp'
+          ? 'whatsapp'
+          : b.label === 'Instagram'
+          ? 'instagram'
+          : b.label === 'Facebook'
+          ? 'facebook'
+          : b.label === 'TikTok'
+          ? 'tiktok'
+          : b.label === 'YouTube'
+          ? 'youtube'
+          : 'email'
+      ]
+    ) || ''
+  )
+
+  if (aIndex === -1 && bIndex === -1) return 0
+  if (aIndex === -1) return 1
+  if (bIndex === -1) return -1
+
+  return aIndex - bIndex
+})
 
   return (
     <ProfileTracker businessId={business.id}>
