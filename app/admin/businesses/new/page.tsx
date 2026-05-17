@@ -34,6 +34,9 @@ export default function NewBusinessPage() {
     googleRating: '',
     googleReviews: '',
     googleCity: '',
+googleOpeningNow: false,
+googleOpeningText: '',
+googleOpeningHours: '',
 
     // Social/Contact
     website: '',
@@ -141,7 +144,50 @@ function handleNameChange(name: string) {
     }
     return links.length > 0 ? JSON.stringify(links) : ''
   }
+async function loadGooglePlaceData(placeId: string) {
+  if (!placeId) return
 
+  try {
+    const res = await fetch('/api/google-place', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ placeId }),
+    })
+
+    if (!res.ok) {
+      throw new Error('Google data failed')
+    }
+
+    const data = await res.json()
+
+    setFormData((prev) => ({
+      ...prev,
+      googleRating: data.rating ?? prev.googleRating,
+      googleReviews: data.reviews ?? prev.googleReviews,
+      latitude: data.latitude ?? prev.latitude,
+      longitude: data.longitude ?? prev.longitude,
+      address: data.address || prev.address,
+      googleCity: data.city || prev.googleCity,
+      googleOpeningNow:
+        data.openNow !== null
+          ? data.openNow
+          : prev.googleOpeningNow,
+
+      googleOpeningHours:
+        data.weekdayDescriptions?.join(' | ') ||
+        prev.googleOpeningHours,
+
+      googleOpeningText:
+        data.openingText ||
+        prev.googleOpeningText,
+    }))
+  } catch (error) {
+    console.error(error)
+    alert('Google Daten konnten nicht geladen werden.')
+  }
+}
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -341,15 +387,23 @@ onChange={(e) => {
               </p>
               <div className="grid grid-cols-2 gap-4 mt-4">
   <div>
-    <label className="block text-sm font-medium mb-1">Google Place ID</label>
-    <input
-      type="text"
-      value={formData.googlePlaceId}
-      onChange={(e) => setFormData({ ...formData, googlePlaceId: e.target.value })}
-      className="w-full p-2 border rounded"
-      placeholder="ChIJ..."
-    />
-  </div>
+  <label className="block text-sm font-medium mb-1">Google Place ID</label>
+  <input
+    type="text"
+    value={formData.googlePlaceId}
+    onChange={(e) => setFormData({ ...formData, googlePlaceId: e.target.value })}
+    className="w-full p-2 border rounded"
+    placeholder="ChIJ..."
+  />
+
+  <button
+    type="button"
+    onClick={() => loadGooglePlaceData(formData.googlePlaceId)}
+    className="mt-2 w-full bg-green-600 text-white py-2 px-3 rounded hover:bg-green-700 text-sm"
+  >
+    Google Daten laden
+  </button>
+</div>
 
   <div>
     <label className="block text-sm font-medium mb-1">Google City</label>
