@@ -370,6 +370,12 @@ const hasUrlState =
   const linkedinUrl = normalizeUrl(business.linkedin)
   const tripadvisorUrl = normalizeUrl(business.tripadvisor)
   const tiktokUrl = normalizeUrl(business.tiktok)
+  const menuLinkUrl = normalizeUrl(business.menuLink)
+const bookingLinkUrl = normalizeUrl(business.bookingLink)
+const shopLinkUrl = normalizeUrl(business.shopLink)
+const uberEatsLinkUrl = normalizeUrl(business.uberEatsLink)
+const justEatLinkUrl = normalizeUrl(business.justEatLink)
+const directOrderLinkUrl = normalizeUrl(business.directOrderLink)
 const youtubeUrl = normalizeUrl(business.youtube)
 let reviewSuggestion = ''
 
@@ -411,6 +417,12 @@ if (reviewTone) {
     { label: 'TripAdvisor', icon: '/slideicons/slide_card_tripadvisor.jpeg', href: tripadvisorUrl },
     { label: 'TikTok', icon: '/slideicons/slide_card_tiktok.jpeg', href: tiktokUrl },
     { label: 'YouTube', icon: '/slideicons/slide_card_youtube.jpeg', href: youtubeUrl },
+    { label: 'MENÜ', icon: '/slideicons/slide_card_menu.jpeg', href: menuLinkUrl },
+{ label: 'BOOKING', icon: '/slideicons/slide_card_termine.jpeg', href: bookingLinkUrl },
+{ label: 'SHOP', icon: '/slideicons/slide_card_shop.jpeg', href: shopLinkUrl },
+{ label: 'UBER EATS', icon: '/slideicons/slide_card_ubereats.jpeg', href: uberEatsLinkUrl },
+{ label: 'JUST EAT', icon: '/slideicons/slide_card_justeat.jpeg', href: justEatLinkUrl },
+{ label: 'BESTELLEN', icon: '/slideicons/slide_card_direkt.jpeg', href: directOrderLinkUrl },
     { label: 'Email', icon: '/slideicons/slide_card_email.jpeg', href: emailUrl },
   ].filter((link): link is { label: string; icon: string; href: string } => Boolean(link.href))
 

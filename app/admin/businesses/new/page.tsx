@@ -46,6 +46,13 @@ export default function NewBusinessPage() {
     tiktok: '',
 youtube: '',
 facebook: '',
+menuLink: '',
+bookingLink: '',
+shopLink: '',
+uberEatsLink: '',
+justEatLink: '',
+directOrderLink: '',
+priorityLinks: '',
     // Custom links
     customLink1Label: '',
     customLink1Url: '',
@@ -511,7 +518,117 @@ onChange={(e) => {
 </div>
           </div>
         </div>
+{/* Business Actions */}
+<div className="border p-4 rounded">
+  <h2 className="text-lg font-bold mb-4">Business Actions</h2>
 
+  <div className="grid grid-cols-2 gap-4">
+    <div>
+      <label className="block text-sm font-medium mb-1">
+        Menükarte
+      </label>
+
+      <input
+        type="text"
+        value={formData.menuLink}
+        onChange={(e) =>
+          setFormData({ ...formData, menuLink: e.target.value })
+        }
+        className="w-full p-2 border rounded"
+        placeholder="https://..."
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">
+        Termin buchen
+      </label>
+
+      <input
+        type="text"
+        value={formData.bookingLink}
+        onChange={(e) =>
+          setFormData({ ...formData, bookingLink: e.target.value })
+        }
+        className="w-full p-2 border rounded"
+        placeholder="https://..."
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">
+        Shop
+      </label>
+
+      <input
+        type="text"
+        value={formData.shopLink}
+        onChange={(e) =>
+          setFormData({ ...formData, shopLink: e.target.value })
+        }
+        className="w-full p-2 border rounded"
+        placeholder="https://..."
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">
+        Direkt bestellen
+      </label>
+
+      <input
+        type="text"
+        value={formData.directOrderLink}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            directOrderLink: e.target.value,
+          })
+        }
+        className="w-full p-2 border rounded"
+        placeholder="https://..."
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">
+        Uber Eats
+      </label>
+
+      <input
+        type="text"
+        value={formData.uberEatsLink}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            uberEatsLink: e.target.value,
+          })
+        }
+        className="w-full p-2 border rounded"
+        placeholder="https://..."
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">
+        Just Eat
+      </label>
+
+      <input
+        type="text"
+        value={formData.justEatLink}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            justEatLink: e.target.value,
+          })
+        }
+        className="w-full p-2 border rounded"
+        placeholder="https://..."
+      />
+    </div>
+  </div>
+</div>
         {/* Custom Links Section */}
         <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Custom Links</h2>
