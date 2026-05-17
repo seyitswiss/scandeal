@@ -21,7 +21,8 @@ export default function NewBusinessPage() {
     logoUrl: '',
     // Category
     category: '',
-    subCategory: '',
+subCategory: '',
+subCategories: [] as string[],
     // Location
     address: '',
     postalCode: '',
@@ -193,10 +194,11 @@ async function loadGooglePlaceData(placeId: string) {
     setLoading(true)
 
     const payload = {
-      ...formData,
-      customLinks: buildCustomLinks(),
-      priorityLinks: JSON.stringify(formData.priorityLinks),
-    }
+  ...formData,
+  subCategories: JSON.stringify(formData.subCategories),
+  customLinks: buildCustomLinks(),
+  priorityLinks: JSON.stringify(formData.priorityLinks),
+}
 
     const res = await fetch('/api/businesses', {
       method: 'POST',
@@ -323,7 +325,44 @@ async function loadGooglePlaceData(placeId: string) {
             </div>
           </div>
         </div>
+<div>
+  <label className="block text-sm font-medium mb-2">
+    Additional Sub Categories
+  </label>
 
+  <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto border rounded p-3">
+    {subCategories
+  .filter((sub) => sub !== formData.subCategory)
+  .map((sub) => (
+      <label
+        key={sub}
+        className="flex items-center gap-2 text-sm"
+      >
+        <input
+          type="checkbox"
+          checked={formData.subCategories.includes(sub)}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setFormData({
+                ...formData,
+                subCategories: [...formData.subCategories, sub],
+              })
+            } else {
+              setFormData({
+                ...formData,
+                subCategories: formData.subCategories.filter(
+                  (item) => item !== sub
+                ),
+              })
+            }
+          }}
+        />
+
+        {sub}
+      </label>
+    ))}
+  </div>
+</div>
         {/* Location Section */}
         <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Location</h2>

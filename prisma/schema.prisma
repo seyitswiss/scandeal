@@ -15,7 +15,8 @@ model Business {
   phone           String?
   website         String?
   category        String?
-  subCategory     String?
+subCategory     String?
+subCategories   String?
   logoUrl         String?
   // Location
   address         String?
@@ -62,8 +63,9 @@ model Deal {
   discountText String?
   highlight    String?
   image        String?
-  category     String?
-  subCategory  String?
+ category      String?
+subCategory   String?
+subCategories String?
   isPremium    Boolean   @default(false)
   isActive     Boolean   @default(true)
   startDate    DateTime?

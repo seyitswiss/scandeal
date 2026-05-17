@@ -36,6 +36,7 @@ export async function PUT(
       website: body.website || null,
       category: body.category || null,
       subCategory: body.subCategory || null,
+      subCategories: body.subCategories || null,
       logoUrl: body.logoUrl || null,
       address: body.address || null,
       postalCode: body.postalCode || null,

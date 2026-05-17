@@ -18,7 +18,8 @@ interface BusinessData {
   phone: string | null
   website: string | null
   category: string | null
-  subCategory: string | null
+subCategory: string | null
+subCategories?: string | null
   logoUrl: string | null
   address: string | null
   postalCode: string | null
@@ -122,7 +123,10 @@ export default function EditBusinessForm({ business }: { business: BusinessData 
     logoUrl: business.logoUrl || '',
     // Category
     category: business.category || '',
-    subCategory: business.subCategory || '',
+subCategory: business.subCategory || '',
+subCategories: business.subCategories
+  ? JSON.parse(business.subCategories)
+  : [],
     // Location
     address: business.address || '',
     postalCode: business.postalCode || '',
@@ -224,11 +228,11 @@ function extractGooglePlaceId(url: string) {
     setLoading(true)
 
     const payload = {
-      ...formData,
-      customLinks: buildCustomLinks(),
-      priorityLinks: JSON.stringify(formData.priorityLinks),
-    }
-
+  ...formData,
+  subCategories: JSON.stringify(formData.subCategories),
+  customLinks: buildCustomLinks(),
+  priorityLinks: JSON.stringify(formData.priorityLinks),
+}
     const res = await fetch(`/api/businesses/${business.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -395,48 +399,105 @@ googleOpeningText:
          </div>
 
          {/* Category Section */}
-         <div className="border p-4 rounded">
-          <h2 className="text-lg font-bold mb-4">Category</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Category *</label>
-              <select
-                required
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value, subCategory: '' })}
-                className="w-full p-2 border rounded"
-              >
-                <option value="">Select a category</option>
-                {categories.map((cat) => (
-                  <option key={cat.name} value={cat.name}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+<div className="border p-4 rounded">
+  <h2 className="text-lg font-bold mb-4">Category</h2>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Sub Category (main) *</label>
-              <select
-                required
-                value={formData.subCategory}
-                onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
-                className="w-full p-2 border rounded"
-                disabled={!formData.category}
-              >
-                <option value="">Select a sub category</option>
-                {subCategories.map((sub) => (
-                  <option key={sub} value={sub}>
-                    {sub}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-         </div>
+  <div className="space-y-4">
+    <div>
+      <label className="block text-sm font-medium mb-1">Category *</label>
 
-         {/* Location Section */}
+      <select
+        required
+        value={formData.category}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            category: e.target.value,
+            subCategory: '',
+            subCategories: [],
+          })
+        }
+        className="w-full p-2 border rounded"
+      >
+        <option value="">Select a category</option>
+
+        {categories.map((cat) => (
+          <option key={cat.name} value={cat.name}>
+            {cat.name}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-1">
+        Sub Category (main) *
+      </label>
+
+      <select
+        required
+        value={formData.subCategory}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            subCategory: e.target.value,
+          })
+        }
+        className="w-full p-2 border rounded"
+        disabled={!formData.category}
+      >
+        <option value="">Select a sub category</option>
+
+        {subCategories.map((sub) => (
+          <option key={sub} value={sub}>
+            {sub}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium mb-2">
+        Additional Sub Categories
+      </label>
+
+      <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto border rounded p-3">
+        {subCategories
+  .filter((sub) => sub !== formData.subCategory)
+  .map((sub) => (
+          <label
+            key={sub}
+            className="flex items-center gap-2 text-sm"
+          >
+            <input
+              type="checkbox"
+              checked={formData.subCategories.includes(sub)}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setFormData({
+                    ...formData,
+                    subCategories: [...formData.subCategories, sub],
+                  })
+                } else {
+                  setFormData({
+                    ...formData,
+                    subCategories: formData.subCategories.filter(
+                      (item: string) => item !== sub
+                    ),
+                  })
+                }
+              }}
+            />
+
+            {sub}
+          </label>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* Location Section */}
          <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Location</h2>
           

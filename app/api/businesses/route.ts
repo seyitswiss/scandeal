@@ -21,6 +21,7 @@ export async function POST(request: Request) {
       website: body.website || null,
       category: body.category || null,
       subCategory: body.subCategory || null,
+      subCategories: body.subCategories || null,
       logoUrl: body.logoUrl || null,
       postalCode: body.postalCode || null,
       googleMapsUrl: body.googleMapsUrl || null,
