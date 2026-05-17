@@ -27,14 +27,15 @@ function normalizeUrl(url: string | null | undefined): string | null {
   const trimmed = url.trim()
   if (!trimmed) return null
 
-  if (
-    trimmed.startsWith('http://') ||
-    trimmed.startsWith('https://') ||
-    trimmed.startsWith('tel:') ||
-    trimmed.startsWith('mailto:')
-  ) {
-    return trimmed
-  }
+if (
+  trimmed.startsWith('http://') ||
+  trimmed.startsWith('https://') ||
+  trimmed.startsWith('/') ||
+  trimmed.startsWith('tel:') ||
+  trimmed.startsWith('mailto:')
+) {
+  return trimmed
+}
 
   return `https://${trimmed}`
 }

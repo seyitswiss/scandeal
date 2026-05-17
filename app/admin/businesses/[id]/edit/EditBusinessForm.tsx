@@ -748,7 +748,36 @@ googleOpeningText:
       <label className="block text-sm font-medium mb-1">
         Menükarte
       </label>
+<input
+  type="file"
+  accept="application/pdf"
+  onChange={async (e) => {
+    const file = e.target.files?.[0]
 
+    if (!file) return
+
+    const data = new FormData()
+    data.append('file', file)
+
+    const res = await fetch('/api/upload-file', {
+      method: 'POST',
+      body: data,
+    })
+
+    if (!res.ok) {
+      alert('PDF Upload fehlgeschlagen')
+      return
+    }
+
+    const result = await res.json()
+
+    setFormData({
+      ...formData,
+      menuLink: result.path,
+    })
+  }}
+  className="w-full p-2 border rounded mb-2"
+/>
       <input
         type="text"
         value={formData.menuLink}
