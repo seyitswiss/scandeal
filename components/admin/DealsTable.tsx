@@ -12,6 +12,7 @@ interface DealWithBusiness {
   discountText: string | null
   category: string | null
   subCategory: string | null
+  subCategories: string | null
   isPremium: boolean
   isActive: boolean
  startDate: Date | null
@@ -92,25 +93,35 @@ export default function DealsTable({ deals }: { deals: DealWithBusiness[] }) {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
+<table className="w-full border-collapse text-[10px]"><thead>
             <tr className="bg-gray-100">
               <th className="text-left p-3 border">Deal Title</th>
               <th className="text-left p-3 border">Business</th>
               <th className="text-left p-3 border">Category</th>
               <th className="text-left p-3 border">SubCategory</th>
+              <th className="text-left p-3 border">Weitere Kategorien</th>
               <th className="text-left p-3 border">Premium</th>
               <th className="text-left p-3 border">Status</th>
               <th className="text-left p-3 border">Actions</th>
             </tr>
-          </thead>
-          <tbody>
+          </thead><tbody>
             {filteredDeals.map((deal) => (
               <tr key={deal.id} className="hover:bg-gray-50">
                 <td className="p-3 border">{deal.title}</td>
                 <td className="p-3 border">{deal.business.name}</td>
                 <td className="p-3 border">{deal.category || '-'}</td>
                 <td className="p-3 border">{deal.subCategory || '-'}</td>
+                <td className="p-3 border align-top">
+  {deal.subCategories ? (
+    <ul className="list-disc pl-3 text-[10px] leading-tight">
+      {JSON.parse(deal.subCategories).map((category: string) => (
+        <li key={category}>{category}</li>
+      ))}
+    </ul>
+  ) : (
+    '-'
+  )}
+</td>
                 <td className="p-3 border">{deal.isPremium ? 'Yes' : 'No'}</td>
                 <td className="p-3 border">
                   <span className={`px-2 py-1 rounded text-xs font-medium ${getDealStatus(deal).color}`}>

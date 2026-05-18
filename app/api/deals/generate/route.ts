@@ -5,7 +5,7 @@ import { generateDealContent } from '@/lib/dealGeneration'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { businessId, isPremium, idea } = body
+    const { businessId, isPremium, idea, type } = body
 
     if (!businessId) {
       return NextResponse.json({ error: 'businessId is required' }, { status: 400 })
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       business.subCategory || '',
       business.description || undefined,
       typeof idea === 'string' ? idea : undefined,
-      !Boolean(isPremium)
+      type === 'image' || type === 'all'
     )
 
     return NextResponse.json(content)

@@ -75,7 +75,16 @@ priorityLinks: body.priorityLinks || null,
       customLinks: body.customLinks || null,
     },
   })
-
+  await prisma.deal.updateMany({
+    where: {
+      businessId: id,
+    },
+    data: {
+      category: body.category || null,
+      subCategory: body.subCategory || null,
+      subCategories: body.subCategories || null,
+    },
+  })
   return NextResponse.json(business)
 }
 export async function DELETE(

@@ -92,10 +92,11 @@ useEffect(() => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          businessId: formData.businessId,
-          isPremium: formData.isPremium,
-          idea: dealIdea,
-        }),
+  businessId: formData.businessId,
+  isPremium: formData.isPremium,
+  idea: dealIdea,
+  type,
+}),
       })
 
       if (res.ok) {

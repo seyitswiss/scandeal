@@ -251,26 +251,60 @@ const hasUrlState =
       } as (typeof scoredDeals)[0])
     }
   } else {
-    const usedSubCategories = new Set<string>()
+    const usedCategories = new Set<string>()
 
-    for (const deal of randomPremiumDeals) {
-      const subCategory = deal.subCategory || ''
-      if (!usedSubCategories.has(subCategory)) {
-        selectedDeals.push(deal)
-        usedSubCategories.add(subCategory)
-        break
+function getDealCategories(deal: any): string[] {
+  const categories = []
+
+  if (deal.subCategory) {
+    categories.push(deal.subCategory)
+  }
+
+  if (deal.subCategories) {
+    try {
+      const parsed = JSON.parse(deal.subCategories)
+
+      if (Array.isArray(parsed)) {
+        categories.push(...parsed)
       }
-    }
+    } catch {}
+  }
 
-    for (const deal of randomNormalDeals) {
-      if (selectedDeals.length >= 4) break
+  return categories
+}
 
-      const subCategory = deal.subCategory || ''
-      if (!usedSubCategories.has(subCategory)) {
-        selectedDeals.push(deal)
-        usedSubCategories.add(subCategory)
-      }
-    }
+function hasCategoryConflict(deal: any) {
+  const categories = getDealCategories(deal)
+
+  return categories.some((category) =>
+    usedCategories.has(category)
+  )
+}
+
+function registerDealCategories(deal: any) {
+  const categories = getDealCategories(deal)
+
+  categories.forEach((category) => {
+    usedCategories.add(category)
+  })
+}
+
+for (const deal of randomPremiumDeals) {
+  if (!hasCategoryConflict(deal)) {
+    selectedDeals.push(deal)
+    registerDealCategories(deal)
+    break
+  }
+}
+
+for (const deal of randomNormalDeals) {
+  if (selectedDeals.length >= 4) break
+
+  if (!hasCategoryConflict(deal)) {
+    selectedDeals.push(deal)
+    registerDealCategories(deal)
+  }
+}
 
     if (
       forcedPreviewDeal &&

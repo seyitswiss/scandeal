@@ -84,10 +84,11 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          businessId: deal.businessId,
-          isPremium: formData.isPremium,
-          idea: dealIdea,
-        }),
+  businessId: deal.businessId,
+  isPremium: formData.isPremium,
+  idea: dealIdea,
+  type,
+}),
       })
 
       if (res.ok) {

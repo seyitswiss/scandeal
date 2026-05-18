@@ -322,19 +322,7 @@ googleOpeningText:
     router.push(`/admin/deals/new?businessId=${business.id}`)
   }
 
-  if (saved) {
-    return (
-      <div className="max-w-2xl mx-auto p-8">
-        <h1 className="text-2xl font-bold mb-4">Business Updated!</h1>
-        <button
-          onClick={() => router.push('/admin/businesses')}
-          className="w-full bg-green-600 text-white py-3 px-4 rounded hover:bg-green-700"
-        >
-          Back to Businesses
-        </button>
-      </div>
-    )
-  }
+  
 
   return (
     <div className="max-w-2xl mx-auto p-8">
