@@ -8,6 +8,7 @@ interface Business {
   name: string
   category: string | null
   subCategory: string | null
+  subCategories: string | null
 }
 
 function NewDealForm() {
@@ -25,6 +26,7 @@ function NewDealForm() {
     image: '',
     category: '',
     subCategory: '',
+    subCategories: '',
     isPremium: false,
     isActive: true,
     startDate: '',
@@ -44,16 +46,16 @@ function NewDealForm() {
   const businessIdFromParam = searchParams.get('businessId')
   const isBusinessPrefilled = Boolean(businessIdFromParam)
   const selectedBusiness = businesses.find((business) => business.id === formData.businessId)
-
-  useEffect(() => {
-    fetch('/api/businesses')
-      .then((res) => res.json())
-      .then((data) => {
-        setBusinesses(data)
-        setBusinessLoading(false)
-      })
-      .catch(() => setBusinessLoading(false))
-  }, [])
+useEffect(() => {
+  fetch('/api/businesses')
+    .then((res) => res.json())
+    .then((data) => {
+      console.log('BUSINESSES FROM API:', data)
+      setBusinesses(data)
+      setBusinessLoading(false)
+    })
+    .catch(() => setBusinessLoading(false))
+}, [])
 
   useEffect(() => {
     const businessId = searchParams.get('businessId')
@@ -67,14 +69,16 @@ function NewDealForm() {
   }, [businessLoading, businesses, formData.businessId, searchParams])
 
   function handleBusinessChange(businessId: string) {
-    const business = businesses.find(b => b.id === businessId)
-    setFormData({
-      ...formData,
-      businessId,
-      category: business?.category || '',
-      subCategory: business?.subCategory || '',
-    })
-  }
+  const business = businesses.find((b) => b.id === businessId)
+
+  setFormData((prev) => ({
+    ...prev,
+    businessId,
+    category: business?.category || '',
+    subCategory: business?.subCategory || '',
+    subCategories: business?.subCategories || '',
+  }))
+}
 
   async function handleGenerateAI(type: 'text' | 'image' | 'all') {
     if (!formData.businessId) {
@@ -340,7 +344,7 @@ function NewDealForm() {
             {isBusinessPrefilled && <span className="text-xs text-gray-500">Vorausgewählt</span>}
           </div>
           {isBusinessPrefilled ? (
-            <div className="grid gap-3 sm:grid-cols-3 text-sm">
+            <div className="grid gap-3 sm:grid-cols-2 text-sm">
               <div className="rounded-lg border p-3 bg-white">
                 <div className="text-xs text-gray-500">Business</div>
                 <div className="font-medium text-slate-900">{selectedBusiness?.name || 'Lädt...'}</div>
@@ -353,6 +357,16 @@ function NewDealForm() {
                 <div className="text-xs text-gray-500">Sub Category</div>
                 <div className="font-medium text-slate-900">{selectedBusiness?.subCategory || formData.subCategory || '-'}</div>
               </div>
+              <div className="rounded-lg border p-3 bg-white min-w-0">
+  <div className="text-xs text-gray-500">Weitere Kategorien</div>
+  <div className="font-medium text-slate-900 break-words">
+    {selectedBusiness?.subCategories
+      ? JSON.parse(selectedBusiness.subCategories).join(', ')
+      : formData.subCategories
+        ? JSON.parse(formData.subCategories).join(', ')
+        : '-'}
+  </div>
+</div>
             </div>
           ) : (
             <div>

@@ -13,6 +13,7 @@ export async function POST(request: Request) {
       image: body.image || null,
       category: body.category || null,
       subCategory: body.subCategory || null,
+      subCategories: body.subCategories || null,
       isPremium: body.isPremium || false,
       isActive: body.isActive !== false,
       startDate: body.startDate ? new Date(body.startDate) : null,

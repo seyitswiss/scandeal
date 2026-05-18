@@ -7,6 +7,7 @@ import ProfileTracker from '@/components/ProfileTracker'
 import TrackedLink from '@/components/TrackedLink'
 import LinkSlider from '@/components/LinkSlider'
 import GoogleReviewCard from '@/components/GoogleReviewCard'
+import { getInstantRelevanceScore } from '@/lib/journey'
 
 
 interface Props {
@@ -57,69 +58,8 @@ function normalizeEmail(email: string | null | undefined): string | null {
   return `mailto:${trimmed}`
 }
 
-const relevanceMapping: Record<string, Record<string, number>> = {
-  'Hair Salon': {
-    Cosmetic: 5,
-    'Nail Salon': 5,
-    Spa: 4,
-    Restaurant: 3,
-    Cafe: 3,
-    Fitness: 3,
-    Cleaning: 1,
-  },
-  Fitness: {
-    Restaurant: 5,
-    Cafe: 4,
-    Bakery: 4,
-    'Hair Salon': 3,
-    Cosmetic: 3,
-  },
-  Restaurant: {
-    Cafe: 5,
-    Bakery: 4,
-    'Hair Salon': 3,
-    Fitness: 3,
-    Cleaning: 2,
-  },
-  Cafe: {
-    Restaurant: 5,
-    Bakery: 4,
-    'Hair Salon': 2,
-    Fitness: 2,
-  },
-  Bakery: {
-    Cafe: 4,
-    Restaurant: 4,
-    Fitness: 3,
-  },
-  Cosmetic: {
-    'Hair Salon': 5,
-    'Nail Salon': 5,
-    Spa: 4,
-    Fitness: 2,
-  },
-  Cleaning: {
-    Transport: 3,
-    Consulting: 2,
-    Repair: 2,
-  },
-  Transport: {
-    Cleaning: 3,
-    Consulting: 2,
-    Restaurant: 2,
-  },
-  Consulting: {
-    Transport: 2,
-    Cleaning: 2,
-    Repair: 2,
-  },
-}
-
 function getRelevanceScore(businessSubCategory: string, dealSubCategory: string | null): number {
-  if (!dealSubCategory) return 1
-  const mapping = relevanceMapping[businessSubCategory]
-  if (mapping && mapping[dealSubCategory] !== undefined) return mapping[dealSubCategory]
-  return 1
+  return getInstantRelevanceScore(businessSubCategory, dealSubCategory)
 }
 
 function isDealActive(deal: any) {

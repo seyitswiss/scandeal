@@ -12,6 +12,7 @@ export default async function DealsPage() {
       discountText: true,
       category: true,
       subCategory: true,
+      subCategories: true,
       isPremium: true,
       isActive: true,
       startDate: true,
