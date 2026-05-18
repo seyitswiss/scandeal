@@ -209,23 +209,41 @@ if (targetDeal) {
   include: {
     business: {
       select: {
-        name: true,
-        slug: true,
-        logoUrl: true,
-latitude: true,
-longitude: true,
-      },
+  name: true,
+  slug: true,
+  logoUrl: true,
+  latitude: true,
+  longitude: true,
+  subCategory: true,
+  subCategories: true,
+},
     },
   },
 })
+const businessBlockedSubCategories = [
+  business.subCategory,
+  ...JSON.parse(business.subCategories || '[]'),
+].filter(Boolean)
 
-  const filteredDeals = allDeals.filter(
-    (deal: (typeof allDeals)[0]) =>
-      deal.businessId !== business.id &&
-      deal.subCategory !== business.subCategory &&
-      (!ourDeal || deal.id !== ourDeal.id) &&
-      isDealActive(deal)
+const filteredDeals = allDeals.filter((deal: (typeof allDeals)[0]) => {
+  const dealBusinessSubCategories = [
+    deal.business?.subCategory,
+    ...JSON.parse(deal.business?.subCategories || '[]'),
+  ].filter(Boolean)
+
+  const hasBlockedSubCategory =
+    businessBlockedSubCategories.includes(deal.subCategory || '') ||
+    dealBusinessSubCategories.some((sub) =>
+      businessBlockedSubCategories.includes(sub)
+    )
+
+  return (
+    deal.businessId !== business.id &&
+    !hasBlockedSubCategory &&
+    (!ourDeal || deal.id !== ourDeal.id) &&
+    isDealActive(deal)
   )
+})
   const forcedPreviewDeal = previewDeal
   ? allDeals.find((deal) => deal.id === previewDeal)
   : null
