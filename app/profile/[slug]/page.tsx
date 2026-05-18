@@ -190,16 +190,37 @@ const filteredDeals = allDeals.filter((deal: (typeof allDeals)[0]) => {
 const forcedDetailsDeal = detailsDeal
   ? allDeals.find((deal) => deal.id === detailsDeal)
   : null
-  const scoredDeals = filteredDeals.map((deal: (typeof allDeals)[0]) => ({
+  function getDistanceScore(distanceKm: number | null): number {
+  if (distanceKm === null) return 0
+  if (distanceKm <= 1) return 5
+  if (distanceKm <= 3) return 4
+  if (distanceKm <= 5) return 3
+  if (distanceKm <= 10) return 2
+  return 0
+}
+  const scoredDeals = filteredDeals.map((deal: (typeof allDeals)[0]) => {
+  const relevanceScore = getRelevanceScore(
+    business.subCategory || '',
+    deal.subCategory
+  )
+
+  const distanceKm = calculateDistanceKm(
+    business.latitude,
+    business.longitude,
+    deal.business?.latitude,
+    deal.business?.longitude
+  )
+
+  const distanceScore = getDistanceScore(distanceKm)
+
+  return {
     ...deal,
-    relevanceScore: getRelevanceScore(business.subCategory || '', deal.subCategory),
-distanceKm: calculateDistanceKm(
-  business.latitude,
-  business.longitude,
-  deal.business?.latitude,
-  deal.business?.longitude
-),
-  }))
+    relevanceScore,
+    distanceKm,
+    distanceScore,
+    finalScore: relevanceScore * 100 + distanceScore,
+  }
+})
 
   const premiumDeals = scoredDeals.filter((deal) => deal.isPremium)
   const normalDeals = scoredDeals.filter((deal) => !deal.isPremium)
@@ -328,7 +349,7 @@ for (const deal of randomNormalDeals) {
     selectedDeals.sort((a, b) => {
       if (a.isPremium && !b.isPremium) return -1
       if (!a.isPremium && b.isPremium) return 1
-      return b.relevanceScore - a.relevanceScore
+      return b.finalScore - a.finalScore
     })
   }
 
