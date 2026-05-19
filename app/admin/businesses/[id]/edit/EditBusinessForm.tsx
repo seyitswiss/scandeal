@@ -632,6 +632,61 @@ googleOpeningText:
           </div>
          </div>
 
+{/* Description Section */}
+<div className="border p-4 rounded">
+  <div className="mb-4 flex items-center gap-2">
+    <h2 className="text-lg font-bold">Description</h2>
+
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          const response = await fetch('/api/business-description', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              businessName: formData.name,
+              category: formData.category,
+              subCategory: formData.subCategory,
+              addSubCategories: formData.subCategories,
+            }),
+          })
+
+          const data = await response.json()
+
+          setFormData({
+            ...formData,
+            description: data.text,
+          })
+        } catch (error) {
+          console.error(error)
+        }
+      }}
+      className="rounded-lg border border-gray-300 px-3 py-1 text-sm"
+    >
+      KI ✨
+    </button>
+  </div>
+
+  <textarea
+    value={formData.description}
+    onChange={(e) =>
+      setFormData({ ...formData, description: e.target.value })
+    }
+    rows={1}
+    maxLength={45}
+    placeholder="z.B. Genuss mit Biss."
+    className="w-full rounded-lg border border-gray-300 px-3 py-2"
+  />
+
+  <p className="mt-1 text-xs text-gray-500">
+    Max. 6 Wörter, kurz und modern.
+  </p>
+</div>
+
+
          {/* Social/Contact Section */}
          <div className="border p-4 rounded">
           <h2 className="text-lg font-bold mb-4">Social / Contact</h2>
@@ -1004,20 +1059,7 @@ googleOpeningText:
           </div>
          </div>
 
-         {/* Description Section */}
-         <div className="border p-4 rounded">
-          <h2 className="text-lg font-bold mb-4">Description</h2>
-          
-          <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full p-2 border rounded"
-              rows={4}
-            />
-          </div>
-         </div>
+         
 
          <button
           type="submit"
