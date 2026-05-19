@@ -13,6 +13,7 @@ export default function NewBusinessPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [savedBusiness, setSavedBusiness] = useState<{ id: string; slug: string } | null>(null)
+  const [nameExists, setNameExists] = useState(false)
 
   const [formData, setFormData] = useState({
     // Basic
@@ -124,12 +125,30 @@ function extractGooglePlaceId(url: string) {
   return match ? decodeURIComponent(match[1]).trim() : ''
 }
 
-function handleNameChange(name: string) {
+async function handleNameChange(name: string) {
   setFormData({
     ...formData,
     name,
     slug: generateSlug(name),
   })
+
+  try {
+    const response = await fetch('/api/businesses/check-name', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+      }),
+    })
+
+    const data = await response.json()
+
+    setNameExists(data.exists)
+  } catch (error) {
+    console.error(error)
+  }
 }
 
   function buildCustomLinks(): string {
@@ -233,15 +252,22 @@ async function loadGooglePlaceData(placeId: string) {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
+  <label className="block text-sm font-medium mb-1">Name *</label>
+
+  <input
+    type="text"
+    required
+    value={formData.name}
+    onChange={(e) => handleNameChange(e.target.value)}
+    className="w-full p-2 border rounded"
+  />
+
+  {nameExists && (
+    <p className="mt-1 text-sm text-red-500">
+      Dieser Name existiert bereits
+    </p>
+  )}
+</div>
 
               <div>
                 <label className="block text-sm font-medium mb-1">Slug</label>
