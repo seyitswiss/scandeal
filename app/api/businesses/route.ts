@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       subCategory: body.subCategory || null,
       subCategories: body.subCategories || null,
       logoUrl: body.logoUrl || null,
+      address: body.address || null,
       postalCode: body.postalCode || null,
       googleMapsUrl: body.googleMapsUrl || null,
       googleReviewUrl: body.googleReviewUrl || null,
@@ -39,6 +40,7 @@ googleOpeningNow:
     ? body.googleOpeningNow
     : null,
 googleOpeningHours: body.googleOpeningHours || null,
+googleOpeningText: body.googleOpeningText || null,
 
 instagram: body.instagram || null,
       linkedin: body.linkedin || null,
