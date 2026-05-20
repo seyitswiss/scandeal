@@ -22,7 +22,171 @@ interface Props {
 hideReview?: string
   }>
 }
+type LiveOpeningStatus = {
+  openNow: boolean | null
+  text: string | null
+}
 
+type GoogleOpeningPeriod = {
+  open?: {
+    day?: number
+    time?: string
+  }
+  close?: {
+    day?: number
+    time?: string
+  }
+}
+
+function parseGoogleTime(time: string | undefined) {
+  if (!time || time.length < 4) {
+    return { hour: 0, minute: 0 }
+  }
+
+  return {
+    hour: Number(time.slice(0, 2)),
+    minute: Number(time.slice(2, 4)),
+  }
+}
+
+async function getLiveGoogleOpeningStatus(
+  placeId: string | null | undefined
+): Promise<LiveOpeningStatus> {
+  if (!placeId || !process.env.GOOGLE_PLACES_API_KEY) {
+    return { openNow: null, text: null }
+  }
+
+  try {
+    const url = new URL('https://maps.googleapis.com/maps/api/place/details/json')
+
+    url.searchParams.set('place_id', placeId)
+    url.searchParams.set('language', 'de')
+    url.searchParams.set('fields', 'opening_hours')
+    url.searchParams.set('key', process.env.GOOGLE_PLACES_API_KEY)
+
+    const response = await fetch(url.toString(), {
+      cache: 'no-store',
+    })
+
+    if (!response.ok) {
+      return { openNow: null, text: null }
+    }
+
+    const data = await response.json()
+    const openingHours = data.result?.opening_hours
+
+    if (!openingHours) {
+      return { openNow: null, text: null }
+    }
+
+    const openNow =
+      typeof openingHours.open_now === 'boolean'
+        ? openingHours.open_now
+        : null
+
+    const periods: GoogleOpeningPeriod[] = openingHours.periods || []
+    const now = new Date()
+    const today = now.getDay()
+
+    const minutesNow = now.getHours() * 60 + now.getMinutes()
+
+    if (openNow) {
+      const todayPeriod = periods.find((period) => {
+        if (period.open?.day !== today || !period.close) return false
+
+        const openTime = parseGoogleTime(period.open.time)
+const closeTime = parseGoogleTime(period.close.time)
+
+const openMinutes =
+  openTime.hour * 60 + openTime.minute
+
+const closeMinutes =
+  closeTime.hour * 60 + closeTime.minute
+
+        return minutesNow >= openMinutes && minutesNow < closeMinutes
+      })
+
+      if (todayPeriod?.close) {
+        const closeTime = parseGoogleTime(todayPeriod.close.time)
+
+const closeHour = String(closeTime.hour).padStart(2, '0')
+const closeMinute = String(closeTime.minute).padStart(2, '0')
+
+        return {
+          openNow,
+          text: `Offen bis ${closeHour}:${closeMinute}`,
+        }
+      }
+
+      return {
+        openNow,
+        text: 'Jetzt geöffnet',
+      }
+    }
+
+    const nextOpenPeriod = periods
+      .map((period) => {
+        if (!period.open) return null
+
+        const dayDiff = (period.open.day! - today + 7) % 7
+       const openTime = parseGoogleTime(period.open.time)
+
+const openMinutes =
+  openTime.hour * 60 + openTime.minute
+        const isTodayFuture = dayDiff === 0 && openMinutes > minutesNow
+
+        if (dayDiff === 0 && !isTodayFuture) return null
+
+        return {
+          day: period.open.day!,
+          dayDiff,
+         hour: openTime.hour,
+minute: openTime.minute,
+        }
+      })
+      .filter(Boolean)
+      .sort((a: any, b: any) => {
+        if (a.dayDiff !== b.dayDiff) return a.dayDiff - b.dayDiff
+        return a.hour * 60 + a.minute - (b.hour * 60 + b.minute)
+      })[0] as
+      | { day: number; dayDiff: number; hour: number; minute: number }
+      | undefined
+
+    if (nextOpenPeriod) {
+      const openHour = String(nextOpenPeriod.hour).padStart(2, '0')
+      const openMinute = String(nextOpenPeriod.minute).padStart(2, '0')
+
+      if (nextOpenPeriod.dayDiff === 0) {
+        return {
+          openNow,
+          text: `Öffnet um ${openHour}:${openMinute}`,
+        }
+      }
+
+      const days = [
+        'Sonntag',
+        'Montag',
+        'Dienstag',
+        'Mittwoch',
+        'Donnerstag',
+        'Freitag',
+        'Samstag',
+      ]
+
+      return {
+        openNow,
+        text: `Öffnet ${days[nextOpenPeriod.day]} um ${openHour}:${openMinute}`,
+      }
+    }
+
+    return {
+      openNow,
+      text: openingHours.weekday_text?.[today] || null,
+    }
+  } catch {
+    return { openNow: null, text: null }
+  }
+}
 function normalizeUrl(url: string | null | undefined): string | null {
   if (!url) return null
   const trimmed = url.trim()
@@ -118,12 +282,23 @@ hideReview,
     where: { slug },
   })
 
+if (!business) notFound()
 
-  if (!business) notFound()
-    const cookieStore = await cookies()
+const liveOpeningStatus = await getLiveGoogleOpeningStatus(
+  business.googlePlaceId
+)
+
+const openingText =
+  liveOpeningStatus.text || business.googleOpeningText
+
+const openingNow =
+  liveOpeningStatus.openNow ?? business.googleOpeningNow
+
+const cookieStore = await cookies()
+
 const reviewHidden =
   cookieStore.get(`scandeal_review_hidden_${business.slug}`)?.value === 'true'
-
+  
   let ourDeal: Awaited<ReturnType<typeof prisma.deal.findUnique>> | null = null
 
   if (dealId || redeemDeal || detailsDeal) {
@@ -600,16 +775,16 @@ const links = [...allLinks].sort((a, b) => {
   </div>
 )}
 
-{business.googleOpeningText && (
+{openingText && (
   <span
     className={
-  business.googleOpeningNow
-    ? 'mt-1 text-sm text-green-400'
-    : 'mt-1 text-sm text-gray-300'
-}
+      openingNow
+        ? 'mt-1 text-sm text-green-400'
+        : 'mt-1 text-sm text-gray-300'
+    }
   >
-    {business.googleOpeningNow ? '🟢 ' : '🕒 '}
-    {business.googleOpeningText}
+    {openingNow ? '🟢 ' : '🕒 '}
+    {openingText}
   </span>
 )}
                     </div>
