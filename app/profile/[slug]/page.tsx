@@ -432,8 +432,25 @@ const forcedDetailsDeal = detailsDeal
   }
 })
 
-  const premiumDeals = scoredDeals.filter((deal) => deal.isPremium)
-  const normalDeals = scoredDeals.filter((deal) => !deal.isPremium)
+  const strongRelevantDeals = scoredDeals.filter(
+  (deal) => deal.relevanceScore >= 3
+)
+
+const fallbackDeals = scoredDeals.filter(
+  (deal) =>
+    deal.relevanceScore >= 2 &&
+    deal.relevanceScore < 3
+)
+
+const premiumDeals = strongRelevantDeals.filter(
+  (deal) =>
+    deal.isPremium &&
+    deal.relevanceScore >= 4
+)
+
+const normalDeals = strongRelevantDeals.filter(
+  (deal) => !deal.isPremium
+)
 
 const hasUrlState =
   previewDeal ||
@@ -520,12 +537,17 @@ function registerDealCategories(deal: any) {
   })
 }
 
-for (const deal of randomPremiumDeals) {
-  if (!hasCategoryConflict(deal)) {
-    selectedDeals.push(deal)
-    registerDealCategories(deal)
-    break
-  }
+const eligiblePremiumDeals = randomPremiumDeals.filter((deal) => {
+  if (hasCategoryConflict(deal)) return false
+
+  return deal.relevanceScore >= 4
+})
+
+const selectedPremiumDeal = eligiblePremiumDeals[0]
+
+if (selectedPremiumDeal) {
+  selectedDeals.push(selectedPremiumDeal)
+  registerDealCategories(selectedPremiumDeal)
 }
 
 for (const deal of randomNormalDeals) {
@@ -536,7 +558,14 @@ for (const deal of randomNormalDeals) {
     registerDealCategories(deal)
   }
 }
+for (const deal of shuffle(fallbackDeals)) {
+  if (selectedDeals.length >= 4) break
 
+  if (!hasCategoryConflict(deal)) {
+    selectedDeals.push(deal)
+    registerDealCategories(deal)
+  }
+}
     if (
       forcedPreviewDeal &&
       !selectedDeals.some((deal) => deal.id === forcedPreviewDeal.id)
