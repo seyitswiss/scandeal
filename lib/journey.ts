@@ -5,6 +5,7 @@ export type JourneyType =
   | 'project'
   | 'home'
   | 'mobility'
+| 'convenience'
   | 'business'
   | 'leisure'
   | 'travel'
@@ -27,17 +28,21 @@ export const journeyMap: Record<string, JourneyType> = {
   Spielwaren: 'shopping',
   Blumen: 'shopping',
   Geschenke: 'shopping',
-  Kiosk: 'shopping',
   Supermarkt: 'shopping',
   Tierbedarf: 'shopping',
   Sportgeschäft: 'shopping',
   Optiker: 'shopping',
   Parfümerie: 'shopping',
   Supplemente: 'selfcare',
+  Tankstelle: 'convenience',
+Kiosk: 'convenience',
+'24h Shop': 'convenience',
+Verkaufsautomat: 'convenience',
   Luxusartikel: 'shopping',
-  Verkaufsautomat: 'shopping',
   Souvenir: 'shopping',
   Buchhandlung: 'shopping',
+
+  
 
   // Gastronomie
   Restaurant: 'food',
@@ -304,6 +309,18 @@ export const instantRelevanceMap: Record<JourneyType, Record<string, number>> = 
     Küchenstudio: 4,
     Schreinerei: 4,
   },
+convenience: {
+  'Fast Food': 5,
+  'Take Away': 5,
+  Café: 4,
+  'Bubble Tea': 4,
+  Dessert: 4,
+  Bar: 4,
+  Lounge: 4,
+  Autowaschanlage: 3,
+  Taxi: 3,
+  Cafébar: 3,
+},
 
   mobility: {
     Autowaschanlage: 5,

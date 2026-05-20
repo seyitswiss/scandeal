@@ -17,7 +17,6 @@ export const categories = [
       'Blumen',
       'Geschenke',
       'Vape Shop',
-      'Kiosk',
       'Supermarkt',
       'Tierbedarf',
       'Sportgeschäft',
@@ -27,7 +26,6 @@ export const categories = [
       'Cannabis Shop',
       'Supplemente',
       'Luxusartikel',
-      'Verkaufsautomat',
       'Souvenir',
       'Buchhandlung',
     ],
@@ -190,6 +188,16 @@ export const categories = [
       'POS Systeme',
     ],
   },
+
+  {
+  name: 'Sofortbedarf & Unterwegs',
+  subCategories: [
+    'Tankstelle',
+    'Kiosk',
+    '24h Shop',
+    'Verkaufsautomat',
+  ],
+},
 
   {
     name: 'Freizeit & Unterhaltung',
