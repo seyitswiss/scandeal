@@ -61,7 +61,7 @@ async function getLiveGoogleOpeningStatus(
 
     url.searchParams.set('place_id', placeId)
     url.searchParams.set('language', 'de')
-    url.searchParams.set('fields', 'opening_hours')
+    url.searchParams.set('fields', 'opening_hours,current_opening_hours')
     url.searchParams.set('key', process.env.GOOGLE_PLACES_API_KEY)
 
     const response = await fetch(url.toString(), {
@@ -73,11 +73,21 @@ async function getLiveGoogleOpeningStatus(
     }
 
     const data = await response.json()
-    const openingHours = data.result?.opening_hours
+    const openingHours =
+  data.result?.current_opening_hours || data.result?.opening_hours
 
-    if (!openingHours) {
-      return { openNow: null, text: null }
-    }
+if (!openingHours) {
+  return { openNow: null, text: null }
+}
+
+const weekdayText: string[] = openingHours.weekday_text || []
+
+const currentDayIndex = new Date().getDay()
+
+const normalizedDayIndex =
+  currentDayIndex === 0 ? 6 : currentDayIndex - 1
+
+const todayText = weekdayText[normalizedDayIndex] || ''
 
     const openNow =
       typeof openingHours.open_now === 'boolean'
@@ -91,6 +101,18 @@ async function getLiveGoogleOpeningStatus(
     const minutesNow = now.getHours() * 60 + now.getMinutes()
 
     if (openNow) {
+      if (
+  todayText.includes('Schließt um')
+) {
+  const cleanText = todayText
+    .split('· Öffnet wieder')[0]
+    .trim()
+
+  return {
+    openNow,
+    text: cleanText,
+  }
+}
       const todayPeriod = periods.find((period) => {
         if (period.open?.day !== today || !period.close) return false
 
@@ -107,20 +129,33 @@ const closeMinutes =
       })
 
       if (todayPeriod?.close) {
-        const closeTime = parseGoogleTime(todayPeriod.close.time)
+  const openTime = parseGoogleTime(todayPeriod.open?.time)
+  const closeTime = parseGoogleTime(todayPeriod.close.time)
 
-const closeHour = String(closeTime.hour).padStart(2, '0')
-const closeMinute = String(closeTime.minute).padStart(2, '0')
+  if (
+    openTime.hour === 0 &&
+    openTime.minute === 0 &&
+    closeTime.hour === 23 &&
+    closeTime.minute === 59
+  ) {
+    return {
+      openNow,
+      text: 'Rund um die Uhr geöffnet',
+    }
+  }
 
-        return {
-          openNow,
-          text: `Offen bis ${closeHour}:${closeMinute}`,
-        }
-      }
+  const closeHour = String(closeTime.hour).padStart(2, '0')
+  const closeMinute = String(closeTime.minute).padStart(2, '0')
+
+  return {
+    openNow,
+    text: `Geöffnet · Schließt um ${closeHour}:${closeMinute}`,
+  }
+}
 
       return {
         openNow,
-        text: 'Jetzt geöffnet',
+        text: 'Geöffnet',
       }
     }
 
