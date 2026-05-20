@@ -10,8 +10,15 @@ export default async function EditBusinessPage({
   const { id } = await params
   
   const business = await prisma.business.findUnique({
-    where: { id },
-  })
+  where: { id },
+  include: {
+    deals: {
+      orderBy: {
+        createdAt: 'desc',
+      },
+    },
+  },
+})
 
   if (!business) {
     return (
@@ -21,5 +28,5 @@ export default async function EditBusinessPage({
     )
   }
 
-  return <EditBusinessForm business={business} />
+  return <EditBusinessForm business={business} deals={business.deals} />
 }

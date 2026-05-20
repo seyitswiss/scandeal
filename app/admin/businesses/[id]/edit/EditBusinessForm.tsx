@@ -52,9 +52,21 @@ directOrderLink: string | null
 priorityLinks: string | null
   customLinks: string | null
 }
+interface BusinessDeal {
+  id: string
+  title: string
+  isActive: boolean
+  isPremium: boolean
+  createdAt: Date
+}
 
-export default function EditBusinessForm({ business }: { business: BusinessData }) {
-  const router = useRouter()
+export default function EditBusinessForm({
+  business,
+  deals,
+}: {
+  business: BusinessData
+  deals: BusinessDeal[]
+}) {  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
   const [logoPreview, setLogoPreview] = useState(business.logoUrl || '')
@@ -1162,13 +1174,55 @@ googleOpeningText:
             </div>
           </div>
         </div>
+{deals.length > 0 && (
+  <div className="mt-8 rounded-xl border border-gray-200 bg-white p-4">
+    <h2 className="mb-4 text-lg font-semibold">
+      Deals dieses Businesses
+    </h2>
 
+    <div className="space-y-3">
+      {deals.map((deal) => (
+        <div
+          key={deal.id}
+          className="flex items-center justify-between rounded-lg border border-gray-200 p-3"
+        >
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">
+                {deal.title}
+              </span>
+
+              {deal.isPremium && (
+                <span className="rounded bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800">
+                  PREMIUM
+                </span>
+              )}
+
+              {!deal.isActive && (
+                <span className="rounded bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
+                  Inaktiv
+                </span>
+              )}
+            </div>
+          </div>
+
+          <a
+            href={`/admin/deals/${deal.id}/edit`}
+            className="rounded-lg bg-black px-3 py-2 text-sm text-white"
+          >
+            Bearbeiten
+          </a>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
         <button
           type="button"
           onClick={handleCreateDeal}
           className="mt-6 w-full bg-indigo-600 text-white py-3 px-4 rounded hover:bg-indigo-700 text-sm"
         >
-          + Deal für dieses Business erstellen
+          + Neuer Deal
         </button>
       </div>
     </div>
