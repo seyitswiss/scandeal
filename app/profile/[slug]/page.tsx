@@ -361,11 +361,13 @@ if (targetDeal) {
       select: {
   name: true,
   slug: true,
-  logoUrl: true,
-  latitude: true,
-  longitude: true,
-  subCategory: true,
-  subCategories: true,
+ logoUrl: true,
+latitude: true,
+longitude: true,
+subCategory: true,
+subCategories: true,
+googleOpeningNow: true,
+googleOpeningText: true,
 },
     },
   },
@@ -408,6 +410,21 @@ const forcedDetailsDeal = detailsDeal
   if (distanceKm <= 10) return 2
   return 0
 }
+function getOpeningScore(deal: any): number {
+  if (deal.business?.googleOpeningText === 'Rund um die Uhr geöffnet') {
+    return 1
+  }
+
+  if (deal.business?.googleOpeningNow === true) {
+    return 0.5
+  }
+
+  if (deal.business?.googleOpeningNow === false) {
+    return -0.5
+  }
+
+  return 0
+}
   const scoredDeals = filteredDeals.map((deal: (typeof allDeals)[0]) => {
   const relevanceScore = getRelevanceScore(
     business.subCategory || '',
@@ -422,13 +439,14 @@ const forcedDetailsDeal = detailsDeal
   )
 
   const distanceScore = getDistanceScore(distanceKm)
-
+const openingScore = getOpeningScore(deal)
   return {
     ...deal,
     relevanceScore,
     distanceKm,
     distanceScore,
-    finalScore: relevanceScore * 100 + distanceScore,
+    openingScore,
+    finalScore: relevanceScore * 100 + distanceScore + openingScore,
   }
 })
 
