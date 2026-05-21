@@ -16,6 +16,8 @@ interface DealCardProps {
   name: string
   slug: string
   logoUrl?: string | null
+googleOpeningText?: string | null
+googleOpeningNow?: boolean | null
 } | null
     validUntil?: string | Date | null
     endDate?: string | Date | null
@@ -448,8 +450,9 @@ overflow: 'hidden',
                 fontSize: '0.72rem',
                 color: '#8f9bb3',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
+flexDirection: 'column',
+alignItems: 'flex-start',
+gap: '2px',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 marginTop: '4px',
@@ -461,7 +464,7 @@ overflow: 'hidden',
                     <span style={{ color: '#86efac', opacity: 0.75 }}>📍</span>{' '}
                     {distanceValue.toFixed(1)} km
                   </span>
-                  {deal.business?.name && <span>·</span>}
+                
                 </>
               )}
 
@@ -470,6 +473,21 @@ overflow: 'hidden',
                   {deal.business.name}
                 </span>
               )}
+              {deal.business?.googleOpeningText && (
+  <div
+    style={{
+      fontSize: '0.72rem',
+      color: deal.business.googleOpeningNow ? '#86efac' : '#8f9bb3',
+      marginTop: '2px',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    }}
+  >
+    {deal.business.googleOpeningNow ? '🟢 ' : '🕒 '}
+    {deal.business.googleOpeningText}
+  </div>
+)}
             </div>
           )}
         </div>

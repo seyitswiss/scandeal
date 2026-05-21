@@ -50,7 +50,8 @@ function parseGoogleTime(time: string | undefined) {
 }
 
 async function getLiveGoogleOpeningStatus(
-  placeId: string | null | undefined
+  placeId: string | null | undefined,
+  subCategory?: string | null
 ): Promise<LiveOpeningStatus> {
   if (!placeId || !process.env.GOOGLE_PLACES_API_KEY) {
     return { openNow: null, text: null }
@@ -77,6 +78,23 @@ async function getLiveGoogleOpeningStatus(
   data.result?.current_opening_hours || data.result?.opening_hours
 
 if (!openingHours) {
+  const alwaysOpenCategories = [
+    'Taxi',
+    'E-Ladestation',
+    'Verkaufsautomat',
+  ]
+
+  if (
+    alwaysOpenCategories.includes(
+      subCategory || ''
+    )
+  ) {
+    return {
+      openNow: true,
+      text: 'Rund um die Uhr geöffnet',
+    }
+  }
+
   return { openNow: null, text: null }
 }
 
@@ -102,7 +120,8 @@ const todayText = weekdayText[normalizedDayIndex] || ''
 
     if (openNow) {
       if (
-  todayText.includes('Schließt um')
+  todayText.includes('Schließt um') ||
+todayText.includes('Schliesst um')
 ) {
   const cleanText = todayText
     .split('· Öffnet wieder')[0]
@@ -114,19 +133,32 @@ const todayText = weekdayText[normalizedDayIndex] || ''
   }
 }
       const todayPeriod = periods.find((period) => {
-        if (period.open?.day !== today || !period.close) return false
+  if (!period.open || !period.close) return false
 
-        const openTime = parseGoogleTime(period.open.time)
-const closeTime = parseGoogleTime(period.close.time)
+  const openTime = parseGoogleTime(period.open.time)
+  const closeTime = parseGoogleTime(period.close.time)
 
-const openMinutes =
-  openTime.hour * 60 + openTime.minute
+  const openMinutes = openTime.hour * 60 + openTime.minute
+  const closeMinutes = closeTime.hour * 60 + closeTime.minute
 
-const closeMinutes =
-  closeTime.hour * 60 + closeTime.minute
+  const opensToday = period.open.day === today
+  const closesToday = period.close.day === today
+  const crossesMidnight = period.open.day !== period.close.day
 
-        return minutesNow >= openMinutes && minutesNow < closeMinutes
-      })
+  if (opensToday && closesToday) {
+    return minutesNow >= openMinutes && minutesNow < closeMinutes
+  }
+
+  if (opensToday && crossesMidnight) {
+    return minutesNow >= openMinutes
+  }
+
+  if (closesToday && crossesMidnight) {
+    return minutesNow < closeMinutes
+  }
+
+  return false
+})
 
       if (todayPeriod?.close) {
   const openTime = parseGoogleTime(todayPeriod.open?.time)
@@ -149,7 +181,7 @@ const closeMinutes =
 
   return {
     openNow,
-    text: `Geöffnet · Schließt um ${closeHour}:${closeMinute}`,
+    text: `Offen bis ${closeHour}:${closeMinute}`,
   }
 }
 
@@ -320,7 +352,8 @@ hideReview,
 if (!business) notFound()
 
 const liveOpeningStatus = await getLiveGoogleOpeningStatus(
-  business.googlePlaceId
+  business.googlePlaceId,
+  business.subCategory
 )
 
 const openingText =
@@ -340,13 +373,16 @@ const reviewHidden =
     const targetDeal = await prisma.deal.findUnique({
   where: { id: detailsDeal || redeemDeal || dealId },
   include: {
-    business: {
-      select: {
-        name: true,
-        slug: true,
-        logoUrl: true,
-      },
-    },
+   business: {
+  select: {
+    name: true,
+    slug: true,
+    logoUrl: true,
+    googleOpeningNow: true,
+    googleOpeningText: true,
+    googlePlaceId: true,
+  },
+},
   },
 })
 
@@ -368,6 +404,8 @@ subCategory: true,
 subCategories: true,
 googleOpeningNow: true,
 googleOpeningText: true,
+googlePlaceId: true,
+
 },
     },
   },
@@ -412,15 +450,15 @@ const forcedDetailsDeal = detailsDeal
 }
 function getOpeningScore(deal: any): number {
   if (deal.business?.googleOpeningText === 'Rund um die Uhr geöffnet') {
-    return 1
+    return 2
   }
 
   if (deal.business?.googleOpeningNow === true) {
-    return 0.5
+    return 1
   }
 
   if (deal.business?.googleOpeningNow === false) {
-    return -0.5
+    return -1
   }
 
   return 0
@@ -569,7 +607,7 @@ if (selectedPremiumDeal) {
 }
 
 for (const deal of randomNormalDeals) {
-  if (selectedDeals.length >= 4) break
+  if (selectedDeals.length >= 7) break
 
   if (!hasCategoryConflict(deal)) {
     selectedDeals.push(deal)
@@ -577,7 +615,7 @@ for (const deal of randomNormalDeals) {
   }
 }
 for (const deal of shuffle(fallbackDeals)) {
-  if (selectedDeals.length >= 4) break
+  if (selectedDeals.length >= 7) break
 
   if (!hasCategoryConflict(deal)) {
     selectedDeals.push(deal)
@@ -610,6 +648,28 @@ for (const deal of shuffle(fallbackDeals)) {
     })
   }
 
+
+const selectedDealsWithLiveOpening = await Promise.all(
+  selectedDeals.map(async (deal) => {
+    const liveOpening = await getLiveGoogleOpeningStatus(
+      deal.business?.googlePlaceId,
+      deal.business?.subCategory
+    )
+
+    return {
+      ...deal,
+      business: deal.business
+        ? {
+            ...deal.business,
+            googleOpeningNow:
+              liveOpening.openNow ?? deal.business.googleOpeningNow,
+            googleOpeningText:
+              liveOpening.text ?? deal.business.googleOpeningText,
+          }
+        : deal.business,
+    }
+  })
+)
   let customLinks: { label: string; url: string }[] = []
 
   if (business.customLinks) {
@@ -957,7 +1017,7 @@ const links = [...allLinks].sort((a, b) => {
               >
                 <DealCardList
   ourDeal={ourDeal}
-  selectedDeals={selectedDeals}
+  selectedDeals={selectedDealsWithLiveOpening}
   previewDealId={previewDeal}
   redeemDealId={redeemDeal}
   detailsDealId={detailsDeal}
