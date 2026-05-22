@@ -6,6 +6,7 @@ import DealCardList from '@/components/DealCardList'
 import ProfileTracker from '@/components/ProfileTracker'
 import TrackedLink from '@/components/TrackedLink'
 import LinkSlider from '@/components/LinkSlider'
+import BranchSlider from '@/components/BranchSlider'
 import GoogleReviewCard from '@/components/GoogleReviewCard'
 import { getInstantRelevanceScore } from '@/lib/journey'
 
@@ -671,6 +672,21 @@ const selectedDealsWithLiveOpening = await Promise.all(
   })
 )
   let customLinks: { label: string; url: string }[] = []
+  let relatedBusinesses: {
+  businessId: string
+  title: string
+  subtitle: string
+}[] = []
+
+if (business.relatedBusinesses) {
+  try {
+    relatedBusinesses = JSON.parse(
+      business.relatedBusinesses
+    )
+  } catch {
+    relatedBusinesses = []
+  }
+}
 
   if (business.customLinks) {
     try {
@@ -777,7 +793,38 @@ const priorityOrder: Record<string, number> = {
   youtube: 13,
   email: 14,
 }
+const relatedBusinessIds = relatedBusinesses.map(
+  (item) => item.businessId
+)
 
+const relatedBusinessData =
+  relatedBusinessIds.length > 0
+    ? await prisma.business.findMany({
+        where: {
+          id: {
+            in: relatedBusinessIds,
+          },
+        },
+        select: {
+          id: true,
+          slug: true,
+          logoUrl: true,
+        },
+      })
+    : []
+
+const relatedBusinessItems =
+  relatedBusinesses.map((item) => {
+    const match = relatedBusinessData.find(
+      (b) => b.id === item.businessId
+    )
+
+    return {
+      ...item,
+      slug: match?.slug,
+      logoUrl: match?.logoUrl,
+    }
+  })
 const links = [...allLinks].sort((a, b) => {
   const aIndex = priorityLinks.indexOf(
     Object.keys(priorityOrder).find(
@@ -955,6 +1002,9 @@ const links = [...allLinks].sort((a, b) => {
 {/* LINK SLIDER */}
                 <div style={{ marginTop: '0.375rem' }}>
                   <LinkSlider links={links} businessId={business.id} />
+                  <BranchSlider
+  items={relatedBusinessItems}
+/>
                 </div>
 
                 

@@ -9,6 +9,11 @@ interface CustomLinkInput {
   label: string
   url: string
 }
+interface RelatedBusinessInput {
+  businessId: string
+  title: string
+  subtitle: string
+}
 
 interface BusinessData {
   id: string
@@ -51,6 +56,7 @@ justEatLink: string | null
 directOrderLink: string | null
 priorityLinks: string | null
   customLinks: string | null
+  relatedBusinesses?: string | null
 }
 interface BusinessDeal {
   id: string
@@ -71,7 +77,8 @@ export default function EditBusinessForm({
   const [saved, setSaved] = useState(false)
   const [logoPreview, setLogoPreview] = useState(business.logoUrl || '')
   const [uploadingLogo, setUploadingLogo] = useState(false)
-
+const [businessSearch, setBusinessSearch] = useState('')
+const [businessResults, setBusinessResults] = useState<any[]>([])
   const handleLogoUpload = async (file: File | null) => {
     if (!file) return
 
@@ -182,8 +189,14 @@ priorityLinks: business.priorityLinks
     customLink2Url: '',
     customLink3Label: '',
     customLink3Url: '',
+
     // Description
     description: business.description || '',
+
+    // Related Businesses
+    relatedBusinesses: business.relatedBusinesses
+      ? JSON.parse(business.relatedBusinesses)
+      : [],
   })
 
   // Initialize custom links after mount
@@ -201,6 +214,29 @@ priorityLinks: business.priorityLinks
   }, [])
 
   const selectedCategory = categories.find(c => c.name === formData.category)
+  useEffect(() => {
+  const fetchBusinesses = async () => {
+    if (businessSearch.trim().length < 2) {
+      setBusinessResults([])
+      return
+    }
+
+    try {
+      const res = await fetch(
+        `/api/businesses/search?q=${encodeURIComponent(businessSearch)}`
+      )
+
+      const data = await res.json()
+      setBusinessResults(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const timeout = setTimeout(fetchBusinesses, 250)
+
+  return () => clearTimeout(timeout)
+}, [businessSearch])
   const subCategories = selectedCategory?.subCategories || []
 
   function generateSlug(name: string) {
@@ -234,15 +270,21 @@ function extractGooglePlaceId(url: string) {
     }
     return links.length > 0 ? JSON.stringify(links) : ''
   }
+  function buildRelatedBusinesses(): string {
+  return formData.relatedBusinesses.length > 0
+    ? JSON.stringify(formData.relatedBusinesses)
+    : ''
+}
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
 
-    const payload = {
+const payload = {
   ...formData,
   subCategories: JSON.stringify(formData.subCategories),
   customLinks: buildCustomLinks(),
+  relatedBusinesses: buildRelatedBusinesses(),
   priorityLinks: JSON.stringify(formData.priorityLinks),
 }
     const res = await fetch(`/api/businesses/${business.id}`, {
@@ -494,6 +536,148 @@ googleOpeningText:
         ))}
       </div>
     </div>
+  </div>
+</div>
+{/* Related Businesses */}
+<div className="border p-4 rounded mb-6">
+  <h2 className="text-lg font-bold mb-4">
+    Weitere Standorte & Partner
+  </h2>
+<div className="mb-4">
+  <input
+    type="text"
+    placeholder="Business suchen..."
+    value={businessSearch}
+    onChange={(e) => setBusinessSearch(e.target.value)}
+    className="w-full p-2 border rounded"
+  />
+
+  {businessResults.length > 0 && (
+    <div className="mt-2 border rounded bg-white max-h-64 overflow-y-auto">
+      {businessResults.map((item) => (
+        <button
+          key={item.id}
+          type="button"
+          onClick={() => {
+            setFormData({
+              ...formData,
+              relatedBusinesses: [
+                ...formData.relatedBusinesses,
+                {
+                  businessId: item.id,
+                  title: item.name,
+                  subtitle: item.googleCity || '',
+                },
+              ],
+            })
+
+            setBusinessSearch('')
+            setBusinessResults([])
+          }}
+          className="w-full text-left px-3 py-2 border-b hover:bg-gray-100"
+        >
+          <div className="font-medium text-black">
+            {item.name}
+          </div>
+
+          <div className="text-xs text-gray-500">
+            {item.googleCity}
+          </div>
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+  <div className="space-y-3">
+    {formData.relatedBusinesses.map((item: RelatedBusinessInput, index: number) => (
+      <div
+        key={index}
+        className="grid grid-cols-4 gap-2"
+      >
+        <input
+          type="text"
+          placeholder="Business ID oder Slug"
+          value={item.businessId}
+          onChange={(e) => {
+            const updated = [...formData.relatedBusinesses]
+            updated[index].businessId = e.target.value
+
+            setFormData({
+              ...formData,
+              relatedBusinesses: updated,
+            })
+          }}
+          className="w-full p-2 border rounded"
+        />
+
+        <input
+          type="text"
+          placeholder="Titel"
+          value={item.title}
+          onChange={(e) => {
+            const updated = [...formData.relatedBusinesses]
+            updated[index].title = e.target.value
+
+            setFormData({
+              ...formData,
+              relatedBusinesses: updated,
+            })
+          }}
+          className="w-full p-2 border rounded"
+        />
+
+        <input
+          type="text"
+          placeholder="Untertitel"
+          value={item.subtitle}
+          onChange={(e) => {
+            const updated = [...formData.relatedBusinesses]
+            updated[index].subtitle = e.target.value
+
+            setFormData({
+              ...formData,
+              relatedBusinesses: updated,
+            })
+          }}
+          className="w-full p-2 border rounded"
+          />
+          <button
+  type="button"
+  onClick={() => {
+    setFormData({
+      ...formData,
+      relatedBusinesses:
+        formData.relatedBusinesses.filter(
+          (_: RelatedBusinessInput, i: number) => i !== index
+        ),
+    })
+  }}
+  className="px-3 py-2 rounded border text-red-500"
+>
+  Entfernen
+</button>
+      </div>
+    ))}
+
+    <button
+      type="button"
+      onClick={() => {
+        setFormData({
+          ...formData,
+          relatedBusinesses: [
+            ...formData.relatedBusinesses,
+            {
+              businessId: '',
+              title: '',
+              subtitle: '',
+            },
+          ],
+        })
+      }}
+      className="px-4 py-2 rounded bg-black text-white border"
+    >
+      + Standort hinzufügen
+    </button>
   </div>
 </div>
 
@@ -1104,7 +1288,15 @@ googleOpeningText:
       )
 
       if (!secondConfirm) return
+const payload = {
+  ...formData,
+  subCategories: JSON.stringify(formData.subCategories),
+  customLinks: buildCustomLinks(),
+  relatedBusinesses: buildRelatedBusinesses(),
+  priorityLinks: JSON.stringify(formData.priorityLinks),
+}
 
+console.log(formData.relatedBusinesses)
       const res = await fetch(`/api/businesses/${business.id}`, {
         method: 'DELETE',
       })

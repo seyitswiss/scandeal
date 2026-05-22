@@ -73,6 +73,8 @@ justEatLink: body.justEatLink || null,
 directOrderLink: body.directOrderLink || null,
 priorityLinks: body.priorityLinks || null,
       customLinks: body.customLinks || null,
+relatedBusinesses: body.relatedBusinesses || null,
+      
     },
   })
   await prisma.deal.updateMany({
@@ -85,6 +87,54 @@ priorityLinks: body.priorityLinks || null,
       subCategories: body.subCategories || null,
     },
   })
+
+  if (body.relatedBusinesses) {
+    try {
+      const relatedItems = JSON.parse(body.relatedBusinesses)
+
+      for (const item of relatedItems) {
+        if (!item.businessId || item.businessId === id) continue
+
+        const relatedBusiness = await prisma.business.findUnique({
+          where: { id: item.businessId },
+        })
+
+        if (!relatedBusiness) continue
+
+        let existingRelated: any[] = []
+
+        if (relatedBusiness.relatedBusinesses) {
+          try {
+            existingRelated = JSON.parse(relatedBusiness.relatedBusinesses)
+          } catch {
+            existingRelated = []
+          }
+        }
+
+        const alreadyLinked = existingRelated.some(
+          (related) => related.businessId === id
+        )
+
+        if (!alreadyLinked) {
+          existingRelated.push({
+            businessId: id,
+            title: body.name,
+            subtitle: body.googleCity || '',
+          })
+
+          await prisma.business.update({
+            where: { id: item.businessId },
+            data: {
+              relatedBusinesses: JSON.stringify(existingRelated),
+            },
+          })
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return NextResponse.json(business)
 }
 export async function DELETE(
