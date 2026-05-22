@@ -320,7 +320,7 @@ export default function DealCard({
         ) : null}
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: previewOpen || isOurDeal ? 'flex-start' : 'center' }}>
+      <div style={{ display: 'flex', gap: '1rem', alignItems: isOurDeal ? 'flex-start' : 'center' }}>
         <div
           style={{
             width: '130px',
@@ -396,10 +396,10 @@ overflow: 'hidden',
           style={{
             
             minWidth: 0,
-            padding: previewOpen || isOurDeal ? '1rem 4.75rem 1rem 0' : '0.75rem 2rem 0.75rem 0',
+            padding: isOurDeal ? '1rem 4.75rem 1rem 0' : '0.75rem 2rem 0.75rem 0',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: previewOpen || isOurDeal ? 'flex-start' : 'center',
+            justifyContent: isOurDeal ? 'flex-start' : 'center',
             gap: '0.5rem',
             overflow: 'hidden',
           }}
@@ -410,7 +410,7 @@ overflow: 'hidden',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
-                fontSize: previewOpen ? '1.1rem' : '0.95rem',
+                fontSize: '0.95rem',
                 fontWeight: 700,
                 lineHeight: 1.2,
                 color: '#fff',
@@ -461,7 +461,38 @@ overflow: 'hidden',
               </span>
             </div>
           )}
-
+{isOurDeal && (
+  <div
+  style={{
+    marginTop: '0.45rem',
+    width: isOurDeal ? 'calc(100% + 4.75rem)' : '100%',
+  }}
+>
+    <Link
+      href={`${pathname}?redeemDeal=${deal.id}${shownDealsQuery}`}
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '0.64rem',
+        color: '#000000',
+        fontWeight: '700',
+        background: '#4ade80',
+        borderRadius: '12px',
+        padding: '0.62rem 0.9rem',
+        textAlign: 'center',
+        textDecoration: 'none',
+        opacity: isExpanded ? 0.65 : 1,
+        boxSizing: 'border-box',
+      }}
+    >
+      {isExpanded
+        ? 'BEREITS EINGELÖST'
+        : 'UNVERBINDLICH EINLÖSEN'}
+    </Link>
+  </div>
+)}
           {!isOurDeal && (
             <div
               style={{
@@ -565,7 +596,7 @@ alignItems: 'center',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
           fontSize: '0.76rem',
-          color: '#d5dce7',
+          color: '#ffffff',
         }}
       >
         {deal.business?.name}
@@ -654,7 +685,7 @@ paddingLeft: '0.35rem',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
           fontSize: '0.76rem',
-          color: '#d5dce7',
+          color: '#ffffff',
         }}
       >
         {deal.business?.name}
@@ -676,12 +707,18 @@ paddingLeft: '0.35rem',
       textDecoration: 'none',
       whiteSpace: 'nowrap',
       fontWeight: 500,
-      fontSize: '0.72rem',
-      borderBottom: '1px dashed rgba(134,239,172,0.5)',
+      fontSize: '0.68rem',
       paddingBottom: '2px',
+      background: 'rgba(134,239,172,0.06)',
+border: '1px solid rgba(134,239,172,0.35)',
+borderRadius: '10px',
+padding: '0.32rem 0.5rem',
+display: 'inline-flex',
+alignItems: 'center',
+justifyContent: 'center',
     }}
   >
-    Deal ansehen →
+    Deal ansehen
   </Link>
 </div>
   </div>
@@ -708,25 +745,6 @@ paddingLeft: '0.35rem',
 
       {isOurDeal && (
         <>
-          <div style={{ width: '100%', marginTop: '0.75rem' }}>
-            <Link
-href={`${pathname}?redeemDeal=${deal.id}${shownDealsQuery}`}  style={{
-    width: '100%',
-    display: 'block',
-    fontSize: '0.75rem',
-    color: '#000000',
-    fontWeight: '700',
-    background: '#4ade80',
-    borderRadius: '12px',
-    padding: '1rem',
-    textAlign: 'center',
-    textDecoration: 'none',
-    opacity: isExpanded ? 0.65 : 1,
-  }}
->
-  {isExpanded ? 'BEREITS EINGELÖST' : 'JETZT UNVERBINDLICH EINLÖSEN'}
-</Link>
-          </div>
 
           {fullDescription && (
             <div
