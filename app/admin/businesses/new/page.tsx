@@ -390,143 +390,154 @@ async function loadGooglePlaceData(placeId: string) {
   </div>
 </div>
         {/* Location Section */}
-        <div className="border p-4 rounded">
-          <h2 className="text-lg font-bold mb-4">Location</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Adresse *</label>
-              <input
-                type="text"
-                required
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="w-full p-2 border rounded"
-                placeholder="Orpundstrasse 40, 2504 Biel"
-              />
-            </div>
+<div className="border p-4 rounded">
+  <h2 className="text-lg font-bold mb-4">Location</h2>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Postal Code</label>
-                <input
-                  type="text"
-                  value={formData.postalCode}
-                  onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
+  <div className="space-y-4">
+    <div>
+      <label className="block text-sm font-medium mb-1">Google Review Link</label>
+      <input
+        type="text"
+        value={formData.googleReviewUrl}
+        onChange={(e) => {
+          const value = e.target.value
+          const placeId = extractGooglePlaceId(value)
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Google Maps Route Link</label>
-                <input
-                  type="text"
-                  value={formData.googleMapsUrl}
-                  onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
-                  className="w-full p-2 border rounded"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Maps</a>
-                </p>
-              </div>
-            </div>
+          setFormData({
+            ...formData,
+            googleReviewUrl: value,
+            googlePlaceId: placeId || formData.googlePlaceId,
+          })
+        }}
+        className="w-full p-2 border rounded"
+      />
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Google Review Link</label>
-              <input
-                type="text"
-                value={formData.googleReviewUrl}
-onChange={(e) => {
-  const value = e.target.value
-  const placeId = extractGooglePlaceId(value)
+      <p className="text-xs text-gray-500 mt-1">
+        <a
+          href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Find Place ID
+        </a>
+      </p>
 
-  setFormData({
-    ...formData,
-    googleReviewUrl: value,
-    googlePlaceId: placeId || formData.googlePlaceId,
-  })
-}}                className="w-full p-2 border rounded"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                <a href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" target="_blank" rel="noopener noreferrer" className="underline">Find Place ID</a>
-              </p>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-  <div>
-  <label className="block text-sm font-medium mb-1">Google Place ID</label>
-  <input
-    type="text"
-    value={formData.googlePlaceId}
-    onChange={(e) => setFormData({ ...formData, googlePlaceId: e.target.value })}
-    className="w-full p-2 border rounded"
-    placeholder="ChIJ..."
-  />
+      <button
+        type="button"
+        onClick={() => loadGooglePlaceData(formData.googlePlaceId)}
+        className="mt-2 w-full bg-green-600 text-white py-2 px-3 rounded hover:bg-green-700 text-sm"
+      >
+        Google Daten laden
+      </button>
+    </div>
 
-  <button
-    type="button"
-    onClick={() => loadGooglePlaceData(formData.googlePlaceId)}
-    className="mt-2 w-full bg-green-600 text-white py-2 px-3 rounded hover:bg-green-700 text-sm"
-  >
-    Google Daten laden
-  </button>
+    <div>
+      <label className="block text-sm font-medium mb-1">Adresse *</label>
+      <input
+        type="text"
+        required
+        value={formData.address}
+        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+        className="w-full p-2 border rounded"
+        placeholder="Orpundstrasse 40, 2504 Biel"
+      />
+    </div>
+
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Postal Code</label>
+        <input
+          type="text"
+          value={formData.postalCode}
+          onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Google Maps Route Link</label>
+        <input
+          type="text"
+          value={formData.googleMapsUrl}
+          onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
+          className="w-full p-2 border rounded"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="underline">
+            Google Maps
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-2 gap-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Google Place ID</label>
+        <input
+          type="text"
+          value={formData.googlePlaceId}
+          onChange={(e) => setFormData({ ...formData, googlePlaceId: e.target.value })}
+          className="w-full p-2 border rounded"
+          placeholder="ChIJ..."
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Google City</label>
+        <input
+          type="text"
+          value={formData.googleCity}
+          onChange={(e) => setFormData({ ...formData, googleCity: e.target.value })}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Latitude</label>
+        <input
+          type="number"
+          step="any"
+          value={formData.latitude}
+          onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Longitude</label>
+        <input
+          type="number"
+          step="any"
+          value={formData.longitude}
+          onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Google Rating</label>
+        <input
+          type="number"
+          step="0.1"
+          value={formData.googleRating}
+          onChange={(e) => setFormData({ ...formData, googleRating: e.target.value })}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Google Reviews</label>
+        <input
+          type="number"
+          value={formData.googleReviews}
+          onChange={(e) => setFormData({ ...formData, googleReviews: e.target.value })}
+          className="w-full p-2 border rounded"
+        />
+      </div>
+    </div>
+  </div>
 </div>
-
-  <div>
-    <label className="block text-sm font-medium mb-1">Google City</label>
-    <input
-      type="text"
-      value={formData.googleCity}
-      onChange={(e) => setFormData({ ...formData, googleCity: e.target.value })}
-      className="w-full p-2 border rounded"
-    />
-  </div>
-
-  <div>
-    <label className="block text-sm font-medium mb-1">Latitude</label>
-    <input
-      type="number"
-      step="any"
-      value={formData.latitude}
-      onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-      className="w-full p-2 border rounded"
-    />
-  </div>
-
-  <div>
-    <label className="block text-sm font-medium mb-1">Longitude</label>
-    <input
-      type="number"
-      step="any"
-      value={formData.longitude}
-      onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-      className="w-full p-2 border rounded"
-    />
-  </div>
-
-  <div>
-    <label className="block text-sm font-medium mb-1">Google Rating</label>
-    <input
-      type="number"
-      step="0.1"
-      value={formData.googleRating}
-      onChange={(e) => setFormData({ ...formData, googleRating: e.target.value })}
-      className="w-full p-2 border rounded"
-    />
-  </div>
-
-  <div>
-    <label className="block text-sm font-medium mb-1">Google Reviews</label>
-    <input
-      type="number"
-      value={formData.googleReviews}
-      onChange={(e) => setFormData({ ...formData, googleReviews: e.target.value })}
-      className="w-full p-2 border rounded"
-    />
-  </div>
-</div>
-            </div>
-          </div>
-        </div>
-
 {/* Description Section */}
 <div className="border p-4 rounded">
   <div className="mb-4 flex items-center gap-2">
