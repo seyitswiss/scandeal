@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import DealPassDownloadButton from '@/components/DealPassDownloadButton'
 
 interface DealCardProps {
   deal: {
@@ -121,6 +122,9 @@ export default function DealCard({
   shownDealIds,
 }: DealCardProps) {
   const [isExpanded, setIsExpanded] = useState(isExpandedFromUrl)
+  useEffect(() => {
+  setIsExpanded(isExpandedFromUrl)
+}, [isExpandedFromUrl])
   const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [showDetails, setShowDetails] = useState(showDetailsFromUrl)
@@ -469,7 +473,7 @@ overflow: 'hidden',
   }}
 >
     <Link
-      href={`${pathname}?redeemDeal=${deal.id}${shownDealsQuery}`}
+      href={`${pathname}?redeemDeal=${deal.id}${shownDealsQuery}#our-deal`}
       style={{
         width: '100%',
         display: 'flex',
@@ -764,7 +768,15 @@ justifyContent: 'center',
           )}
 
           <Link
-  href={`${pathname}?detailsDeal=${deal.id}${shownDealsQuery}#our-deal`}
+  href={
+  showDetails
+    ? isExpanded
+      ? `${pathname}?redeemDeal=${deal.id}${shownDealsQuery}#our-deal`
+      : `${pathname}?dealId=${deal.id}${shownDealsQuery}#our-deal`
+    : isExpanded
+      ? `${pathname}?redeemDeal=${deal.id}&detailsDeal=${deal.id}${shownDealsQuery}#our-deal`
+      : `${pathname}?dealId=${deal.id}&detailsDeal=${deal.id}${shownDealsQuery}#our-deal`
+}
   style={{
     width: '100%',
     background: 'none',
