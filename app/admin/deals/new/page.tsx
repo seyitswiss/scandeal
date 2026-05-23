@@ -203,8 +203,8 @@ useEffect(() => {
           <div className="flex flex-col gap-3">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold">✨ Mit KI generieren</h2>
-                <p className="text-sm text-gray-600 mt-1">Generiere Text, Bild oder beides automatisch.</p>
+                <h2 className="text-lg font-semibold">✨ Dealfindung / KI-Idee</h2>
+                <p className="text-sm text-gray-600 mt-1">Ziel oder Idee eingeben. Die KI erstellt daraus Titel, Highlight, Beschreibung und Bild.</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
@@ -238,14 +238,37 @@ useEffect(() => {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium mb-1">Deal Idee (optional)</label>
+                <label className="block text-sm font-medium mb-1">Ziel / Deal-Idee</label>
                 <input
                   type="text"
                   value={dealIdea}
                   onChange={(e) => setDealIdea(e.target.value)}
-                  placeholder="z. B. Kaffee + Kuchen"
+                  placeholder="z. B. mehr Laufkundschaft, Montags Deal, 20 Min. gratis ab 60 Min."
                   className="w-full p-2 border rounded"
                 />
+                <p className="mt-3 text-xs text-gray-500">
+  Schnellstart-Ideen für die KI
+</p>
+
+<div className="mt-3 flex flex-wrap gap-2">
+  {[
+    'Mehr Kundschaft',
+    'Neukunden',
+    'Freie Termine',
+    'Mehr Aufträge',
+    'Montags Deal',
+    'Mittags Deal',
+  ].map((idea) => (
+    <button
+      key={idea}
+      type="button"
+      onClick={() => setDealIdea(idea)}
+      className="rounded-full border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100"
+    >
+      {idea}
+    </button>
+  ))}
+</div>
               </div>
               <div>
                 {formData.isPremium ? (

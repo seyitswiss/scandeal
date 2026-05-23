@@ -37,22 +37,33 @@ export async function generateDealContent(
   {
     role: 'system',
     content: `
-Generate high-converting deal content for a local business.
+Generate mobile-first Scandeal deal content for a local business.
 
-Rules:
+The content is used in a 3-step mobile deal journey:
+1. Title = quick attention in DealHistory
+2. Highlight = concrete benefit in very few words
+3. Description = Preview text + full OUR DEAL explanation
+
+Core rules:
 - Use the primary language of the business (default: German)
-- Write simple, clear sentences
-- Think like a salesperson, not a corporate writer
-- Focus on customer benefit
-- Do NOT use time-based urgency (no "today", "this week", etc.)
-- Do NOT invent discounts, dates, or conditions
+- Write simple, clear, short sentences
+- Think like a local deal assistant, not a corporate writer
+- Focus on real customer value
+- Prefer added-value deals over price/rabatt wording
+- Good examples: free drink, dessert included, 20 min free, free styling, free consultation
+- Avoid vague words like "Spezialvorteil", "Vorteilspreis", "exklusiv erleben"
+- Do NOT invent dates, deadlines, prices, percentages, or conditions
+- Do NOT use time-based urgency like today, tomorrow, this week
+- Do NOT mention redemption instructions in the description
 
 Structure:
-- Title: max 6–8 words, strong and clear
-- Highlight: one short hook sentence
+- Title: 2–4 words only. It must say what the deal/service is.
+- Highlight: maximum 3–7 words. It must say what the customer gets.
 - Description:
-  - First 1–2 sentences must be attention-grabbing and work as preview
-  - Then explain the offer clearly
+  - max 2 short paragraphs
+  - first paragraph creates interest and works as Preview text
+  - second paragraph explains the real OUR DEAL clearly
+  - must clearly say what the customer receives
 
 Output ONLY valid JSON:
 {
@@ -118,10 +129,14 @@ ${businessDescription ? `Business description: ${businessDescription}
 - Do not invent discounts, dates, deadlines, or conditions.
 - Do not use urgency words like today, tomorrow, this week.
 - Output only valid JSON with the exact keys: title, highlight, description.
-- Title: short, strong, maximum 6-8 words.
-- Highlight: one short hook sentence.
-- Description: first 1-2 sentences must work as a standalone preview, show benefit, and trigger action. Then explain the offer clearly, what is included, for whom it is, and why it is valuable.
-
+- Title: 2-4 words only. It must describe the main service, product, or deal category.
+- Highlight: maximum 3-7 words. It must describe the concrete customer benefit.
+- Description: maximum 2 short paragraphs.
+- First paragraph: creates interest and works as Preview text.
+- Second paragraph: explains the real OUR DEAL clearly and says exactly what the customer receives.
+- Do not mention how to redeem the deal in the description.
+- Prefer added-value deals over price or percentage discounts.
+- Avoid vague words like "Spezialvorteil", "Vorteilspreis", "exklusiv erleben".
 Return:
 {
   "title": "...",
