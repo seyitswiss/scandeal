@@ -123,10 +123,7 @@ export default function DealCard({
   
   const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
-  const [showDetails, setShowDetails] = useState(showDetailsFromUrl)
-  useEffect(() => {
-  setShowDetails(showDetailsFromUrl)
-}, [showDetailsFromUrl])
+  
 
   const isOurDeal = mode === 'ourDeal'
   const businessSlug = deal.business?.slug
@@ -742,36 +739,9 @@ justifyContent: 'center',
             </div>
           )}
 
-          <Link
-href={
-  showDetails
-    ? `${pathname}?dealId=${deal.id}${shownDealsQuery}#our-deal`
-    : `${pathname}?dealId=${deal.id}&detailsDeal=${deal.id}${shownDealsQuery}#our-deal`
-}
-  style={{
-    width: '100%',
-    background: 'none',
-    border: 'none',
-    fontSize: '0.75rem',
-    color: '#9ca3af',
-    marginTop: '0.6rem',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: 0,
-    textAlign: 'left',
-    textDecoration: 'none',
-  }}
->
-  <span>ⓘ</span>
-  <span>Details & Bedingungen anzeigen</span>
-  <span style={{ marginLeft: 'auto' }}>
-    {showDetails ? '↑' : '↓'}
-  </span>
-</Link>
+          
 
-           {showDetails && (
+       
             <div
               style={{
                 marginTop: '0.6rem',
@@ -823,7 +793,7 @@ href={
 
 {deal.combinability && (
   <div style={detailRowStyle}>
-    <span>❌ Kombinierbarkeit</span>
+    <span>🔗 Kombinierbarkeit</span>
     <span>{deal.combinability}</span>
   </div>
 )}
@@ -841,18 +811,18 @@ href={
   </div>
 )}
             </div>
-           )}
+           
             </>
       )}
     </article>
   )
 }
 
-const detailRowStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  gap: '1rem',
-  fontSize: '0.75rem',
-  padding: '0.35rem 0',
-  borderTop: '1px solid rgba(255,255,255,0.05)',
+const detailRowStyle = {
+  display: 'grid',
+  gridTemplateColumns: '145px 1fr',
+  columnGap: '12px',
+  alignItems: 'start',
+  marginTop: '10px',
+  fontSize: '0.72rem',
 }
