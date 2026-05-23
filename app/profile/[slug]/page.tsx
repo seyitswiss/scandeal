@@ -20,6 +20,7 @@ interface Props {
     detailsDeal?: string
     shownDeals?: string
     reviewTone?: string
+    reviewThanks?: string
 hideReview?: string
   }>
 }
@@ -345,6 +346,7 @@ const {
   shownDeals,
   reviewTone,
 hideReview,
+reviewThanks
 } = await searchParams
   const business = await prisma.business.findUnique({
     where: { slug },
@@ -367,7 +369,9 @@ const cookieStore = await cookies()
 
 const reviewHidden =
   cookieStore.get(`scandeal_review_hidden_${business.slug}`)?.value === 'true'
-  
+  const reviewHiddenForever =
+  cookieStore.get(`scandeal_review_hidden_forever_${business.slug}`)?.value === 'true'
+
   let ourDeal: Awaited<ReturnType<typeof prisma.deal.findUnique>> | null = null
 
   if (dealId || redeemDeal || detailsDeal) {
@@ -979,7 +983,7 @@ const links = [...allLinks].sort((a, b) => {
                     </div>
                   </div>
                 </div>
-{!hideReview && !reviewHidden && (
+{!hideReview && !reviewHidden && !reviewHiddenForever && reviewThanks !== '1' && (
   <div className="relative">
     <a
       href={`/api/review-hide?slug=${business.slug}&redirect=${encodeURIComponent(
@@ -997,6 +1001,24 @@ const links = [...allLinks].sort((a, b) => {
       reviewTone={reviewTone}
       reviewSuggestion={reviewSuggestion}
     />
+
+  </div>
+)}
+{reviewThanks === '1' && (
+  <div className="mt-3 text-center text-sm text-green-400">
+    {reviewThanks === '1' && (
+  <div className="mt-3 text-center text-sm text-green-400">
+    Vielen Dank für deine Unterstützung 💚
+
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          window.history.replaceState({}, '', window.location.pathname)
+        `,
+      }}
+    />
+  </div>
+)}
   </div>
 )}
 {/* LINK SLIDER */}

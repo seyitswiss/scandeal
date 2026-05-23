@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 
 const tones = [
-  'freundlich',
-  'locker',
-  'professionell',
-  'modern',
-  'herzlich',
+  'natürlich',
+  'ehrlich',
+  'zufrieden',
+  'unkompliziert',
+  'angenehm',
 ]
 
 const focuses = [
@@ -37,37 +37,42 @@ let intensityStyle = ''
 
 if (intensity === 1) {
   intensityStyle =
-    'kurz, eher zurückhaltend, freundlich, schlicht und natürlich'
+    'sehr kurz, neutral, höflich, wenig emotional, wie eine einfache normale Google Bewertung'
 }
 
 if (intensity === 2) {
   intensityStyle =
-    'wärmer, persönlicher, zufriedener Kunde, angenehm formuliert'
+    'klar zufrieden, persönlicher, freundlich, leichte Empfehlung, natürlich formuliert'
 }
 
 if (intensity === 3) {
   intensityStyle =
-    'starke Empfehlung, begeistert aber glaubwürdig, emotionaler'
+    'deutlich begeisterter, starke Empfehlung, natürlicher emotionaler Ton, ein Ausrufezeichen erlaubt'
 }
     const prompt = `
-Schreibe eine kurze natürliche Google-Empfehlung.
+Schreibe eine echte, kurze Google-Bewertung aus Sicht eines normalen Kunden.
 
 WICHTIG:
-- maximal 2 Sätze
-- natürlich
-- menschlich
+- maximal 2 kurze Sätze
+- sehr natürlich, nicht perfekt
+- keine Werbesprache
+- keine erfundenen Details
 - keine Emojis
+- maximal 1 Ausrufezeichen erlaubt
+- leichte Umgangssprache erlaubt
+- darf wie echte Google Bewertungen wirken
 - keine Hashtags
-- keine übertriebene Werbung
-- keine Wiederholungen
-- keine generischen KI-Sätze
-- nicht identisch zu typischen Standardbewertungen
+- keine Wörter wie Erlebnis, hervorragend, stilvoll, liebevoll, Premium
+- nicht schreiben: "in der Schweiz"
+- nicht zu poetisch
+- nicht wie KI
+- einfache Alltagssprache
 
 Business:
 ${businessName}
 
 Stadt:
-${city || 'Schweiz'}
+${city || ''}
 
 Kategorie:
 ${category || ''}
@@ -76,7 +81,7 @@ Unterkategorie:
 ${subCategory || ''}
 
 Intensität:
-${intensity}/5
+${intensity}/3
 
 Schreibstil:
 ${intensityStyle}
@@ -87,8 +92,11 @@ ${randomTone}
 Fokus:
 ${randomFocus}
 
-Die Bewertung soll positiv und glaubwürdig wirken.
-Stadt oder Branche dürfen subtil erwähnt werden.
+SEO-Regel:
+Wenn es natürlich passt, darfst du den Businessnamen oder die Stadt einmal erwähnen.
+Nicht beide erzwingen.
+
+Schreibe nur die Bewertung. Kein Titel. Keine Erklärung.
 `
 
     const response = await fetch(

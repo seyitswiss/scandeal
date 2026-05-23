@@ -66,17 +66,29 @@ inklusive KI-Inspiration.
 
           {/* BUTTON */}
 {googleReviewUrl && (
-<div className="overflow-hidden rounded-[18px] bg-[conic-gradient(from_180deg_at_50%_50%,#EA4335_0deg,#4285F4_90deg,#34A853_180deg,#FBBC05_270deg,#EA4335_360deg)] p-[2px] shadow-lg [transform:translateZ(0)]">   
-     <a
-  href={googleReviewUrl}
-  className="flex h-11 min-w-[109px] items-center justify-center rounded-[15px] bg-white pl-1 pr-2 text-base font-semibold text-black"
->
-      Öffnen
-    </a>
+  <div>
+    <div className="overflow-hidden rounded-[18px] bg-[conic-gradient(from_180deg_at_50%_50%,#EA4335_0deg,#4285F4_90deg,#34A853_180deg,#FBBC05_270deg,#EA4335_360deg)] p-[2px] shadow-lg [transform:translateZ(0)]">
+      <a
+        href={googleReviewUrl}
+        className="flex h-11 min-w-[109px] items-center justify-center rounded-[15px] bg-white pl-1 pr-2 text-base font-semibold text-black"
+      >
+        Öffnen
+      </a>
+    </div>
+
+    <div className="mt-3 flex justify-center">
+      <a
+        href={`/api/review-hide-permanent?slug=${businessSlug}&redirect=${encodeURIComponent(
+          `/profile/${businessSlug}?reviewThanks=1`
+        )}`}
+        className="text-[10px] leading-none text-gray-300 underline underline-offset-2"
+      >
+        Bereits bewertet?
+      </a>
+    </div>
   </div>
 )}
         </div>
-
         {/* KI LINK */}
         {!reviewTone && (
           <div className="relative z-10 mt-5 border-t border-white/10 pt-4">
@@ -160,7 +172,7 @@ inklusive KI-Inspiration.
                   KI Inspiration
                 </div>
 <p className="mt-2 text-xs text-gray-400">
-  Text kopieren • Öffnen • einfügen
+  Text markieren/kopieren • Öffnen • Sterneauswahl • einfügen
 </p>
                 <p className="mt-3 text-[15px] leading-relaxed text-gray-300">
                   {reviewSuggestion ||
