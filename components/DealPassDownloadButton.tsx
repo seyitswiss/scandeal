@@ -1,5 +1,5 @@
 'use client'
-
+import { useEffect, useState } from 'react'
 type DealPassDownloadButtonProps = {
   deal: {
     id: string
@@ -29,7 +29,9 @@ function makeCode(dealId: string) {
 }
 
 export default function DealPassDownloadButton({ deal }: DealPassDownloadButtonProps) {
-  function downloadDealPass() {
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+
+  useEffect(() => {
     const canvas = document.createElement('canvas')
     canvas.width = 900
     canvas.height = 1300
@@ -61,10 +63,7 @@ export default function DealPassDownloadButton({ deal }: DealPassDownloadButtonP
 
     ctx.fillStyle = '#ffffff'
     ctx.font = '28px Arial'
-
-    const description = deal.description || ''
-    const shortDescription = description.slice(0, 180)
-    ctx.fillText(shortDescription, 60, 390)
+    ctx.fillText((deal.description || '').slice(0, 180), 60, 390)
 
     ctx.fillStyle = '#111827'
     ctx.fillRect(60, 470, 780, 150)
@@ -107,23 +106,20 @@ export default function DealPassDownloadButton({ deal }: DealPassDownloadButtonP
     ctx.font = '24px Arial'
     ctx.fillText('Deal speichern und beim Besuch vorzeigen.', 60, 1250)
 
-    const link = document.createElement('a')
-    link.download = `${deal.title}-scandeal.jpg`
-    link.href = canvas.toDataURL('image/jpeg', 0.92)
-    link.click()
+    setImageUrl(canvas.toDataURL('image/jpeg', 0.92))
+  }, [deal])
+
+  if (!imageUrl) {
+    return null
   }
 
   return (
-    <button
-      type="button"
-      onClick={(event) => {
-  event.preventDefault()
-  event.stopPropagation()
-  downloadDealPass()
-}}
-      className="mt-3 w-full rounded-xl bg-green-500 px-4 py-3 font-semibold text-black"
+    <a
+      href={imageUrl}
+      download={`${deal.title}-scandeal.jpg`}
+      className="mt-3 block w-full rounded-xl bg-green-500 px-4 py-3 text-center font-semibold text-black"
     >
       Dealpass als Bild speichern
-    </button>
+    </a>
   )
 }

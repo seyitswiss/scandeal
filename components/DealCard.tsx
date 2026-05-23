@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import DealPassDownloadButton from '@/components/DealPassDownloadButton'
 
 interface DealCardProps {
   deal: {
@@ -121,10 +120,7 @@ export default function DealCard({
   showDetailsFromUrl = false,
   shownDealIds,
 }: DealCardProps) {
-  const [isExpanded, setIsExpanded] = useState(isExpandedFromUrl)
-  useEffect(() => {
-  setIsExpanded(isExpandedFromUrl)
-}, [isExpandedFromUrl])
+  
   const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [showDetails, setShowDetails] = useState(showDetailsFromUrl)
@@ -230,25 +226,7 @@ export default function DealCard({
     setIsSaved(true)
   }
 
-  const redeemDeal = () => {
-    if (isExpanded) return
-
-    const redeemedKey = `redeemed_${deal.id}`
-
-    if (localStorage.getItem(redeemedKey)) {
-      setIsExpanded(true)
-      return
-    }
-
-    trackDeal({
-      dealId: deal.id,
-      businessId: deal.businessId,
-      type: 'redeem',
-    })
-
-    localStorage.setItem(redeemedKey, 'true')
-    setIsExpanded(true)
-  }
+  
 
   const cardStyle: React.CSSProperties = {
     width: '100%',
@@ -473,28 +451,25 @@ overflow: 'hidden',
   }}
 >
     <Link
-      href={`${pathname}?redeemDeal=${deal.id}${shownDealsQuery}#our-deal`}
-      style={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '0.64rem',
-        color: '#000000',
-        fontWeight: '700',
-        background: '#4ade80',
-        borderRadius: '12px',
-        padding: '0.62rem 0.9rem',
-        textAlign: 'center',
-        textDecoration: 'none',
-        opacity: isExpanded ? 0.65 : 1,
-        boxSizing: 'border-box',
-      }}
-    >
-      {isExpanded
-        ? 'BEREITS EINGELÖST'
-        : 'UNVERBINDLICH EINLÖSEN'}
-    </Link>
+  href={`/deal-pass/${deal.id}`}
+  style={{
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '0.64rem',
+    color: '#000000',
+    fontWeight: '700',
+    background: '#4ade80',
+    borderRadius: '12px',
+    padding: '0.62rem 0.9rem',
+    textAlign: 'center',
+    textDecoration: 'none',
+    boxSizing: 'border-box',
+  }}
+>
+  DEALPASS ÖFFNEN
+</Link>
   </div>
 )}
           {!isOurDeal && (
@@ -768,14 +743,10 @@ justifyContent: 'center',
           )}
 
           <Link
-  href={
+href={
   showDetails
-    ? isExpanded
-      ? `${pathname}?redeemDeal=${deal.id}${shownDealsQuery}#our-deal`
-      : `${pathname}?dealId=${deal.id}${shownDealsQuery}#our-deal`
-    : isExpanded
-      ? `${pathname}?redeemDeal=${deal.id}&detailsDeal=${deal.id}${shownDealsQuery}#our-deal`
-      : `${pathname}?dealId=${deal.id}&detailsDeal=${deal.id}${shownDealsQuery}#our-deal`
+    ? `${pathname}?dealId=${deal.id}${shownDealsQuery}#our-deal`
+    : `${pathname}?dealId=${deal.id}&detailsDeal=${deal.id}${shownDealsQuery}#our-deal`
 }
   style={{
     width: '100%',
