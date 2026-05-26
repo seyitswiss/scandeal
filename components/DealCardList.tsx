@@ -6,40 +6,18 @@ import DealCard from '@/components/DealCard'
 type Deal = ComponentProps<typeof DealCard>['deal']
 
 interface DealCardListProps {
-  ourDeal?: Deal | null
   selectedDeals: Deal[]
-  previewDealId?: string
-  redeemDealId?: string
-  detailsDealId?: string
-  shownDealIds?: string[]
 }
 
 export default function DealCardList({
-  ourDeal,
+
   selectedDeals,
-  previewDealId,
-  redeemDealId,
-  detailsDealId,
-  shownDealIds,
+
 }: DealCardListProps) {
-  const currentShownDealIds =
-    shownDealIds && shownDealIds.length > 0
-      ? shownDealIds
-      : selectedDeals.map((deal) => deal.id)
+
 
   return (
     <div id="deals-section" style={{ scrollMarginTop: '72px' }}>
-      {ourDeal && (
-  <div id="our-deal" style={{ scrollMarginTop: '120px' }}>
-    <DealCard
-          deal={ourDeal}
-          mode="ourDeal"
-          isExpandedFromUrl={redeemDealId === ourDeal.id}
-          showDetailsFromUrl={detailsDealId === ourDeal.id}
-        shownDealIds={currentShownDealIds}
-/>
-  </div>
-)}
 
       {selectedDeals.length > 0 && (
         <>
@@ -52,7 +30,7 @@ export default function DealCardList({
               color: '#f8fafc',
             }}
           >
-            Deals für Dich
+            Entdecken
           </h2>
 
           <div
@@ -64,13 +42,9 @@ export default function DealCardList({
           >
             {selectedDeals.map((deal) => (
               <DealCard
-                key={deal.id}
-                deal={deal}
-                isPreviewOpen={previewDealId === deal.id}
-                isExpandedFromUrl={redeemDealId === deal.id}
-                showDetailsFromUrl={detailsDealId === deal.id}
-                shownDealIds={currentShownDealIds}
-              />
+  key={deal.id}
+  deal={deal}
+/>
             ))}
           </div>
         </>

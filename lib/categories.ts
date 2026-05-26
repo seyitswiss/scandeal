@@ -16,14 +16,13 @@ export const categories = [
       'Spielwaren',
       'Blumen',
       'Geschenke',
-      'Vape Shop',
+    
       'Supermarkt',
       'Tierbedarf',
       'Sportgeschäft',
       'Optiker',
       'Parfümerie',
-      'Adult Shop',
-      'Cannabis Shop',
+      
       'Supplemente',
       'Luxusartikel',
       'Souvenir',
@@ -137,6 +136,7 @@ export const categories = [
       'Tuning',
       'Pneuservice',
       'E-Ladestation',
+      'Tanksäulen',
       'Motorrad',
       'Velogeschäft',
       'Scooter',
@@ -192,7 +192,7 @@ export const categories = [
   {
   name: 'Sofortbedarf & Unterwegs',
   subCategories: [
-    'Tankstelle',
+    'Tankstelle mit Shop',
     'Kiosk',
     '24h Shop',
     'Verkaufsautomat',
@@ -246,6 +246,7 @@ export const categories = [
       'Tour Guide',
       'Wellness Resort',
       'Hostel',
+      'Restaurant',
     ],
   },
 
@@ -266,6 +267,19 @@ export const categories = [
       'Musikschule',
     ],
   },
+
+{
+  name: 'Haustiere & Tiere',
+  subCategories: [
+    'Tierbedarf',
+    'Tierarzt',
+    'Hundesalon',
+    'Hundetraining',
+    'Tierhotel',
+    'Aquaristik',
+  ],
+},
+
 ] as const
 
 export type Category = (typeof categories)[number]['name']

@@ -2,9 +2,9 @@ import fs from 'fs/promises'
 import path from 'path'
 
 /**
- * Deal generation helper for AI-generated content and images
+ * Promotion generation helper for AI-generated content and images
  * Generates: title, highlight, description, image
- * Only for non-premium deals
+ * Used for local discovery / PromoCards
  */
 
 export interface GeneratedDealContent {
@@ -37,33 +37,34 @@ export async function generateDealContent(
   {
     role: 'system',
     content: `
-Generate mobile-first Scandeal deal content for a local business.
+Generate mobile-first Scandeal promotion content for a local business.
 
-The content is used in a 3-step mobile deal journey:
-1. Title = quick attention in DealHistory
-2. Highlight = concrete benefit in very few words
-3. Description = Preview text + full OUR DEAL explanation
+The content is used in a local discovery journey:
+1. Title = quick attention on the PromoCard
+2. Highlight = short hook / reason to look closer
+3. Description = short business-focused promo text for local discovery
 
 Core rules:
 - Use the primary language of the business (default: German)
 - Write simple, clear, short sentences
-- Think like a local deal assistant, not a corporate writer
-- Focus on real customer value
-- Prefer added-value deals over price/rabatt wording
-- Good examples: free drink, dessert included, 20 min free, free styling, free consultation
-- Avoid vague words like "Spezialvorteil", "Vorteilspreis", "exklusiv erleben"
-- Do NOT invent dates, deadlines, prices, percentages, or conditions
-- Do NOT use time-based urgency like today, tomorrow, this week
-- Do NOT mention redemption instructions in the description
+- Think like a local discovery assistant, not a coupon writer
+- Focus on attention, atmosphere, specialty, trust, local relevance, or curiosity
+- Do NOT create discounts, coupons, free items, percentages, prices, deadlines, or deal conditions
+- Do NOT write redemption instructions
+- Do NOT use "Rabatt", "Gutschein", "gratis", "kostenlos", "Dealpass", "einlösen", "profitieren"
+- Do NOT use fake claims like "best", "number 1", "most popular" unless provided
+- Do NOT invent facts, awards, opening hours, guarantees, or customer numbers
+- Avoid generic marketing words like "exklusiv", "einzigartig", "unschlagbar", "Spezialvorteil"
+- Keep it natural and believable for a small local business
 
 Structure:
-- Title: 2–4 words only. It must say what the deal/service is.
-- Highlight: maximum 3–7 words. It must say what the customer gets.
+- Title: 2–5 words only. It should describe the business, product, service, or local spot.
+- Highlight: maximum 3–7 words. It should be a short hook, not a discount.
 - Description:
   - max 2 short paragraphs
-  - first paragraph creates interest and works as Preview text
-  - second paragraph explains the real OUR DEAL clearly
-  - must clearly say what the customer receives
+  - first paragraph creates interest
+  - second paragraph gives a simple, useful reason to visit or explore the business
+  - no redemption or coupon language
 
 Output ONLY valid JSON:
 {
@@ -117,26 +118,26 @@ function buildPrompt(
   businessDescription?: string,
   dealIdea?: string
 ): string {
-  return `Create deal content for the business "${businessName}" in the category ${category}/${subCategory}.
+  return `Create promotion content for the business "${businessName}" in the category ${category}/${subCategory}.
 ${businessDescription ? `Business description: ${businessDescription}
-` : ''}${dealIdea ? `Deal idea: ${dealIdea}
+` : ''}${dealIdea ? `Promotion idea: ${dealIdea}
 ` : ''}
 
 - Use the primary language of the business, default German.
 - Keep sentences short and simple.
-- Think like a salesperson.
-- Focus on customer benefit and value.
-- Do not invent discounts, dates, deadlines, or conditions.
-- Do not use urgency words like today, tomorrow, this week.
+- Think like a local discovery assistant, not a coupon writer.
+- Focus on attention, atmosphere, specialty, trust, local relevance, or curiosity.
+- Do not invent discounts, prices, percentages, free items, dates, deadlines, or conditions.
+- Do not mention redemption, coupons, DealPass, vouchers, or how to redeem anything.
+- Do not use words like "Rabatt", "Gutschein", "gratis", "kostenlos", "einlösen", "profitieren".
+- Do not invent fake claims such as "best", "number 1", "most popular", awards, opening hours, or customer numbers.
+- Avoid vague marketing words like "exklusiv", "einzigartig", "unschlagbar", "Spezialvorteil".
 - Output only valid JSON with the exact keys: title, highlight, description.
-- Title: 2-4 words only. It must describe the main service, product, or deal category.
-- Highlight: maximum 3-7 words. It must describe the concrete customer benefit.
+- Title: 2-5 words only. It must describe the business, product, service, or local spot.
+- Highlight: maximum 3-7 words. It must be a short hook, not a discount.
 - Description: maximum 2 short paragraphs.
-- First paragraph: creates interest and works as Preview text.
-- Second paragraph: explains the real OUR DEAL clearly and says exactly what the customer receives.
-- Do not mention how to redeem the deal in the description.
-- Prefer added-value deals over price or percentage discounts.
-- Avoid vague words like "Spezialvorteil", "Vorteilspreis", "exklusiv erleben".
+- First paragraph creates interest.
+- Second paragraph gives a simple useful reason to visit or explore the business.
 Return:
 {
   "title": "...",
@@ -175,9 +176,9 @@ function getDefaultContent(
   category: string
 ): Omit<GeneratedDealContent, 'image'> {
 return {
-  title: `${businessName} Angebot`,
-  highlight: `Exklusives Angebot bei ${businessName}`,
-  description: `Entdecke ein attraktives Angebot bei ${businessName}. Klar, einfach und passend zu deinem Interesse. Jetzt ansehen und profitieren.`,
+  title: `${businessName}`,
+  highlight: `Lokaler Spot zum Entdecken`,
+  description: `Entdecke ${businessName} und erfahre mehr über das Angebot, die Atmosphäre und die wichtigsten Infos auf einen Blick.`,
 }
 }
 
@@ -241,10 +242,10 @@ async function generateDealImage(
 }
 
 function buildImagePrompt(businessName: string, category: string, subCategory: string): string {
-  return `Create a professional, realistic promotional image for a deal at "${businessName}" (${category}/${subCategory}). 
-Style: Modern, commercial, clean aesthetic. 
-Show the service/product relevant to ${subCategory} in an appealing way.
-No text, no logos, no watermarks.
+return `Create a professional, realistic promotional image for the local business "${businessName}" (${category}/${subCategory}).
+Style: modern, commercial, clean, trustworthy, local discovery aesthetic.
+Show the service, product, food, place, or atmosphere relevant to ${subCategory} in an appealing but realistic way.
+No discount signs, no coupon design, no text, no logos, no watermarks.
 Size: 1024x1024.
 Professional lighting and composition.`
 }

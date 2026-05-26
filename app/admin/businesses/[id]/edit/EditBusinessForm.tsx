@@ -1282,14 +1282,14 @@ googleOpeningText:
   </h2>
 
   <p className="text-sm text-red-600 mb-4">
-    Dieses Business inklusive OP, Deals und Statistiken wird gelöscht.
+    Dieses Business inklusive OP, Promotions und Statistiken wird gelöscht.
   </p>
 
   <button
     type="button"
     onClick={async () => {
       const confirmed = confirm(
-        'Business wirklich löschen? Dadurch werden OP, Deals und Statistiken gelöscht.'
+        'Business wirklich löschen? Dadurch werden OP, Promotions und Statistiken gelöscht.'
       )
 
       if (!confirmed) return
@@ -1380,7 +1380,7 @@ console.log(formData.relatedBusinesses)
 {deals.length > 0 && (
   <div className="mt-8 rounded-xl border border-gray-200 bg-white p-4">
     <h2 className="mb-4 text-lg font-semibold">
-      Deals dieses Businesses
+      Promotions dieses Businesses
     </h2>
 
     <div className="space-y-3">
@@ -1425,7 +1425,7 @@ console.log(formData.relatedBusinesses)
           onClick={handleCreateDeal}
           className="mt-6 w-full bg-indigo-600 text-white py-3 px-4 rounded hover:bg-indigo-700 text-sm"
         >
-          + Neuer Deal
+          + neue Promotions dieses Businesses
         </button>
       </div>
     </div>

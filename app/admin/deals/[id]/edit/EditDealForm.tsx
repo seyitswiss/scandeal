@@ -109,7 +109,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
         }
       } else {
         const error = await res.json()
-        alert(error.error || 'Failed to generate deal content')
+        alert(error.error || 'Promotion konnte nicht generiert werden')
       }
     } catch (error) {
       console.error('Generation error:', error)
@@ -164,12 +164,12 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
   if (saved) {
     return (
       <div className="max-w-2xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-4">Deal Updated!</h1>
+        <h1 className="text-2xl font-bold mb-4">Promotion gespeichert!</h1>
         <button
           onClick={() => router.push('/admin/deals')}
           className="w-full bg-green-600 text-white py-3 px-4 rounded hover:bg-green-700"
         >
-          Back to Deals
+          Zurück zu Promotions
         </button>
       </div>
     )
@@ -177,15 +177,15 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-5">Edit Deal</h1>
+      <h1 className="text-2xl font-bold mb-5">Promotion bearbeiten</h1>
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* KI Section */}
         <div className="border bg-slate-50 p-4 rounded-lg">
           <div className="flex flex-col gap-3">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold">✨ Dealfindung / KI-Idee</h2>
-                <p className="text-sm text-gray-600 mt-1">Ziel oder Idee eingeben. Die KI erstellt daraus passende Deal-Vorschläge, Titel, Highlight, Beschreibung und Bild.</p>
+                <h2 className="text-lg font-semibold">✨ Promo-Idee / KI</h2>
+                <p className="text-sm text-gray-600 mt-1">Ziel oder Idee eingeben. Die KI erstellt daraus eine passende Promotion mit Titel, Highlight, Beschreibung und Bild.</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
@@ -219,12 +219,12 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium mb-1">Ziel / Deal-Idee</label>
+                <label className="block text-sm font-medium mb-1">Ziel / Promo-Idee</label>
                 <input
                   type="text"
                   value={dealIdea}
                   onChange={(e) => setDealIdea(e.target.value)}
-                  placeholder="z. B. mehr Laufkundschaft, Montags Deal, 20 Min. gratis ab 60 Min."
+                  placeholder="z. B. mehr Laufkundschaft, neues Gericht, freie Termine, lokale Sichtbarkeit"
                   className="w-full p-2 border rounded"
                 />
                 <p className="mt-3 text-xs text-gray-500">
@@ -236,8 +236,8 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
     'Neukunden',
     'Freie Termine',
     'Mehr Aufträge',
-    'Montags Deal',
-    'Mittags Deal',
+    'Lokaler Spot',
+'Besonderheit zeigen',
   ].map((idea) => (
     <button
       key={idea}
@@ -304,10 +304,10 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
         </div>
 
         <div className="border p-4 rounded-lg">
-          <h2 className="text-lg font-semibold mb-3">Deal Details</h2>
+          <h2 className="text-lg font-semibold mb-3">Promo Details</h2>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium mb-1">Title *</label>
+              <label className="block text-sm font-medium mb-1">Promo Titel *</label>
               <input
                 type="text"
                 required
@@ -328,7 +328,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Description</label>
+              <label className="block text-sm font-medium mb-1">Beschreibung</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -342,85 +342,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
           <h2 className="text-lg font-semibold mb-3">Business</h2>
           <p className="text-sm text-gray-600">{deal.business.name}</p>
         </div>
-{/* Einlösung & Bedingungen */}
-<div className="border p-4 rounded-lg">
-  <h2 className="text-lg font-semibold mb-3">Einlösung & Bedingungen</h2>
 
-  <div className="grid gap-3 sm:grid-cols-2">
-    <div>
-      <label className="block text-sm font-medium mb-1">Einlösbar</label>
-      <select
-        value={formData.redeemableWhen}
-        onChange={(e) => setFormData({ ...formData, redeemableWhen: e.target.value })}
-        className="w-full p-2 border rounded"
-      >
-        <option value="">Bitte wählen</option>
-        <option value="Täglich">Täglich</option>
-        <option value="Mo – Fr">Mo – Fr</option>
-        <option value="Wochenende">Wochenende</option>
-        <option value="Nach Vereinbarung">Nach Vereinbarung</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium mb-1">Einlösbar für</label>
-      <select
-        value={formData.redeemableFor}
-        onChange={(e) => setFormData({ ...formData, redeemableFor: e.target.value })}
-        className="w-full p-2 border rounded"
-      >
-        <option value="">Bitte wählen</option>
-        <option value="1 Person">1 Person</option>
-        <option value="2 Personen">2 Personen</option>
-        <option value="Familie">Familie</option>
-        <option value="Gruppe">Gruppe</option>
-        <option value="Pro Kunde 1x">Pro Kunde 1x</option>
-        <option value="Unbegrenzt">Unbegrenzt</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium mb-1">Voraussetzung</label>
-      <select
-        value={formData.requirements}
-        onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-        className="w-full p-2 border rounded"
-      >
-        <option value="">Keine</option>
-        <option value="Termin erforderlich">Termin erforderlich</option>
-        <option value="Reservation erforderlich">Reservation erforderlich</option>
-        <option value="Nur vor Ort einlösbar">Nur vor Ort einlösbar</option>
-        <option value="Nur für Neukunden">Nur für Neukunden</option>
-        <option value="Mindestbestellwert erforderlich">Mindestbestellwert erforderlich</option>
-        <option value="Gutschein vorzeigen">Gutschein vorzeigen</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium mb-1">Kombinierbarkeit</label>
-      <select
-        value={formData.combinability}
-        onChange={(e) => setFormData({ ...formData, combinability: e.target.value })}
-        className="w-full p-2 border rounded"
-      >
-        <option value="">Bitte wählen</option>
-        <option value="Nicht mit anderen Angeboten kombinierbar">Nicht mit anderen Angeboten kombinierbar</option>
-        <option value="Mit anderen Angeboten kombinierbar">Mit anderen Angeboten kombinierbar</option>
-        <option value="Nach Absprache">Nach Absprache</option>
-      </select>
-    </div>
-  </div>
-
-  <div className="mt-3">
-    <label className="block text-sm font-medium mb-1">Zusätzliche Bedingungen</label>
-    <textarea
-      value={formData.conditionDetails}
-      onChange={(e) => setFormData({ ...formData, conditionDetails: e.target.value })}
-      placeholder="Optional"
-      className="w-full p-2 border rounded min-h-[80px]"
-    />
-  </div>
-</div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="border p-4 rounded-lg">
             <h3 className="text-sm font-semibold mb-3">Status</h3>
@@ -481,7 +403,7 @@ export default function EditDealForm({ deal }: { deal: DealData }) {
           disabled={loading}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? 'Saving...' : 'Update Deal'}
+          {loading ? 'Speichert...' : 'Promotion speichern'}
         </button>
       </form>
     </div>

@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 
 interface DealCardProps {
   deal: {
@@ -42,12 +41,8 @@ googleOpeningNow?: boolean | null
     combinability?: string | null
     conditionDetails?: string | null
   }
-  mode?: 'normal' | 'ourDeal'
-  isPreviewOpen?: boolean
-  onPreviewToggle?: (dealId: string, open: boolean) => void
-  isExpandedFromUrl?: boolean
-  showDetailsFromUrl?: boolean
-  shownDealIds?: string[]
+
+
 }
 
 function formatDate(date: string | Date | null | undefined) {
@@ -64,14 +59,7 @@ function formatDate(date: string | Date | null | undefined) {
   }
 }
 
-function getTextTeaser(text: string | null | undefined, maxLength: number) {
-  if (!text) return null
 
-  const normalized = text.replace(/\s+/g, ' ').trim()
-  if (normalized.length <= maxLength) return normalized
-
-  return `${normalized.slice(0, maxLength).trimEnd()}…`
-}
 function getUiCategoryLabel(category: string | null | undefined) {
   const labels: Record<string, string> = {
     Shopping: '🛍️ Shopping',
@@ -85,6 +73,7 @@ function getUiCategoryLabel(category: string | null | undefined) {
     'Freizeit & Unterhaltung': '🎉 Freizeit',
     'Reisen & Hotels': '✈️ Travel',
     'Bildung & Community': '👥 Community',
+    'Haustiere & Tiere': '🐾🤎 Pets',
   }
 
   return labels[category || ''] || category || 'Deal'
@@ -111,48 +100,19 @@ function trackDeal(data: {
   } catch {}
 }
 
-export default function DealCard({
-  deal,
-  mode = 'normal',
-  isPreviewOpen: isPreviewOpenProp,
-  onPreviewToggle,
-  isExpandedFromUrl = false,
-  showDetailsFromUrl = false,
-  shownDealIds,
-}: DealCardProps) {
+export default function DealCard({ deal }: DealCardProps) {
   
-  const [localPreviewOpen, setLocalPreviewOpen] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
   
 
-  const isOurDeal = mode === 'ourDeal'
   const businessSlug = deal.business?.slug
-  const pathname = usePathname()
 
-  const shownDealsQuery = shownDealIds && shownDealIds.length > 0
-    ? `&shownDeals=${shownDealIds.join(',')}`
-    : ''
 
-  const previewOpen =
-    typeof isPreviewOpenProp === 'boolean'
-      ? isPreviewOpenProp
-      : localPreviewOpen
 
-  const setPreviewOpen = (open: boolean) => {
-    if (typeof isPreviewOpenProp === 'boolean') {
-      onPreviewToggle?.(deal.id, open)
-      return
-    }
 
-    setLocalPreviewOpen(open)
-  }
-
-  const previewText = deal.previewText ?? deal.description
   const fullDescription = deal.fullDescription ?? deal.description
   const endDateValue = deal.validUntil ?? deal.endDate
   const distanceValue = deal.distanceKm ?? deal.distance
   const formattedEndDate = formatDate(endDateValue)
-  const previewTeaser = getTextTeaser(previewText, 180)
   const uiCategoryLabel = getUiCategoryLabel(deal.category)
 
   let imageSrc = deal.image || '/deals/scandeal.png'
@@ -166,14 +126,8 @@ export default function DealCard({
   }
 
   const profileHref = businessSlug ? `/profile/${businessSlug}` : '#'
- const dealHref = businessSlug
-  ? `/profile/${businessSlug}?dealId=${deal.id}#our-deal`
-  : '#'
 
-  useEffect(() => {
-    const savedDeals = JSON.parse(localStorage.getItem('savedDeals') || '[]')
-    setIsSaved(savedDeals.includes(deal.id))
-  }, [deal.id])
+
 
   useEffect(() => {
     trackDeal({
@@ -182,52 +136,16 @@ export default function DealCard({
       type: 'view',
     })
 
-    if (isOurDeal) {
-      trackDeal({
-        dealId: deal.id,
-        businessId: deal.businessId,
-        type: 'our_deal_view',
-      })
-    }
-  }, [deal.id, deal.businessId, isOurDeal])
 
-  const openPreview = () => {
-    trackDeal({
-      dealId: deal.id,
-      businessId: deal.businessId,
-      type: 'preview_open',
-    })
+  }, [deal.id, deal.businessId])
 
-    setPreviewOpen(true)
-  }
 
-  const closePreview = () => {
-    setPreviewOpen(false)
-  }
 
-  const toggleBookmark = () => {
-    const savedDeals = JSON.parse(localStorage.getItem('savedDeals') || '[]')
 
-    if (isSaved) {
-      const updated = savedDeals.filter((id: string) => id !== deal.id)
-      localStorage.setItem('savedDeals', JSON.stringify(updated))
-      setIsSaved(false)
-      return
-    }
-
-    if (!savedDeals.includes(deal.id)) {
-      savedDeals.push(deal.id)
-      localStorage.setItem('savedDeals', JSON.stringify(savedDeals))
-    }
-
-    setIsSaved(true)
-  }
-
-  
 
   const cardStyle: React.CSSProperties = {
     width: '100%',
-    maxWidth: previewOpen ? '650px' : '600px',
+    maxWidth: '600px',
     margin: '0 auto',
     boxSizing: 'border-box',
     position: 'relative',
@@ -236,7 +154,7 @@ export default function DealCard({
     borderRadius: '12px',
     background: '#121214',
     border:
-      isOurDeal || deal.isPremium
+      deal.isPremium
         ? '1.5px solid rgba(134, 239, 172, 0.2)'
         : '1px solid rgba(255, 255, 255, 0.05)',
     boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.02)',
@@ -258,48 +176,10 @@ export default function DealCard({
       >
 
 
-        {isOurDeal ? (
-          <Link
-            href={profileHref}
-            onClick={() =>
-              trackDeal({
-                dealId: deal.id,
-                businessId: deal.businessId,
-                type: 'our_deal_close',
-              })
-            }
-            style={{
-              color: '#e5e7eb',
-              textDecoration: 'none',
-              fontSize: '18px',
-              lineHeight: 1,
-            }}
-            aria-label="OUR DEAL schliessen"
-          >
-            ×
-          </Link>
-        ) : previewOpen ? (
-<Link
-  href={
-  shownDealsQuery
-    ? `${pathname}?shownDeals=${shownDealIds?.join(',')}#deal-${deal.id}`
-    : `${pathname}#deal-${deal.id}`
-}
-  style={{
-    color: '#e5e7eb',
-    textDecoration: 'none',
-    fontSize: '18px',
-    lineHeight: 1,
-    display: 'inline-block',
-  }}
-  aria-label="Preview schliessen"
->
-  ×
-</Link>
-        ) : null}
+        
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: isOurDeal ? 'flex-start' : 'center' }}>
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <div
           style={{
             width: '130px',
@@ -375,10 +255,10 @@ overflow: 'hidden',
           style={{
             
             minWidth: 0,
-            padding: isOurDeal ? '1rem 4.75rem 1rem 0' : '0.75rem 2rem 0.75rem 0',
+            padding: '0.75rem 2rem 0.75rem 0',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: isOurDeal ? 'flex-start' : 'center',
+            justifyContent: 'center',
             gap: '0.5rem',
             overflow: 'hidden',
           }}
@@ -440,36 +320,8 @@ overflow: 'hidden',
               </span>
             </div>
           )}
-{isOurDeal && (
-  <div
-  style={{
-    marginTop: '0.45rem',
-    width: isOurDeal ? 'calc(100% + 4.75rem)' : '100%',
-  }}
->
-    <Link
-  href={`/deal-pass/${deal.id}`}
-  style={{
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '0.64rem',
-    color: '#000000',
-    fontWeight: '700',
-    background: '#4ade80',
-    borderRadius: '12px',
-    padding: '0.62rem 0.9rem',
-    textAlign: 'center',
-    textDecoration: 'none',
-    boxSizing: 'border-box',
-  }}
->
-  DEALPASS ÖFFNEN
-</Link>
-  </div>
-)}
-          {!isOurDeal && (
+
+          {true && (
             <div
               style={{
                 fontSize: '0.72rem',
@@ -514,315 +366,103 @@ gap: '2px',
         </div>
       </div>
 
-    {!isOurDeal && !previewOpen && (
-  <div
-    style={{
-      width: '100%',
-      marginTop: '0.45rem',
-      paddingTop: '0.55rem',
-      borderTop: '1px solid rgba(255,255,255,0.05)',
-      display: 'grid',
-      gridTemplateColumns: '130px minmax(0,1fr) max-content',
-      alignItems: 'center',
-      fontSize: '0.72rem',
-      color: '#8f9bb3',
-    }}
-  >
-    <div
-  style={{
-    minWidth: 0,
-    display: 'flex',
-    justifyContent: 'flex-start',
-    paddingLeft: '0.15rem',
-  }}
->
-      <span
-        style={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          color: '#9ca3af',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.05)',
-          borderRadius: '10px',
-          padding: '0.28rem 0.55rem',
-         width: '130px',
-display: 'flex',
-alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '0.68rem',
-        }}
-      >
-        {uiCategoryLabel}
-      </span>
-    </div>
-
-    <div
-      style={{
-        minWidth: 0,
-        textAlign: 'center',
-        borderRight: '1px solid rgba(255,255,255,0.12)',
-        padding: '0 0.5rem',
-      }}
-    >
-      <span
-        style={{
-          display: 'block',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          fontSize: '0.76rem',
-          color: '#ffffff',
-        }}
-      >
-        {deal.business?.name}
-      </span>
-    </div>
-
-    <div
-      style={{
-        minWidth: 0,
-        display: 'flex',
-justifyContent: 'flex-start',
-paddingLeft: '0.35rem',
-      }}
-    >
-      <Link
-        href={`${pathname}?previewDeal=${deal.id}${shownDealsQuery}#deal-${deal.id}`}
-        style={{
-          color: '#86efac',
-          textDecoration: 'none',
-          whiteSpace: 'nowrap',
-          fontWeight: 500,
-          fontSize: '0.72rem',
-          borderBottom: '1px dashed rgba(134,239,172,0.5)',
-          paddingBottom: '2px',
-        }}
-      >
-        Preview öffnen
-      </Link>
-    </div>
-  </div>
-)}
-{!isOurDeal && previewOpen && (
-  <div
-    style={{
-      width: '100%',
-      marginTop: '0.45rem',
-      paddingTop: '0.55rem',
-      borderTop: '1px solid rgba(255,255,255,0.05)',
-      display: 'grid',
-      gridTemplateColumns: '130px minmax(0,1fr) max-content',
-      alignItems: 'center',
-      fontSize: '0.72rem',
-      color: '#8f9bb3',
-    }}
-  >
-    <div
-      style={{
-        minWidth: 0,
-        display: 'flex',
-        justifyContent: 'flex-start',
-        paddingLeft: '0.15rem',
-      }}
-    >
-      <span
-        style={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          color: '#9ca3af',
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.05)',
-          borderRadius: '10px',
-          padding: '0.28rem 0.55rem',
-          width: '130px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '0.68rem',
-        }}
-      >
-        {uiCategoryLabel}
-      </span>
-    </div>
-
-    <div
-      style={{
-        minWidth: 0,
-        textAlign: 'center',
-        padding: '0 0.5rem',
-      }}
-    >
-      <span
-        style={{
-          display: 'block',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          fontSize: '0.76rem',
-          color: '#ffffff',
-        }}
-      >
-        {deal.business?.name}
-      </span>
-      
-    </div>
-    <div
-  style={{
-    minWidth: 0,
-    display: 'flex',
-    justifyContent: 'flex-start',
-    paddingLeft: '0.35rem',
-  }}
->
-  <Link
-    href={dealHref}
-    style={{
-      color: '#86efac',
-      textDecoration: 'none',
-      whiteSpace: 'nowrap',
-      fontWeight: 500,
-      fontSize: '0.68rem',
-      paddingBottom: '2px',
-      background: 'rgba(134,239,172,0.06)',
-border: '1px solid rgba(134,239,172,0.35)',
-borderRadius: '10px',
-padding: '0.32rem 0.5rem',
-display: 'inline-flex',
-alignItems: 'center',
-justifyContent: 'center',
-    }}
-  >
-    Deal ansehen
-  </Link>
-</div>
-  </div>
-)}
-      {!isOurDeal && previewOpen && previewTeaser && (
+      {true && (
         <div
           style={{
-            fontSize: '0.8rem',
-            color: '#cbd5e1',
-            lineHeight: 1.45,
-            marginTop: '0.75rem',
-            padding: '0.65rem 0.75rem',
-            background: 'rgba(255,255,255,0.02)',
-            borderRadius: '8px',
-            border: '1px solid rgba(134, 239, 172, 0.2)',
-            borderLeft: '3px solid rgba(134, 239, 172, 0.2)',
+            width: '100%',
+            marginTop: '0.45rem',
+            paddingTop: '0.55rem',
+            borderTop: '1px solid rgba(255,255,255,0.05)',
+            display: 'grid',
+            gridTemplateColumns: '130px minmax(0,1fr) max-content',
+            alignItems: 'center',
+            fontSize: '0.72rem',
+            color: '#8f9bb3',
           }}
         >
-          {previewTeaser}
-        </div>
-      )}
-
-      
-
-      {isOurDeal && (
-        <>
-
-          {fullDescription && (
-            <div
+          <div
+            style={{
+              minWidth: 0,
+              display: 'flex',
+              justifyContent: 'flex-start',
+              paddingLeft: '0.15rem',
+            }}
+          >
+            <span
               style={{
-                fontSize: '0.8rem',
-                color: '#cbd5e1',
-                lineHeight: 1.45,
-                marginTop: '0.75rem',
-                padding: '0.65rem 0.75rem',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '8px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                color: '#9ca3af',
+                background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.05)',
+                borderRadius: '10px',
+                padding: '0.28rem 0.55rem',
+                width: '130px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.68rem',
               }}
             >
-              {fullDescription}
-            </div>
-          )}
+              {uiCategoryLabel}
+            </span>
+          </div>
 
-          
-
-       
-            <div
+          <div
+            style={{
+              minWidth: 0,
+              textAlign: 'center',
+              borderRight: '1px solid rgba(255,255,255,0.12)',
+              padding: '0 0.5rem',
+            }}
+          >
+            <span
               style={{
-                marginTop: '0.6rem',
-                borderRadius: '12px',
-                border: '1px solid rgba(134, 239, 172, 0.2)',
-                padding: '0.6rem 0.7rem',
-                background: 'rgba(0,0,0,0.3)',
+                display: 'block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                fontSize: '0.76rem',
+                color: '#ffffff',
               }}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.8rem',
-                  color: '#d1d5db',
-                  marginBottom: '0.4rem',
-                }}
-              >
-                <span>ℹ️</span>
-                <span>Details & Bedingungen</span>
-              </div>
+              {deal.business?.name}
+            </span>
+          </div>
 
-              <div style={detailRowStyle}>
-                <span>📅 Gültig bis</span>
-                <span>{formattedEndDate || 'Nach Angabe'}</span>
-              </div>
-
-              {deal.redeemableWhen && (
-  <div style={detailRowStyle}>
-    <span>🕒 Einlösbar</span>
-    <span>{deal.redeemableWhen}</span>
-  </div>
-)}
-
-{deal.redeemableFor && (
-  <div style={detailRowStyle}>
-    <span>👤 Einlösbar für</span>
-    <span>{deal.redeemableFor}</span>
-  </div>
-)}
-
-{deal.requirements && (
-  <div style={detailRowStyle}>
-    <span>✔️ Voraussetzung</span>
-    <span>{deal.requirements}</span>
-  </div>
-)}
-
-{deal.combinability && (
-  <div style={detailRowStyle}>
-    <span>🔗 Kombinierbarkeit</span>
-    <span>{deal.combinability}</span>
-  </div>
-)}
-
-{deal.conditionDetails && (
-  <div
-    style={{
-      marginTop: '0.75rem',
-      fontSize: '0.75rem',
-      color: '#9ca3af',
-      lineHeight: 1.5,
-    }}
-  >
-    {deal.conditionDetails}
-  </div>
-)}
-            </div>
-           
-            </>
+          <div
+            style={{
+              minWidth: 0,
+              display: 'flex',
+              justifyContent: 'flex-start',
+              paddingLeft: '0.35rem',
+            }}
+          >
+            <Link
+              href={profileHref}
+              onClick={() =>
+                trackDeal({
+                  dealId: deal.id,
+                  businessId: deal.businessId,
+                  type: 'promo_click',
+                })
+              }
+              style={{
+                color: '#86efac',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                fontWeight: 500,
+                fontSize: '0.72rem',
+                borderBottom: '1px dashed rgba(134,239,172,0.5)',
+                paddingBottom: '2px',
+              }}
+            >
+              Zum Business
+            </Link>
+          </div>
+        </div>
       )}
     </article>
   )
-}
-
-const detailRowStyle = {
-  display: 'grid',
-  gridTemplateColumns: '145px 1fr',
-  columnGap: '12px',
-  alignItems: 'start',
-  marginTop: '10px',
-  fontSize: '0.72rem',
 }

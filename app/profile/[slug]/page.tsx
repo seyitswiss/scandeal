@@ -14,11 +14,7 @@ import { getInstantRelevanceScore } from '@/lib/journey'
 interface Props {
   params: Promise<{ slug: string }>
   searchParams: Promise<{
-    dealId?: string
-    previewDeal?: string
-    redeemDeal?: string
-    detailsDeal?: string
-    shownDeals?: string
+
     reviewTone?: string
     reviewThanks?: string
 hideReview?: string
@@ -339,11 +335,7 @@ function shuffle<T>(array: T[]): T[] {
 export default async function ProfilePage({ params, searchParams }: Props) {
   const { slug } = await params
 const {
-  dealId,
-  previewDeal,
-  redeemDeal,
-  detailsDeal,
-  shownDeals,
+
   reviewTone,
 hideReview,
 reviewThanks
@@ -372,29 +364,7 @@ const reviewHidden =
   const reviewHiddenForever =
   cookieStore.get(`scandeal_review_hidden_forever_${business.slug}`)?.value === 'true'
 
-  let ourDeal: Awaited<ReturnType<typeof prisma.deal.findUnique>> | null = null
-
-  if (dealId || redeemDeal || detailsDeal) {
-    const targetDeal = await prisma.deal.findUnique({
-  where: { id: detailsDeal || redeemDeal || dealId },
-  include: {
-   business: {
-  select: {
-    name: true,
-    slug: true,
-    logoUrl: true,
-    googleOpeningNow: true,
-    googleOpeningText: true,
-    googlePlaceId: true,
-  },
-},
-  },
-})
-
-if (targetDeal) {
-  ourDeal = targetDeal
-}
-}
+  
 
  const allDeals = await prisma.deal.findMany({
   include: {
@@ -435,16 +405,11 @@ const filteredDeals = allDeals.filter((deal: (typeof allDeals)[0]) => {
   return (
     deal.businessId !== business.id &&
     !hasBlockedSubCategory &&
-    (!ourDeal || deal.id !== ourDeal.id) &&
+
     isDealActive(deal)
   )
 })
-  const forcedPreviewDeal = previewDeal
-  ? allDeals.find((deal) => deal.id === previewDeal)
-  : null
-const forcedDetailsDeal = detailsDeal
-  ? allDeals.find((deal) => deal.id === detailsDeal)
-  : null
+
   function getDistanceScore(distanceKm: number | null): number {
   if (distanceKm === null) return 0
   if (distanceKm <= 1) return 5
@@ -513,54 +478,12 @@ const normalDeals = strongRelevantDeals.filter(
   (deal) => !deal.isPremium
 )
 
-const hasUrlState =
-  previewDeal ||
-  redeemDeal ||
-  detailsDeal ||
-  reviewTone
-    const shownDealIds = shownDeals
-    ? shownDeals
-        .split(',')
-        .map((id) => id.trim())
-        .filter(Boolean)
-    : []
-  const preserveShownDeals = shownDealIds.length > 0
-  const randomPremiumDeals = hasUrlState ? premiumDeals : shuffle(premiumDeals)
-  const randomNormalDeals = hasUrlState ? normalDeals : shuffle(normalDeals)
+const randomPremiumDeals = shuffle(premiumDeals)
+const randomNormalDeals = shuffle(normalDeals)
 
-  const selectedDeals: typeof scoredDeals = []
+const selectedDeals: typeof scoredDeals = []
 
-  if (preserveShownDeals) {
-    const dealById = new Map(scoredDeals.map((deal) => [deal.id, deal]))
-
-    for (const id of shownDealIds) {
-      const deal = dealById.get(id)
-      if (deal) selectedDeals.push(deal)
-    }
-
-    const selectedDealIds = new Set(selectedDeals.map((deal) => deal.id))
-
-    if (
-      forcedPreviewDeal &&
-      !selectedDealIds.has(forcedPreviewDeal.id)
-    ) {
-      selectedDeals.push({
-        ...forcedPreviewDeal,
-        relevanceScore: 999,
-      } as (typeof scoredDeals)[0])
-    }
-
-    if (
-      forcedDetailsDeal &&
-      !selectedDealIds.has(forcedDetailsDeal.id)
-    ) {
-      selectedDeals.push({
-        ...forcedDetailsDeal,
-        relevanceScore: 998,
-      } as (typeof scoredDeals)[0])
-    }
-  } else {
-    const usedCategories = new Set<string>()
+const usedCategories = new Set<string>()
 
 function getDealCategories(deal: any): string[] {
   const categories = []
@@ -627,31 +550,15 @@ for (const deal of shuffle(fallbackDeals)) {
     registerDealCategories(deal)
   }
 }
-    if (
-      forcedPreviewDeal &&
-      !selectedDeals.some((deal) => deal.id === forcedPreviewDeal.id)
-    ) {
-      selectedDeals.push({
-        ...forcedPreviewDeal,
-        relevanceScore: 999,
-      } as (typeof scoredDeals)[0])
-    }
-    if (
-      forcedDetailsDeal &&
-      !selectedDeals.some((deal) => deal.id === forcedDetailsDeal.id)
-    ) {
-      selectedDeals.push({
-        ...forcedDetailsDeal,
-        relevanceScore: 998,
-      } as (typeof scoredDeals)[0])
-    }
+  
+
 
     selectedDeals.sort((a, b) => {
       if (a.isPremium && !b.isPremium) return -1
       if (!a.isPremium && b.isPremium) return 1
       return b.finalScore - a.finalScore
     })
-  }
+  
 
 
 const selectedDealsWithLiveOpening = await Promise.all(
@@ -987,7 +894,7 @@ const links = [...allLinks].sort((a, b) => {
   <div className="relative">
     <a
       href={`/api/review-hide?slug=${business.slug}&redirect=${encodeURIComponent(
-  `/profile/${business.slug}?shownDeals=${selectedDeals.map((deal) => deal.id).join(',')}`
+  `/profile/${business.slug}`
 )}`}
       className="absolute -left-2 -top-2 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black text-lg text-white shadow-lg"
     >
@@ -1088,12 +995,7 @@ const links = [...allLinks].sort((a, b) => {
                 }}
               >
                 <DealCardList
-  ourDeal={ourDeal}
   selectedDeals={selectedDealsWithLiveOpening}
-  previewDealId={previewDeal}
-  redeemDealId={redeemDeal}
-  detailsDealId={detailsDeal}
-  shownDealIds={shownDealIds}
 />
               </div>
             </div>
