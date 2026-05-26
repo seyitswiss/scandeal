@@ -162,6 +162,21 @@ export default function DealCard({ deal }: DealCardProps) {
   }
 
   return (
+<Link
+  href={profileHref}
+  onClick={() =>
+    trackDeal({
+      dealId: deal.id,
+      businessId: deal.businessId,
+      type: 'promo_click',
+    })
+  }
+  style={{
+    textDecoration: 'none',
+    color: 'inherit',
+    display: 'block',
+  }}
+>
 <article id={`deal-${deal.id}`} style={cardStyle}>      
   <div
         style={{
@@ -439,30 +454,11 @@ gap: '2px',
               paddingLeft: '0.35rem',
             }}
           >
-            <Link
-              href={profileHref}
-              onClick={() =>
-                trackDeal({
-                  dealId: deal.id,
-                  businessId: deal.businessId,
-                  type: 'promo_click',
-                })
-              }
-              style={{
-                color: '#86efac',
-                textDecoration: 'none',
-                whiteSpace: 'nowrap',
-                fontWeight: 500,
-                fontSize: '0.72rem',
-                borderBottom: '1px dashed rgba(134,239,172,0.5)',
-                paddingBottom: '2px',
-              }}
-            >
-              Zum Business
-            </Link>
+            
           </div>
         </div>
       )}
     </article>
+  </Link>
   )
 }

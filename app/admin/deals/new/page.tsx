@@ -82,7 +82,7 @@ useEffect(() => {
 
   async function handleGenerateAI(type: 'text' | 'image' | 'all') {
     if (!formData.businessId) {
-      alert('Please select a business first')
+      alert('Bitte zuerst ein Business auswählen')
       return
     }
 
@@ -117,11 +117,11 @@ useEffect(() => {
         }
       } else {
         const error = await res.json()
-        alert(error.error || 'Failed to generate deal content')
+        alert(error.error || 'Promotion konnte nicht generiert werden')
       }
     } catch (error) {
       console.error('Generation error:', error)
-      alert('Failed to generate deal content')
+      alert('Promotion konnte nicht generiert werden')
     } finally {
       setGeneratingAI(false)
     }
@@ -145,7 +145,7 @@ useEffect(() => {
     if (!file) return
 
     if (file.type !== 'video/mp4') {
-      alert('Please upload a valid MP4 file')
+      alert('Bitte eine gültige MP4-Datei hochladen')
       return
     }
 
@@ -158,8 +158,8 @@ useEffect(() => {
     })
 
     if (!res.ok) {
-      const error = await res.json().catch(() => ({ error: 'Upload failed' }))
-      alert(error.error || 'Upload failed')
+      const error = await res.json().catch(() => ({ error: 'Upload fehlgeschlagen' }))
+      alert(error.error || 'Upload fehlgeschlagen')
       return
     }
 
@@ -173,7 +173,7 @@ useEffect(() => {
     e.preventDefault()
     
     if (!formData.businessId) {
-      alert('Please select a business')
+      alert('Bitte ein Business auswählen')
       return
     }
     
@@ -188,7 +188,7 @@ useEffect(() => {
     if (res.ok) {
       router.push('/admin/deals')
     } else {
-      alert('Failed to create deal')
+      alert('Promotion konnte nicht erstellt werden')
     }
 
     setLoading(false)
@@ -196,15 +196,15 @@ useEffect(() => {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-5">Add New Deal</h1>
+      <h1 className="text-2xl font-bold mb-5">Neue Promotion erstellen</h1>
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* KI Section */}
         <div className="border bg-slate-50 p-4 rounded-lg">
           <div className="flex flex-col gap-3">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold">✨ Dealfindung / KI-Idee</h2>
-                <p className="text-sm text-gray-600 mt-1">Ziel oder Idee eingeben. Die KI erstellt daraus Titel, Highlight, Beschreibung und Bild.</p>
+                <h2 className="text-lg font-semibold">✨ Promo-Idee / KI</h2>
+                <p className="text-sm text-gray-600 mt-1">Ziel / Promo-Idee eingeben. Die KI erstellt daraus Titel, Highlight, Beschreibung und Bild.</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
@@ -238,12 +238,12 @@ useEffect(() => {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium mb-1">Ziel / Deal-Idee</label>
+                <label className="block text-sm font-medium mb-1">Ziel / Promo-Idee</label>
                 <input
                   type="text"
                   value={dealIdea}
                   onChange={(e) => setDealIdea(e.target.value)}
-                  placeholder="z. B. mehr Laufkundschaft, Montags Deal, 20 Min. gratis ab 60 Min."
+                  placeholder="z. B. mehr Laufkundschaft, neues Gericht, freie Termine, lokale Sichtbarkeit"
                   className="w-full p-2 border rounded"
                 />
                 <p className="mt-3 text-xs text-gray-500">
@@ -256,8 +256,8 @@ useEffect(() => {
     'Neukunden',
     'Freie Termine',
     'Mehr Aufträge',
-    'Montags Deal',
-    'Mittags Deal',
+    'Lokaler Spot',
+    'Besonderheit zeigen',
   ].map((idea) => (
     <button
       key={idea}
@@ -323,14 +323,14 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Deal Details Section */}
+        {/* Promo Details Section */}
         <div className="border p-4 rounded-lg">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold">Deal Details</h2>
+            <h2 className="text-lg font-semibold">Promo Details</h2>
           </div>
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium mb-1">Title *</label>
+              <label className="block text-sm font-medium mb-1">Promo Titel *</label>
               <input
                 type="text"
                 required
@@ -351,7 +351,7 @@ useEffect(() => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Description</label>
+              <label className="block text-sm font-medium mb-1">Beschreibung</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -402,7 +402,7 @@ useEffect(() => {
                 onChange={(e) => handleBusinessChange(e.target.value)}
                 className="w-full p-2 border rounded"
               >
-                <option value="">{businessLoading ? 'Loading...' : 'Select a business'}</option>
+                <option value="">{businessLoading ? 'Lädt...' : 'Business auswählen'}</option>
                 {businesses.map((business) => (
                   <option key={business.id} value={business.id}>
                     {business.name}
@@ -412,86 +412,6 @@ useEffect(() => {
             </div>
           )}
         </div>
-{/* Einlösung & Bedingungen */}
-<div className="border p-4 rounded-lg">
-  <h2 className="text-lg font-semibold mb-3">Einlösung & Bedingungen</h2>
-
-  <div className="grid gap-3 sm:grid-cols-2">
-    <div>
-      <label className="block text-sm font-medium mb-1">Einlösbar</label>
-      <select
-        value={formData.redeemableWhen}
-        onChange={(e) => setFormData({ ...formData, redeemableWhen: e.target.value })}
-        className="w-full p-2 border rounded"
-      >
-        <option value="">Bitte wählen</option>
-        <option value="Täglich">Täglich</option>
-        <option value="Mo – Fr">Mo – Fr</option>
-        <option value="Wochenende">Wochenende</option>
-        <option value="Nach Vereinbarung">Nach Vereinbarung</option>
-        <option value="Nur ausgewählte Tage">Nur ausgewählte Tage</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium mb-1">Einlösbar für</label>
-      <select
-        value={formData.redeemableFor}
-        onChange={(e) => setFormData({ ...formData, redeemableFor: e.target.value })}
-        className="w-full p-2 border rounded"
-      >
-        <option value="">Bitte wählen</option>
-        <option value="1 Person">1 Person</option>
-        <option value="2 Personen">2 Personen</option>
-        <option value="Familie">Familie</option>
-        <option value="Gruppe">Gruppe</option>
-        <option value="Pro Kunde 1x">Pro Kunde 1x</option>
-        <option value="Unbegrenzt">Unbegrenzt</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium mb-1">Voraussetzung</label>
-      <select
-        value={formData.requirements}
-        onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-        className="w-full p-2 border rounded"
-      >
-        <option value="">Keine</option>
-        <option value="Termin erforderlich">Termin erforderlich</option>
-        <option value="Reservation erforderlich">Reservation erforderlich</option>
-        <option value="Nur vor Ort einlösbar">Nur vor Ort einlösbar</option>
-        <option value="Nur für Neukunden">Nur für Neukunden</option>
-        <option value="Mindestbestellwert erforderlich">Mindestbestellwert erforderlich</option>
-        <option value="Gutschein vorzeigen">Gutschein vorzeigen</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium mb-1">Kombinierbarkeit</label>
-      <select
-        value={formData.combinability}
-        onChange={(e) => setFormData({ ...formData, combinability: e.target.value })}
-        className="w-full p-2 border rounded"
-      >
-        <option value="">Bitte wählen</option>
-        <option value="Nicht mit anderen Angeboten kombinierbar">Nicht mit anderen Angeboten kombinierbar</option>
-        <option value="Mit anderen Angeboten kombinierbar">Mit anderen Angeboten kombinierbar</option>
-        <option value="Nach Absprache">Nach Absprache</option>
-      </select>
-    </div>
-  </div>
-
-  <div className="mt-3">
-    <label className="block text-sm font-medium mb-1">Zusätzliche Bedingungen</label>
-    <textarea
-      value={formData.conditionDetails}
-      onChange={(e) => setFormData({ ...formData, conditionDetails: e.target.value })}
-      placeholder="Optional, z. B. nicht an Feiertagen gültig"
-      className="w-full p-2 border rounded min-h-[80px]"
-    />
-  </div>
-</div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="border p-4 rounded-lg">
             <h3 className="text-sm font-semibold mb-3">Status</h3>
@@ -552,7 +472,7 @@ useEffect(() => {
           disabled={loading}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? 'Saving...' : 'Save Deal'}
+          {loading ? 'Speichert...' : 'Promotion speichern'}
         </button>
       </form>
     </div>
