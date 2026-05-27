@@ -58,7 +58,7 @@ Core rules:
 - Keep it natural and believable for a small local business
 
 Structure:
-- Title: 2–5 words only. It should describe the business, product, service, or local spot.
+- Title: 2–4 words only. Do NOT include the business name. It should describe the experience, product, service, or local discovery reason.
 - Highlight: maximum 3–7 words. It should be a short hook, not a discount.
 - Description:
   - max 2 short paragraphs
@@ -133,7 +133,7 @@ ${businessDescription ? `Business description: ${businessDescription}
 - Do not invent fake claims such as "best", "number 1", "most popular", awards, opening hours, or customer numbers.
 - Avoid vague marketing words like "exklusiv", "einzigartig", "unschlagbar", "Spezialvorteil".
 - Output only valid JSON with the exact keys: title, highlight, description.
-- Title: 2-5 words only. It must describe the business, product, service, or local spot.
+- Title: 2-4 words only. Do NOT include the business name. It must describe the experience, product, service, or local discovery reason.
 - Highlight: maximum 3-7 words. It must be a short hook, not a discount.
 - Description: maximum 2 short paragraphs.
 - First paragraph creates interest.
@@ -176,7 +176,7 @@ function getDefaultContent(
   category: string
 ): Omit<GeneratedDealContent, 'image'> {
 return {
-  title: `${businessName}`,
+  title: `Lokalen Spot entdecken`,
   highlight: `Lokaler Spot zum Entdecken`,
   description: `Entdecke ${businessName} und erfahre mehr über das Angebot, die Atmosphäre und die wichtigsten Infos auf einen Blick.`,
 }
@@ -240,12 +240,80 @@ async function generateDealImage(
     return undefined
   }
 }
+const categoryImageMoodMap: Record<string, string> = {
+  Shopping:
+    'modern retail atmosphere, stylish products, cinematic lighting, realistic local shopping vibe',
 
-function buildImagePrompt(businessName: string, category: string, subCategory: string): string {
-return `Create a professional, realistic promotional image for the local business "${businessName}" (${category}/${subCategory}).
-Style: modern, commercial, clean, trustworthy, local discovery aesthetic.
-Show the service, product, food, place, or atmosphere relevant to ${subCategory} in an appealing but realistic way.
-No discount signs, no coupon design, no text, no logos, no watermarks.
-Size: 1024x1024.
-Professional lighting and composition.`
+  Gastronomie:
+    'warm food atmosphere, appetizing presentation, cinematic lighting, realistic restaurant mood',
+
+  'Beauty & Gesundheit':
+    'clean elegant beauty atmosphere, soft lighting, calm premium wellness mood',
+
+  'Haus & Handwerk':
+    'professional craftsmanship atmosphere, clean realistic work environment, trustworthy service mood',
+
+  'Bau & Immobilien':
+    'modern architecture atmosphere, clean premium real estate mood, professional lighting',
+
+  'Auto & Mobilität':
+    'modern mobility atmosphere, cinematic automotive lighting, realistic transport environment',
+
+  Dienstleistungen:
+    'modern professional service atmosphere, clean office aesthetic, trustworthy local business mood',
+
+  'Sofortbedarf & Unterwegs':
+    'urban convenience atmosphere, modern roadside aesthetic, realistic quick stop vibe',
+
+  'Freizeit & Unterhaltung':
+    'vibrant entertainment atmosphere, cinematic leisure mood, lively realistic setting',
+
+  'Reisen & Hotels':
+    'warm hospitality atmosphere, premium travel mood, cinematic hotel aesthetic',
+
+  'Bildung & Community':
+    'friendly educational atmosphere, welcoming community environment, modern realistic mood',
+
+  'Haustiere & Tiere':
+    'warm pet-friendly atmosphere, realistic animal care environment, friendly local mood',
+}
+function buildImagePrompt(
+  businessName: string,
+  category: string,
+  subCategory: string
+): string {
+  const categoryMood =
+    categoryImageMoodMap[category] ||
+    'modern local discovery atmosphere'
+
+  return `
+Create a professional realistic local discovery image for "${businessName}" (${category}/${subCategory}).
+
+Main atmosphere:
+${categoryMood}
+
+Subcategory context:
+${subCategory}
+
+Style:
+modern mobile app aesthetic,
+cinematic lighting,
+realistic atmosphere,
+high quality photography,
+emotionally appealing,
+lighting and colors that fit the category mood,
+not stock-photo looking,
+premium local discovery platform feeling.
+
+Show the service, food, product, place, or atmosphere naturally relevant to the subcategory.
+
+No text.
+No logos.
+No watermarks.
+No coupons.
+No discount design.
+No fake advertising layout.
+
+Professional composition and realistic depth.
+`
 }

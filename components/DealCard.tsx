@@ -145,7 +145,7 @@ export default function DealCard({ deal }: DealCardProps) {
 
   const cardStyle: React.CSSProperties = {
     width: '100%',
-    maxWidth: '600px',
+    maxWidth: '640px',
     margin: '0 auto',
     boxSizing: 'border-box',
     position: 'relative',
@@ -153,12 +153,12 @@ export default function DealCard({ deal }: DealCardProps) {
     color: 'inherit',
     borderRadius: '12px',
     background: '#121214',
-    border:
-      deal.isPremium
-        ? '1.5px solid rgba(134, 239, 172, 0.2)'
-        : '1px solid rgba(255, 255, 255, 0.05)',
+   border:
+  deal.isPremium
+    ? '1px solid rgba(134, 239, 172, 0.10)'
+    : '1px solid rgba(255, 255, 255, 0.03)',
     boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.02)',
-    padding: '0.2rem 0.25rem',
+    padding: 0,
   }
 
   return (
@@ -194,16 +194,26 @@ export default function DealCard({ deal }: DealCardProps) {
         
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: '1rem',
+          alignItems: 'stretch',
+        
+        }}
+      >
         <div
           style={{
-            width: '130px',
-            height: '110px',
+            width: '160px',
+            height: '100%',
             flexShrink: 0,
-            background: '#777',
+            alignSelf: 'stretch',
+            background: '#111',
             borderRadius: '12px',
             overflow: 'hidden',
             position: 'relative',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
+
           }}
         >
           {deal.isPremium && imageSrc.endsWith('.mp4') ? (
@@ -216,7 +226,8 @@ export default function DealCard({ deal }: DealCardProps) {
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
+                                objectFit: 'cover',
+                objectPosition: 'center',
                 display: 'block',
               }}
             />
@@ -227,7 +238,8 @@ export default function DealCard({ deal }: DealCardProps) {
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
+                                objectFit: 'cover',
+                objectPosition: 'center',
                 display: 'block',
               }}
               onError={(event) => {
@@ -235,42 +247,53 @@ export default function DealCard({ deal }: DealCardProps) {
                 target.src = '/deals/scandeal.png'
               }}
                         />
+                        
           )}
 
-          {deal.business?.logoUrl && (
-            <div
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: '-0.55rem',
+              padding: '0.15rem 0 0.7rem',
+              zIndex: 3,
+              display: 'flex',
+              justifyContent: 'center',
+              background:
+                'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.72) 38%, rgba(0,0,0,0.22) 72%, rgba(0,0,0,0) 100%)',
+              backdropFilter: 'blur(3px)',
+              WebkitBackdropFilter: 'blur(3px)',
+            }}
+          >
+            <span
               style={{
-                position: 'absolute',
-                bottom: '8px',
-                right: '8px',
-                width: '42px',
-                height: '42px',
-                borderRadius: '10px',
-background: '#fff',
-padding: '1px',
-overflow: 'hidden',
-                
+                fontSize: '0.68rem',
+                color: '#ffffff',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '999px',
+                padding: '0.22rem 0.55rem',
+                whiteSpace: 'nowrap',
+                                width: '116px',
+                height: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                boxSizing: 'border-box',
               }}
             >
-              <img
-                src={deal.business.logoUrl}
-                alt={deal.business.name}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain',
-                  borderRadius: '10px',
-                }}
-              />
-            </div>
-          )}
+              {uiCategoryLabel}
+            </span>
+          </div>
         </div>
 
         <div
           style={{
             
             minWidth: 0,
-            padding: '0.75rem 2rem 0.75rem 0',
+            padding: '0.75rem 0.75rem 3.2rem 0',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -296,55 +319,30 @@ overflow: 'hidden',
           </div>
 
           {deal.highlight && (
-            <div
-              style={{
-                color: '#86efac',
-                fontSize: '0.7rem',
-                fontWeight: 400,
-                opacity: 0.7,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                width: 'fit-content',
-              }}
-            >
-              <span
-                style={{
-                  width: '12px',
-                  height: '12px',
-                  border: '1px solid rgba(134, 239, 172, 0.2)',
-                  borderRadius: '50%',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.6rem',
-                  flexShrink: 0,
-                }}
-              >
-                ✔
-              </span>
-              <span
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  minWidth: 0,
-                }}
-              >
-                {deal.highlight}
-              </span>
-            </div>
-          )}
-
+  <div
+    style={{
+      color: '#d1d5db',
+      fontSize: '0.72rem',
+      fontWeight: 400,
+      opacity: 0.82,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      marginTop: '2px',
+    }}
+  >
+    {deal.highlight}
+  </div>
+)}
           {true && (
             <div
               style={{
                 fontSize: '0.72rem',
                 color: '#8f9bb3',
                 display: 'flex',
-flexDirection: 'column',
-alignItems: 'flex-start',
-gap: '2px',
+alignItems: 'center',
+gap: '10px',
+flexWrap: 'wrap',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 marginTop: '4px',
@@ -365,15 +363,28 @@ gap: '2px',
   <div
     style={{
       fontSize: '0.72rem',
-      color: deal.business.googleOpeningNow ? '#86efac' : '#8f9bb3',
-      marginTop: '2px',
+      color: deal.business.googleOpeningNow ? '#86efac' : '#60a5fa',
+      
       overflow: 'hidden',
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
     }}
   >
     {deal.business.googleOpeningNow ? '🟢 ' : '🕒 '}
-    {deal.business.googleOpeningText}
+    {deal.business.googleOpeningText
+  ?.replace('Rund um die Uhr geöffnet', '24/7 offen')
+  ?.replace('Rund um die Uhr', '24/7')
+
+  ?.replace('Öffnet Donnerstag um ', 'öffnet Do ')
+  ?.replace('Öffnet Freitag um ', 'öffnet Fr ')
+  ?.replace('Öffnet Samstag um ', 'öffnet Sa ')
+  ?.replace('Öffnet Sonntag um ', 'öffnet So ')
+  ?.replace('Öffnet Montag um ', 'öffnet Mo ')
+  ?.replace('Öffnet Dienstag um ', 'öffnet Di ')
+  ?.replace('Öffnet Mittwoch um ', 'öffnet Mi ')
+
+  ?.replace('Geöffnet bis ', 'offen bis ')
+}
   </div>
 )}
             </div>
@@ -381,83 +392,51 @@ gap: '2px',
         </div>
       </div>
 
-      {true && (
-        <div
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: '-1.55rem',
+          height: '54px',
+          borderTop: '1px solid rgba(255,255,255,0.07)',
+          display: 'grid',
+          gridTemplateColumns: '138px minmax(0,1fr) 18px',
+          alignItems: 'center',
+          padding: '0 0.8rem',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }}
+      >
+        <div />
+
+        <span
           style={{
-            width: '100%',
-            marginTop: '0.45rem',
-            paddingTop: '0.55rem',
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-            display: 'grid',
-            gridTemplateColumns: '130px minmax(0,1fr) max-content',
-            alignItems: 'center',
-            fontSize: '0.72rem',
-            color: '#8f9bb3',
+            display: 'block',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            fontSize: '0.84rem',
+            color: '#ffffff',
+            textAlign: 'center',
+            padding: '0 0.5rem',
+            transform: 'translateY(-14px)',
           }}
         >
-          <div
-            style={{
-              minWidth: 0,
-              display: 'flex',
-              justifyContent: 'flex-start',
-              paddingLeft: '0.15rem',
-            }}
-          >
-            <span
-              style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                color: '#9ca3af',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.05)',
-                borderRadius: '10px',
-                padding: '0.28rem 0.55rem',
-                width: '130px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '0.68rem',
-              }}
-            >
-              {uiCategoryLabel}
-            </span>
-          </div>
+          {deal.business?.name}
+        </span>
 
-          <div
-            style={{
-              minWidth: 0,
-              textAlign: 'center',
-              borderRight: '1px solid rgba(255,255,255,0.12)',
-              padding: '0 0.5rem',
-            }}
-          >
-            <span
-              style={{
-                display: 'block',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                fontSize: '0.76rem',
-                color: '#ffffff',
-              }}
-            >
-              {deal.business?.name}
-            </span>
-          </div>
-
-          <div
-            style={{
-              minWidth: 0,
-              display: 'flex',
-              justifyContent: 'flex-start',
-              paddingLeft: '0.35rem',
-            }}
-          >
-            
-          </div>
-        </div>
-      )}
+        <span
+          style={{
+            color: 'rgba(255,255,255,0.45)',
+            fontSize: '0.9rem',
+            lineHeight: 1,
+            transform: 'translateY(-14px)',
+          }}
+        >
+          →
+        </span>
+      </div>
     </article>
   </Link>
   )
