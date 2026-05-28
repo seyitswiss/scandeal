@@ -159,6 +159,7 @@ export default function DealCard({ deal }: DealCardProps) {
     : '1px solid rgba(255, 255, 255, 0.03)',
     boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.02)',
     padding: 0,
+    height: '160px',
   }
 
   return (
@@ -199,12 +200,13 @@ export default function DealCard({ deal }: DealCardProps) {
           display: 'flex',
           gap: '1rem',
           alignItems: 'stretch',
+          height: '100%',
         
         }}
       >
         <div
           style={{
-            width: '160px',
+            width: '180px',
             height: '100%',
             flexShrink: 0,
             alignSelf: 'stretch',
@@ -255,8 +257,8 @@ export default function DealCard({ deal }: DealCardProps) {
               position: 'absolute',
               left: 0,
               right: 0,
-              bottom: '-0.55rem',
-              padding: '0.15rem 0 0.7rem',
+              bottom: '-0.75rem',
+               padding: '0.15rem 0 0.7rem',
               zIndex: 3,
               display: 'flex',
               justifyContent: 'center',
@@ -306,8 +308,11 @@ export default function DealCard({ deal }: DealCardProps) {
               style={{
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                fontSize: '0.95rem',
+                whiteSpace: 'pre-line',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+fontSize: '1.14rem',
                 fontWeight: 700,
                 lineHeight: 1.2,
                 color: '#fff',
@@ -401,7 +406,7 @@ flexWrap: 'wrap',
           height: '54px',
           borderTop: '1px solid rgba(255,255,255,0.07)',
           display: 'grid',
-          gridTemplateColumns: '138px minmax(0,1fr) 18px',
+          gridTemplateColumns: '180px minmax(0,1fr) 18px',
           alignItems: 'center',
           padding: '0 0.8rem',
           zIndex: 2,

@@ -48,7 +48,7 @@ Core rules:
 - Use the primary language of the business (default: German)
 - Write simple, clear, short sentences
 - Think like a local discovery assistant, not a coupon writer
-- Focus on attention, atmosphere, specialty, trust, local relevance, or curiosity
+- Focus on attention, atmosphere, specialty, trust, local relevance, curiosity, professionalism, reliability, or practical everyday value depending on the category
 - Do NOT create discounts, coupons, free items, percentages, prices, deadlines, or deal conditions
 - Do NOT write redemption instructions
 - Do NOT use "Rabatt", "Gutschein", "gratis", "kostenlos", "Dealpass", "einlösen", "profitieren"
@@ -58,7 +58,16 @@ Core rules:
 - Keep it natural and believable for a small local business
 
 Structure:
-- Title: 2–4 words only. Do NOT include the business name. It should describe the experience, product, service, or local discovery reason.
+- Title: 2–5 words only. Do NOT include the business name. It should describe the experience, product, service, or local discovery reason.
+- Prefer editorial two-line titles when it looks natural.
+- Use escaped \\n inside the JSON string to split the title into 2 short balanced lines.
+- Examples:
+  "Energie für\\njede Fahrt"
+  "Leckeres\\nHähnchen"
+  "Glänzend\\nunterwegs"
+  "Fit. Stark.\\nDu."
+- Avoid long sentence-like titles.
+- Maximum 2 title lines.
 - Highlight: maximum 3–7 words. It should be a short hook, not a discount.
 - Description:
   - max 2 short paragraphs
@@ -79,8 +88,8 @@ Output ONLY valid JSON:
             content: prompt,
           },
         ],
-        temperature: 0.7,
-        max_tokens: 300,
+        temperature: 0.5,
+        max_tokens: 220,
       }),
     })
 
@@ -133,7 +142,16 @@ ${businessDescription ? `Business description: ${businessDescription}
 - Do not invent fake claims such as "best", "number 1", "most popular", awards, opening hours, or customer numbers.
 - Avoid vague marketing words like "exklusiv", "einzigartig", "unschlagbar", "Spezialvorteil".
 - Output only valid JSON with the exact keys: title, highlight, description.
-- Title: 2-4 words only. Do NOT include the business name. It must describe the experience, product, service, or local discovery reason.
+- Title: 2-5 words only. Do NOT include the business name. It must describe the experience, product, service, or local discovery reason.
+- Prefer editorial two-line titles when it looks natural.
+- Use escaped \\n inside the JSON string to split the title into 2 short balanced lines.
+- Examples:
+  "Energie für\\njede Fahrt"
+  "Leckeres\\nHähnchen"
+  "Glänzend\\nunterwegs"
+  "Fit. Stark.\\nDu."
+- Avoid long sentence-like titles.
+- Maximum 2 title lines.
 - Highlight: maximum 3-7 words. It must be a short hook, not a discount.
 - Description: maximum 2 short paragraphs.
 - First paragraph creates interest.
@@ -242,40 +260,40 @@ async function generateDealImage(
 }
 const categoryImageMoodMap: Record<string, string> = {
   Shopping:
-    'modern retail atmosphere, stylish products, cinematic lighting, realistic local shopping vibe',
+    'modern stylish retail atmosphere, premium shopping mood, elegant products, soft editorial lighting, fashionable realistic local discovery vibe',
 
   Gastronomie:
-    'warm food atmosphere, appetizing presentation, cinematic lighting, realistic restaurant mood',
+    'warm cozy food atmosphere, appetizing presentation, cinematic restaurant mood, emotional dining experience, rich textures and warm lighting',
 
   'Beauty & Gesundheit':
-    'clean elegant beauty atmosphere, soft lighting, calm premium wellness mood',
+    'soft elegant beauty atmosphere, premium wellness mood, clean beige aesthetic, calm luxury lighting, minimal modern spa feeling',
 
   'Haus & Handwerk':
-    'professional craftsmanship atmosphere, clean realistic work environment, trustworthy service mood',
+    'professional craftsmanship atmosphere, realistic workers, trustworthy practical environment, grounded authentic service mood, organized workspace',
 
   'Bau & Immobilien':
-    'modern architecture atmosphere, clean premium real estate mood, professional lighting',
+    'modern architecture atmosphere, bright daylight, premium real estate aesthetic, clean urban living mood, elegant realistic interiors',
 
   'Auto & Mobilität':
-    'modern mobility atmosphere, cinematic automotive lighting, realistic transport environment',
+    'urban mobility atmosphere, cinematic automotive mood, metallic reflections, cooler blue lighting, dynamic city feeling, modern transport aesthetic',
 
   Dienstleistungen:
-    'modern professional service atmosphere, clean office aesthetic, trustworthy local business mood',
+    'clean professional service atmosphere, trustworthy modern office aesthetic, realistic business environment, structured calm premium mood',
 
   'Sofortbedarf & Unterwegs':
-    'urban convenience atmosphere, modern roadside aesthetic, realistic quick stop vibe',
+    'urban convenience atmosphere, realistic roadside aesthetic, modern quick-stop mood, practical everyday environment',
 
   'Freizeit & Unterhaltung':
-    'vibrant entertainment atmosphere, cinematic leisure mood, lively realistic setting',
+    'cinematic entertainment atmosphere, immersive nightlife mood, darker contrasty lighting, emotional leisure feeling, vibrant realistic setting',
 
   'Reisen & Hotels':
-    'warm hospitality atmosphere, premium travel mood, cinematic hotel aesthetic',
+    'premium hospitality atmosphere, travel discovery mood, elegant hotel aesthetic, cinematic vacation feeling, warm luxurious environment',
 
   'Bildung & Community':
-    'friendly educational atmosphere, welcoming community environment, modern realistic mood',
+    'friendly educational atmosphere, welcoming community environment, realistic learning mood, bright modern social setting',
 
   'Haustiere & Tiere':
-    'warm pet-friendly atmosphere, realistic animal care environment, friendly local mood',
+    'warm pet-friendly atmosphere, emotional animal connection, caring realistic veterinary and pet environment, soft natural lighting',
 }
 function buildImagePrompt(
   businessName: string,
@@ -315,5 +333,8 @@ No discount design.
 No fake advertising layout.
 
 Professional composition and realistic depth.
+Keep the main subject in the upper or middle image area.
+Leave the lower part of the image calmer and less important for UI overlays.
+Avoid placing faces, products, or important objects at the very bottom.
 `
 }

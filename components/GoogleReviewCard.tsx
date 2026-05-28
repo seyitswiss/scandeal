@@ -59,8 +59,8 @@ export default function GoogleReviewCard({
             </div>
 
             <p className="mt-4 max-w-[240px] text-[15px] leading-relaxed text-gray-300">
-              Teile deine Erfahrung direkt auf Google —
-inklusive KI-Inspiration.
+              Hilfe dem lokalen Unternehmen mit einer Google Bewertung —
+nutze die KI-Inspiration.
             </p>
           </div>
 
@@ -109,56 +109,46 @@ inklusive KI-Inspiration.
           >
             <div className="flex items-center justify-between gap-4">
               <p className="text-[16px] font-semibold text-white">
-                ✨ Wie stark möchtest du deine Unterstützung ausdrücken?
+                ✨ Wähle einen passenden Stil:
               </p>
 
              
             </div>
 
-            <div className="mt-5 flex items-center gap-8">
-              {[
-                {
-                  value: '1',
-                  active:
-                    'border-green-400 bg-green-500/25 text-green-200',
-                  idle:
-                    'border-white/25 bg-black/20 text-white',
-                },
-                {
-                  value: '2',
-                  active:
-                    'border-orange-300 bg-orange-400/25 text-orange-200',
-                  idle:
-                    'border-white/25 bg-black/20 text-white',
-                },
-                {
-                  value: '3',
-                  active:
-                    'border-blue-400 bg-blue-500/25 text-blue-200',
-                  idle:
-                    'border-white/25 bg-black/20 text-white',
-                },
-              ].map((item) => (
-                <a
-                  key={item.value}
-                  href={`?reviewTone=${item.value}#review-ai`}
-                  style={{
-                    width: '64px',
-                    height: '64px',
-                    minWidth: '64px',
-                    minHeight: '64px',
-                    borderRadius: '9999px',
-                  }}
-                  className={`flex items-center justify-center border text-xl font-semibold transition ${
-                    reviewTone === item.value
-                      ? item.active
-                      : item.idle
-                  }`}
-                >
-                  {item.value}
-                </a>
-              ))}
-            </div>
+            <div className="mt-5 flex flex-col gap-3">
+  <a
+    href="?reviewTone=1#review-ai"
+    className={`rounded-2xl border px-4 py-3 text-sm transition ${
+      reviewTone === '1'
+        ? 'border-green-400 bg-green-500/25 text-green-200'
+        : 'border-white/15 bg-black/20 text-white'
+    }`}
+  >
+    Kurz & schlicht
+  </a>
+
+  <a
+    href="?reviewTone=2#review-ai"
+    className={`rounded-2xl border px-4 py-3 text-sm transition ${
+      reviewTone === '2'
+        ? 'border-orange-300 bg-orange-400/25 text-orange-200'
+        : 'border-white/15 bg-black/20 text-white'
+    }`}
+  >
+    Freundlich & persönlich
+  </a>
+
+  <a
+    href="?reviewTone=3#review-ai"
+    className={`rounded-2xl border px-4 py-3 text-sm transition ${
+      reviewTone === '3'
+        ? 'border-blue-400 bg-blue-500/25 text-blue-200'
+        : 'border-white/15 bg-black/20 text-white'
+    }`}
+  >
+    Sehr begeistert
+  </a>
+</div>
 
             <div className="mt-6 flex items-start gap-4">
               <img
