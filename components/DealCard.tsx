@@ -151,12 +151,12 @@ export default function DealCard({ deal }: DealCardProps) {
     position: 'relative',
     overflow: 'hidden',
     color: 'inherit',
-    borderRadius: '12px',
+    borderRadius: '18px',
     background: '#121214',
    border:
   deal.isPremium
     ? '1px solid rgba(134, 239, 172, 0.10)'
-    : '1px solid rgba(255, 255, 255, 0.03)',
+    : '1px solid rgba(255, 255, 255, 0.015)',
     boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.02)',
     padding: 0,
     height: '160px',
@@ -198,7 +198,7 @@ export default function DealCard({ deal }: DealCardProps) {
       <div
         style={{
           display: 'flex',
-          gap: '1rem',
+          gap: '0.60rem',
           alignItems: 'stretch',
           height: '100%',
         
@@ -211,10 +211,10 @@ export default function DealCard({ deal }: DealCardProps) {
             flexShrink: 0,
             alignSelf: 'stretch',
             background: '#111',
-            borderRadius: '12px',
+            borderRadius: '18px',
             overflow: 'hidden',
             position: 'relative',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
+            boxShadow: '0 4px 12px rgba(61, 60, 60, 0.18)',
 
           }}
         >
@@ -251,59 +251,74 @@ export default function DealCard({ deal }: DealCardProps) {
                         />
                         
           )}
-
           <div
             style={{
               position: 'absolute',
-              left: 0,
+              top: 0,
               right: 0,
-              bottom: '-0.75rem',
-               padding: '0.15rem 0 0.7rem',
-              zIndex: 3,
-              display: 'flex',
-              justifyContent: 'center',
+              width: '40px',
+              height: '100%',
               background:
-                'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.72) 38%, rgba(0,0,0,0.22) 72%, rgba(0,0,0,0) 100%)',
-              backdropFilter: 'blur(3px)',
-              WebkitBackdropFilter: 'blur(3px)',
+                'linear-gradient(to left, rgba(0,0,0,0.35), rgba(0,0,0,0))',
+              pointerEvents: 'none',
             }}
-          >
-            <span
-              style={{
-                fontSize: '0.68rem',
-                color: '#ffffff',
-                background: 'rgba(255,255,255,0.08)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '999px',
-                padding: '0.22rem 0.55rem',
-                whiteSpace: 'nowrap',
-                                width: '116px',
-                height: '28px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                boxSizing: 'border-box',
-              }}
-            >
-              {uiCategoryLabel}
-            </span>
-          </div>
+          />
         </div>
 
         <div
           style={{
             
             minWidth: 0,
-            padding: '0.75rem 0.75rem 3.2rem 0',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            gap: '0.5rem',
+            padding: '0.65rem 0.75rem 0.65rem 0',
+          gap: '0.8rem',
             overflow: 'hidden',
           }}
         >
-          <div style={{ minWidth: 0 }}>
+                    <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              minWidth: 0,
+            }}
+          >
+            {deal.business?.logoUrl && (
+              <img
+                src={deal.business.logoUrl}
+                alt={deal.business.name || 'Logo'}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  objectFit: 'contain',
+                  borderRadius: '6px',
+                  background: '#fff',
+                  padding: '4px',
+                  flexShrink: 0,
+                }}
+              />
+            )}
+
+            <span
+              style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                fontSize: '0.86rem',
+                color: '#ffffff',
+                fontWeight: 500,
+                minWidth: 0,
+              }}
+            >
+              {deal.business?.name}
+            </span>
+          </div>
+          <div
+  style={{
+    minWidth: 0,
+    paddingTop: '0px',
+    paddingBottom: '4px',
+  }}
+>
             <h4
               style={{
                 overflow: 'hidden',
@@ -312,33 +327,18 @@ export default function DealCard({ deal }: DealCardProps) {
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
-fontSize: '1.14rem',
-                fontWeight: 700,
-                lineHeight: 1.2,
+                fontSize: '1.35rem',
+                fontWeight: 800,
+                lineHeight: 1.15,
                 color: '#fff',
-                margin: 0,
+                margin: '0.7rem 0',
               }}
             >
               {deal.title}
             </h4>
           </div>
 
-          {deal.highlight && (
-  <div
-    style={{
-      color: '#d1d5db',
-      fontSize: '0.72rem',
-      fontWeight: 400,
-      opacity: 0.82,
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      marginTop: '2px',
-    }}
-  >
-    {deal.highlight}
-  </div>
-)}
+          
           {true && (
             <div
               style={{
@@ -397,51 +397,7 @@ flexWrap: 'wrap',
         </div>
       </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: '-1.55rem',
-          height: '54px',
-          borderTop: '1px solid rgba(255,255,255,0.07)',
-          display: 'grid',
-          gridTemplateColumns: '180px minmax(0,1fr) 18px',
-          alignItems: 'center',
-          padding: '0 0.8rem',
-          zIndex: 2,
-          pointerEvents: 'none',
-        }}
-      >
-        <div />
 
-        <span
-          style={{
-            display: 'block',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            fontSize: '0.84rem',
-            color: '#ffffff',
-            textAlign: 'center',
-            padding: '0 0.5rem',
-            transform: 'translateY(-14px)',
-          }}
-        >
-          {deal.business?.name}
-        </span>
-
-        <span
-          style={{
-            color: 'rgba(255,255,255,0.45)',
-            fontSize: '0.9rem',
-            lineHeight: 1,
-            transform: 'translateY(-14px)',
-          }}
-        >
-          →
-        </span>
-      </div>
     </article>
   </Link>
   )
