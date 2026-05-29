@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import ExpandableAnalyticsCard from '@/components/ExpandableAnalyticsCard'
-import { getDealRecommendation, getBusinessRecommendation } from '@/lib/analyticsRecommendations'
+import { getBusinessRecommendation } from '@/lib/analyticsRecommendations'
 
 export default async function BusinessAnalyticsPage({
   params,
@@ -45,7 +45,7 @@ export default async function BusinessAnalyticsPage({
     },
   })
 
-  const profileViews = businessStats.filter((s) => s.type === 'profile_view').length
+  const profileViews = businessStats.filter((s) => s.type.startsWith('profile_view')).length
   const qrScans = businessStats.filter((s) => s.type === 'profile_view_qr').length
   const instagramViews = businessStats.filter((s) => s.type === 'profile_view_instagram').length
   const googleViews = businessStats.filter((s) => s.type === 'profile_view_google').length
@@ -67,10 +67,12 @@ export default async function BusinessAnalyticsPage({
       linkClicksBySource[source] = (linkClicksBySource[source] || 0) + 1
     })
 
-  const dealViews = dealStats.filter((s) => s.type === 'view').length
-  const dealClicks = dealStats.filter((s) => s.type === 'click').length
-  const redeems = dealStats.filter((s) => s.type === 'redeem').length
-  const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').length
+  const promoImpressions = dealStats.filter((s) => s.type === 'view').length
+  const promoClicks = dealStats.filter((s) => s.type === 'click').length
+const dealViews = promoImpressions
+const dealClicks = promoClicks
+const redeems = dealStats.filter((s) => s.type === 'redeem').length
+const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').length
 
   const dealClickRate = dealViews === 0 ? 0 : Math.round((dealClicks / dealViews) * 100)
   const redeemRateOverall = dealClicks === 0 ? 0 : Math.round((redeems / dealClicks) * 100)
@@ -121,7 +123,7 @@ export default async function BusinessAnalyticsPage({
     const redeemRate = dealClicks === 0 ? 0 : Math.round((dealRedeems / dealClicks) * 100)
 
     // Generate recommendation
-    let recommendation = getDealRecommendation(dealViews, dealClicks, dealRedeems)
+    let recommendation = 'PromoCard Performance wird aktuell neu aufgebaut.'
 
     // Generate performance label
     let label = ''

@@ -198,7 +198,7 @@ export default function DealCard({ deal }: DealCardProps) {
       <div
         style={{
           display: 'flex',
-          gap: '0.60rem',
+          gap: '0.45rem',
           alignItems: 'stretch',
           height: '100%',
         
@@ -287,14 +287,14 @@ export default function DealCard({ deal }: DealCardProps) {
                 src={deal.business.logoUrl}
                 alt={deal.business.name || 'Logo'}
                 style={{
-                  width: '36px',
-                  height: '36px',
-                  objectFit: 'contain',
-                  borderRadius: '6px',
-                  background: '#fff',
-                  padding: '4px',
-                  flexShrink: 0,
-                }}
+  width: '36px',
+  height: '36px',
+  objectFit: 'contain',
+  borderRadius: '6px',
+  background: '#fff',
+  padding: '1px',
+  flexShrink: 0,
+}}
               />
             )}
 

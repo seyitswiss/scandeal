@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import ExpandableAnalyticsCard from '@/components/ExpandableAnalyticsCard'
-import { getDealRecommendation } from '@/lib/analyticsRecommendations'
+
 
 export default async function AnalyticsPage() {
   // Get all business stats
@@ -26,7 +26,7 @@ export default async function AnalyticsPage() {
   })
 
   // Calculate business stats totals
-  const profileViews = businessStats.filter((s) => s.type === 'profile_view').length
+  const profileViews = businessStats.filter((s) => s.type.startsWith('profile_view')).length
   const qrScans = businessStats.filter((s) => s.type === 'profile_view_qr').length
   const instagramViews = businessStats.filter((s) => s.type === 'profile_view_instagram').length
   const googleViews = businessStats.filter((s) => s.type === 'profile_view_google').length
@@ -108,37 +108,39 @@ export default async function AnalyticsPage() {
     .slice(0, 10)
 
   // Calculate deal stats totals
-  const dealViews = dealStats.filter((s) => s.type === 'view').length
-  const dealClicks = dealStats.filter((s) => s.type === 'click').length
-  const redeems = dealStats.filter((s) => s.type === 'redeem').length
-  const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').length
+  const promoImpressions = dealStats.filter((s) => s.type === 'view').length
+  const promoClicks = dealStats.filter((s) => s.type === 'click').length
+const overallCtr =
+  promoImpressions === 0
+    ? 0
+    : Math.round((promoClicks / promoImpressions) * 100)
 
   // Group deal stats by deal title
-  const dealStatsByTitle: Record<string, { views: number; clicks: number; redeems: number; clickRate: number; redeemRate: number; status: string }> = {}
+  const promoStatsByTitle: Record<string, { views: number; clicks: number; redeems: number; clickRate: number; redeemRate: number; status: string }> = {}
   dealStats.forEach((s) => {
     const title = s.deal.title || 'Unknown Deal'
-    if (!dealStatsByTitle[title]) {
-      dealStatsByTitle[title] = { views: 0, clicks: 0, redeems: 0, clickRate: 0, redeemRate: 0, status: '' }
+    if (!promoStatsByTitle[title]) {
+      promoStatsByTitle[title] = { views: 0, clicks: 0, redeems: 0, clickRate: 0, redeemRate: 0, status: '' }
     }
     if (s.type === 'view') {
-      dealStatsByTitle[title].views += 1
+      promoStatsByTitle[title].views += 1
     } else if (s.type === 'click') {
-      dealStatsByTitle[title].clicks += 1
+      promoStatsByTitle[title].clicks += 1
     } else if (s.type === 'redeem') {
-      dealStatsByTitle[title].redeems += 1
+      promoStatsByTitle[title].redeems += 1
     }
   })
 
   // Calculate conversion rates and performance status for each deal
-  Object.values(dealStatsByTitle).forEach((deal) => {
+  Object.values(promoStatsByTitle).forEach((deal) => {
     deal.clickRate = deal.views === 0 ? 0 : Math.round((deal.clicks / deal.views) * 100)
     deal.redeemRate = deal.clicks === 0 ? 0 : Math.round((deal.redeems / deal.clicks) * 100)
 
-    deal.status = getDealRecommendation(deal.views, deal.clicks, deal.redeems)
+    deal.status = 'PromoCard Performance wird aktuell neu aufgebaut.'
   })
 
   // Sort deals by views (descending)
-  const topDeals = Object.entries(dealStatsByTitle)
+  const topPromoCards = Object.entries(promoStatsByTitle)
     .sort((a, b) => b[1].views - a[1].views)
     .slice(0, 10)
 
@@ -262,48 +264,37 @@ export default async function AnalyticsPage() {
 
       {/* Deal Stats Section */}
       <div className="mb-12">
-        <h2 className="text-2xl font-bold mb-6">Deal Stats</h2>
-        <div className="grid gap-4 md:grid-cols-4">
-          {/* Deal Views Card */}
+        <h2 className="text-2xl font-bold mb-6">PromoCard Performance</h2>
+                <div className="grid gap-4 md:grid-cols-3">
           <div className="border rounded-lg p-6 bg-white">
-            <div className="text-sm font-medium text-gray-600 mb-2">Deal Views</div>
-            <div className="text-3xl font-bold text-blue-600">{dealViews}</div>
-            <div className="text-xs text-gray-500 mt-2">Times deals were displayed</div>
+            <div className="text-sm font-medium text-gray-600 mb-2">Promo Impressions</div>
+            <div className="text-3xl font-bold text-blue-600">{promoImpressions}</div>
+            <div className="text-xs text-gray-500 mt-2">Times PromoCards were shown</div>
           </div>
 
-          {/* Deal Clicks Card */}
           <div className="border rounded-lg p-6 bg-white">
-            <div className="text-sm font-medium text-gray-600 mb-2">Deal Clicks</div>
-            <div className="text-3xl font-bold text-green-600">{dealClicks}</div>
-            <div className="text-xs text-gray-500 mt-2">Deal interactions</div>
+            <div className="text-sm font-medium text-gray-600 mb-2">Promo Clicks</div>
+            <div className="text-3xl font-bold text-green-600">{promoClicks}</div>
+            <div className="text-xs text-gray-500 mt-2">PromoCard interactions</div>
           </div>
 
-          {/* Redeems Card */}
           <div className="border rounded-lg p-6 bg-white">
-            <div className="text-sm font-medium text-gray-600 mb-2">Redeems</div>
-            <div className="text-3xl font-bold text-purple-600">{redeems}</div>
-            <div className="text-xs text-gray-500 mt-2">Deal redemptions</div>
-          </div>
-
-          {/* Our Deal Closed Card */}
-          <div className="border rounded-lg p-6 bg-white">
-            <div className="text-sm font-medium text-gray-600 mb-2">Our Deal Closed</div>
-            <div className="text-3xl font-bold text-red-600">{ourDealClosed}</div>
-            <div className="text-xs text-gray-500 mt-2">Our Deal modal closed</div>
+            <div className="text-sm font-medium text-gray-600 mb-2">Overall CTR</div>
+            <div className="text-3xl font-bold text-indigo-600">{overallCtr}%</div>
+            <div className="text-xs text-gray-500 mt-2">Clicks / Impressions</div>
           </div>
         </div>
-
         {/* Top Deals */}
-        {topDeals.length > 0 && (
+        {topPromoCards.length > 0 && (
           <div className="mt-8 border rounded-lg p-6 bg-white">
-            <h3 className="font-bold text-lg mb-4">Top Deals (by Views)</h3>
+            <h3 className="font-bold text-lg mb-4">Top PromoCards (by Impressions)</h3>
             <div className="space-y-4">
-              {topDeals.map(([title, stats]) => (
+              {topPromoCards.map(([title, stats]) => (
                 <div key={title} className="flex items-center justify-between pb-4 border-b last:border-b-0">
                   <div>
                     <div className="font-medium text-gray-900">{title}</div>
                     <div className="text-sm text-gray-500">
-                      {stats.views} views • {stats.clicks} clicks • {stats.redeems} redeems • Click Rate: {stats.clickRate}% • Redeem Rate: {stats.redeemRate}%
+                      {stats.views} impressions • {stats.clicks} clicks • Click Rate: {stats.clickRate}% 
                     </div>
                     <div className="text-xs text-gray-600 mt-1">{stats.status}</div>
                   </div>
