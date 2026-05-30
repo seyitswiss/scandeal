@@ -165,7 +165,7 @@ const dealClicks = promoClicks
   // Calculate per-deal stats
   const perDealStats = businessDeals.map((deal) => {
     const dealViews = dealStats.filter((s) => s.dealId === deal.id && s.type === 'view').length
-    const dealClicks = dealStats.filter((s) => s.dealId === deal.id && s.type === 'click').length
+    const dealClicks = dealStats.filter((s) => s.dealId === deal.id && s.type === 'promo_click').length
     const dealRedeems = dealStats.filter((s) => s.dealId === deal.id && s.type === 'redeem').length
     const clickRate = dealViews === 0 ? 0 : Math.round((dealClicks / dealViews) * 100)
     const redeemRate = dealClicks === 0 ? 0 : Math.round((dealRedeems / dealClicks) * 100)
@@ -330,17 +330,17 @@ const dealClicks = promoClicks
 
       </div>
 
-      {/* Per-Deal Analytics */}
+      {/* PromoCard Analytics */}
       {perDealStats.length > 0 ? (
         <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <h2 className="text-xl font-semibold mb-4">Per-Deal Analytics</h2>
+          <h2 className="text-xl font-semibold mb-4">PromoCard Analytics</h2>
           <div className="space-y-4">
             {perDealStats.map((deal) => (
               <div key={deal.id} className="flex items-center justify-between p-4 rounded-lg bg-gray-50">
                 <div>
                   <div className="font-medium text-gray-900">{deal.title}</div>
                   <div className="text-sm text-gray-600">
-                    Views: {deal.views} • Clicks: {deal.clicks} • Redeems: {deal.redeems} • Click Rate: {deal.clickRate}% • Redeem Rate: {deal.redeemRate}%
+                    Promo Impressions: {deal.views} • Promo Clicks: {deal.clicks} • Click Rate: {deal.clickRate}%
                   </div>
                   <div className="text-xs text-gray-700 mt-1 font-medium">{deal.label}</div>
                   <div className="text-sm text-blue-600 mt-1">
@@ -349,7 +349,7 @@ const dealClicks = promoClicks
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-semibold text-blue-600">{deal.views}</div>
-                  <div className="text-sm text-gray-500">views</div>
+                  <div className="text-sm text-gray-500">promo impressions</div>
                 </div>
               </div>
             ))}

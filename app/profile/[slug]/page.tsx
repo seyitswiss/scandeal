@@ -369,6 +369,14 @@ if (promoDeal && promoBusiness) {
     },
   })
 }
+if (reviewTone === '1') {
+  await prisma.businessStat.create({
+    data: {
+      businessId: business.id,
+      type: 'ai_inspiration_open',
+    },
+  })
+}
 const liveOpeningStatus = await getLiveGoogleOpeningStatus(
   business.googlePlaceId,
   business.subCategory

@@ -82,8 +82,8 @@ nutze die KI-Inspiration.
   <div>
     <div className="overflow-hidden rounded-[18px] bg-[conic-gradient(from_180deg_at_50%_50%,#EA4335_0deg,#4285F4_90deg,#34A853_180deg,#FBBC05_270deg,#EA4335_360deg)] p-[2px] shadow-lg [transform:translateZ(0)]">
       <a
-        href={googleReviewUrl}
-        onClick={() => trackGoogleBox('google_review_click')}
+        href={`/api/track-business-event?businessId=${businessId}&type=google_review_click&to=${encodeURIComponent(googleReviewUrl)}`}
+      
         className="flex h-11 min-w-[109px] items-center justify-center rounded-[15px] bg-white pl-1 pr-2 text-base font-semibold text-black"
       >
         Öffnen
@@ -108,8 +108,8 @@ nutze die KI-Inspiration.
         {!reviewTone && (
           <div className="relative z-10 mt-5 border-t border-white/10 pt-4">
             <a
-              href="?reviewTone=1#review-ai"
-              onClick={() => trackGoogleBox('ai_inspiration_open')}
+              href={`/profile/${businessSlug}?reviewTone=1`}
+             
               className="text-sm text-gray-300 transition hover:text-white"
             >
               ✨  KI-Inspiration hier öffnen
