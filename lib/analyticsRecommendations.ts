@@ -1,4 +1,4 @@
-export function getDealRecommendation(views: number, clicks: number, redeems: number): string {
+export function getPromoRecommendation(views: number, clicks: number, redeems: number): string {
   if (views > 100 && clicks / Math.max(views, 1) < 0.2) {
     return "⚠️ Viele sehen diesen Deal, aber wenige klicken. Prüfe Titel, Bild oder Highlight."
   }

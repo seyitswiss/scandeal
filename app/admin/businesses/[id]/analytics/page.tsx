@@ -54,8 +54,55 @@ export default async function BusinessAnalyticsPage({
       (s) => s.type === 'profile_view_direct' || s.type === 'profile_view',
     ).length
   const linkClicks = businessStats.filter((s) => s.type === 'link_click').length
-  const googleReviewClicks = businessStats.filter((s) => s.type === 'link_click' && s.source === 'google').length
+  const googleReviewClicks = businessStats.filter(
+  (s) => s.type === 'google_review_click'
+).length
+const googleReviewClickEvents = businessStats
+  .filter((s) => s.type === 'google_review_click')
+  .sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() -
+      new Date(a.createdAt).getTime()
+  )
+  .slice(0, 50)
+  const googleReviewClickDetails = googleReviewClickEvents.map((event) => {
+  const date = new Date(event.createdAt)
+
+  return {
+    day: date.toLocaleString('de-CH', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+    count: 1,
+  }
+})
   const googleBoxOpen = businessStats.filter((s) => s.type === 'google_box_open').length
+  const googleBoxShown = businessStats.filter(
+  (s) => s.type === 'google_box_shown'
+).length
+
+const googleReviewDone = businessStats.filter(
+  (s) => s.type === 'google_review_done'
+).length
+
+const aiInspirationOpen = businessStats.filter(
+  (s) => s.type === 'ai_inspiration_open'
+).length
+
+const aiToneShort = businessStats.filter(
+  (s) => s.type === 'ai_tone_short'
+).length
+
+const aiToneFriendly = businessStats.filter(
+  (s) => s.type === 'ai_tone_friendly'
+).length
+
+const aiToneExcited = businessStats.filter(
+  (s) => s.type === 'ai_tone_excited'
+).length
   const internalFeedback = businessStats.filter((s) => s.type === 'internal_feedback').length
   const aiUsage = businessStats.filter((s) => s.type === 'ai_usage').length
 
@@ -68,14 +115,15 @@ export default async function BusinessAnalyticsPage({
     })
 
   const promoImpressions = dealStats.filter((s) => s.type === 'view').length
-  const promoClicks = dealStats.filter((s) => s.type === 'click').length
+  const promoClicks = dealStats.filter(
+  (s) => s.type === 'promo_click'
+).length
 const dealViews = promoImpressions
 const dealClicks = promoClicks
-const redeems = dealStats.filter((s) => s.type === 'redeem').length
-const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').length
 
-  const dealClickRate = dealViews === 0 ? 0 : Math.round((dealClicks / dealViews) * 100)
-  const redeemRateOverall = dealClicks === 0 ? 0 : Math.round((redeems / dealClicks) * 100)
+
+  const promoCtr = dealViews === 0 ? 0 : Math.round((dealClicks / dealViews) * 100)
+
 
   const formatDay = (createdAt: Date | string) => {
     const date = new Date(createdAt)
@@ -167,7 +215,7 @@ const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').lengt
       <div className="grid gap-6 md:grid-cols-3 mb-10">
         <ExpandableAnalyticsCard title="Profile Views" value={profileViews} details={profileViewsByDay} />
         <ExpandableAnalyticsCard title="Link Clicks" value={linkClicks} details={linkClicksByDay} />
-        <ExpandableAnalyticsCard title="Deal Views" value={dealViews} details={dealViewsByDay} />
+        <ExpandableAnalyticsCard title="Promo Impressions " value={dealViews} details={dealViewsByDay} />
       </div>
 
       <div className="border rounded-lg p-6 bg-white shadow-sm mb-10">
@@ -195,22 +243,60 @@ const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').lengt
           </div>
         </div>
       </div>
+<div className="grid gap-6 md:grid-cols-3 mb-10">
+  <div className="border rounded-lg p-6 bg-white shadow-sm">
+    <div className="text-sm font-medium text-gray-500">Google Box angezeigt</div>
+    <div className="mt-4 text-3xl font-bold text-indigo-600">{googleBoxShown}</div>
+  </div>
 
-      <div className="grid gap-6 md:grid-cols-3 mb-10">
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Google Box Opens</div>
-          <div className="mt-4 text-3xl font-bold text-indigo-600">{googleBoxOpen}</div>
-        </div>
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Internal Feedback</div>
-          <div className="mt-4 text-3xl font-bold text-teal-600">{internalFeedback}</div>
-        </div>
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Google Review Clicks</div>
-          <div className="mt-4 text-3xl font-bold text-blue-600">{googleReviewClicks}</div>
-        </div>
-      </div>
+<ExpandableAnalyticsCard
+  title="Google öffnen"
+  value={googleReviewClicks}
+  details={googleReviewClickDetails}
+/>
 
+  <div className="border rounded-lg p-6 bg-white shadow-sm">
+    <div className="text-sm font-medium text-gray-500">Bereits bewertet</div>
+    <div className="mt-4 text-3xl font-bold text-green-600">{googleReviewDone}</div>
+  </div>
+</div>
+<div className="grid gap-6 md:grid-cols-4 mb-10">
+  <div className="border rounded-lg p-6 bg-white shadow-sm">
+    <div className="text-sm font-medium text-gray-500">
+      KI Inspiration geöffnet
+    </div>
+    <div className="mt-4 text-3xl font-bold text-purple-600">
+      {aiInspirationOpen}
+    </div>
+  </div>
+
+  <div className="border rounded-lg p-6 bg-white shadow-sm">
+    <div className="text-sm font-medium text-gray-500">
+      Kurz & schlicht
+    </div>
+    <div className="mt-4 text-3xl font-bold text-green-600">
+      {aiToneShort}
+    </div>
+  </div>
+
+  <div className="border rounded-lg p-6 bg-white shadow-sm">
+    <div className="text-sm font-medium text-gray-500">
+      Freundlich & persönlich
+    </div>
+    <div className="mt-4 text-3xl font-bold text-orange-600">
+      {aiToneFriendly}
+    </div>
+  </div>
+
+  <div className="border rounded-lg p-6 bg-white shadow-sm">
+    <div className="text-sm font-medium text-gray-500">
+      Sehr begeistert
+    </div>
+    <div className="mt-4 text-3xl font-bold text-blue-600">
+      {aiToneExcited}
+    </div>
+  </div>
+</div>
       {Object.keys(linkClicksBySource).length > 0 && (
         <div className="border rounded-lg p-6 bg-white shadow-sm mb-10">
           <h2 className="text-xl font-semibold mb-4">Link Clicks by Source</h2>
@@ -229,31 +315,19 @@ const ourDealClosed = dealStats.filter((s) => s.type === 'our_deal_close').lengt
 
       <div className="grid gap-6 md:grid-cols-6 mb-10">
         <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Deal Views</div>
+          <div className="text-sm font-medium text-gray-500">Promo Impressions</div>
           <div className="mt-4 text-3xl font-bold text-blue-600">{dealViews}</div>
         </div>
         <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Deal Clicks</div>
+          <div className="text-sm font-medium text-gray-500">Promo Clicks</div>
           <div className="mt-4 text-3xl font-bold text-green-600">{dealClicks}</div>
         </div>
         <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Redeems</div>
-          <div className="mt-4 text-3xl font-bold text-purple-600">{redeems}</div>
-        </div>
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Our Deal Closed</div>
-          <div className="mt-4 text-3xl font-bold text-red-600">{ourDealClosed}</div>
-        </div>
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Click Rate</div>
-          <div className="mt-4 text-3xl font-bold text-orange-600">{dealClickRate}%</div>
+          <div className="text-sm font-medium text-gray-500">CTR (Klickrate)</div>
+          <div className="mt-4 text-3xl font-bold text-orange-600">{promoCtr}%</div>
           <div className="text-xs text-gray-500 mt-2">Clicks / Views</div>
         </div>
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
-          <div className="text-sm font-medium text-gray-500">Redeem Rate</div>
-          <div className="mt-4 text-3xl font-bold text-indigo-600">{redeemRateOverall}%</div>
-          <div className="text-xs text-gray-500 mt-2">Redeems / Clicks</div>
-        </div>
+
       </div>
 
       {/* Per-Deal Analytics */}

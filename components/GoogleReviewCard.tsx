@@ -1,9 +1,10 @@
 'use client'
-
+import { useEffect } from 'react'
 
 
 
 interface Props {
+  businessId: string
   businessSlug: string
   businessName: string
   googleReviewUrl: string | null
@@ -12,14 +13,26 @@ interface Props {
 }
 
 export default function GoogleReviewCard({
+  businessId,
   businessSlug,
   businessName,
   googleReviewUrl,
   reviewTone,
   reviewSuggestion,
 }: Props) {
-  
-
+  function trackGoogleBox(type: string) {
+    fetch('/api/business-stats', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        businessId,
+        type,
+      }),
+    }).catch(() => {})
+  }
+useEffect(() => {
+  trackGoogleBox('google_box_shown')
+}, [])
   return (
     <div className="mt-3 overflow-hidden rounded-3xl border border-[#222] bg-[#111]">
       {/* TOP GOOGLE AREA */}
@@ -70,6 +83,7 @@ nutze die KI-Inspiration.
     <div className="overflow-hidden rounded-[18px] bg-[conic-gradient(from_180deg_at_50%_50%,#EA4335_0deg,#4285F4_90deg,#34A853_180deg,#FBBC05_270deg,#EA4335_360deg)] p-[2px] shadow-lg [transform:translateZ(0)]">
       <a
         href={googleReviewUrl}
+        onClick={() => trackGoogleBox('google_review_click')}
         className="flex h-11 min-w-[109px] items-center justify-center rounded-[15px] bg-white pl-1 pr-2 text-base font-semibold text-black"
       >
         Öffnen
@@ -78,6 +92,7 @@ nutze die KI-Inspiration.
 
     <div className="mt-3 flex justify-center">
       <a
+        onClick={() => trackGoogleBox('google_review_done')}
         href={`/api/review-hide-permanent?slug=${businessSlug}&redirect=${encodeURIComponent(
           `/profile/${businessSlug}?reviewThanks=1`
         )}`}
@@ -94,6 +109,7 @@ nutze die KI-Inspiration.
           <div className="relative z-10 mt-5 border-t border-white/10 pt-4">
             <a
               href="?reviewTone=1#review-ai"
+              onClick={() => trackGoogleBox('ai_inspiration_open')}
               className="text-sm text-gray-300 transition hover:text-white"
             >
               ✨  KI-Inspiration hier öffnen
@@ -118,6 +134,7 @@ nutze die KI-Inspiration.
             <div className="mt-5 flex flex-col gap-3">
   <a
     href="?reviewTone=1#review-ai"
+    onClick={() => trackGoogleBox('ai_tone_short')}
     className={`rounded-2xl border px-4 py-3 text-sm transition ${
       reviewTone === '1'
         ? 'border-green-400 bg-green-500/25 text-green-200'
@@ -129,6 +146,7 @@ nutze die KI-Inspiration.
 
   <a
     href="?reviewTone=2#review-ai"
+    onClick={() => trackGoogleBox('ai_tone_friendly')}
     className={`rounded-2xl border px-4 py-3 text-sm transition ${
       reviewTone === '2'
         ? 'border-orange-300 bg-orange-400/25 text-orange-200'
@@ -140,6 +158,7 @@ nutze die KI-Inspiration.
 
   <a
     href="?reviewTone=3#review-ai"
+    onClick={() => trackGoogleBox('ai_tone_excited')}
     className={`rounded-2xl border px-4 py-3 text-sm transition ${
       reviewTone === '3'
         ? 'border-blue-400 bg-blue-500/25 text-blue-200'

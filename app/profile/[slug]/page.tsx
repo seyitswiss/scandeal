@@ -18,6 +18,9 @@ interface Props {
     reviewTone?: string
     reviewThanks?: string
 hideReview?: string
+src?: string
+promoDeal?: string
+promoBusiness?: string
   }>
 }
 type LiveOpeningStatus = {
@@ -338,14 +341,34 @@ const {
 
   reviewTone,
 hideReview,
-reviewThanks
+reviewThanks,
+src,
+promoDeal,
+promoBusiness
 } = await searchParams
   const business = await prisma.business.findUnique({
     where: { slug },
   })
 
 if (!business) notFound()
+  const validSources = ['qr', 'instagram', 'google', 'direct']
+const source = validSources.includes(src || '') ? src : 'direct'
 
+await prisma.businessStat.create({
+  data: {
+    businessId: business.id,
+    type: `profile_view_${source}`,
+  },
+})
+if (promoDeal && promoBusiness) {
+  await prisma.dealStat.create({
+    data: {
+      dealId: promoDeal,
+      businessId: promoBusiness,
+      type: 'promo_click',
+    },
+  })
+}
 const liveOpeningStatus = await getLiveGoogleOpeningStatus(
   business.googlePlaceId,
   business.subCategory
@@ -581,6 +604,17 @@ const selectedDealsWithLiveOpening = await Promise.all(
         : deal.business,
     }
   })
+)
+await Promise.all(
+  selectedDeals.map((deal) =>
+    prisma.dealStat.create({
+      data: {
+        dealId: deal.id,
+        businessId: deal.businessId,
+        type: 'view',
+      },
+    })
+  )
 )
   let customLinks: { label: string; url: string }[] = []
   let relatedBusinesses: {
@@ -902,6 +936,7 @@ const links = [...allLinks].sort((a, b) => {
     </a>
 
     <GoogleReviewCard
+    businessId={business.id}
       businessSlug={business.slug}
       businessName={business.name}
       googleReviewUrl={googleReviewUrl}

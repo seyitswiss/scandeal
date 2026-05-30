@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
 import Link from 'next/link'
 
 interface DealCardProps {
@@ -87,7 +86,10 @@ function trackDeal(data: {
     const body = JSON.stringify(data)
 
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('/api/deal-stats', body)
+      navigator.sendBeacon(
+  '/api/deal-stats',
+  new Blob([body], { type: 'application/json' })
+)
       return
     }
 
@@ -128,21 +130,6 @@ export default function DealCard({ deal }: DealCardProps) {
   const profileHref = businessSlug ? `/profile/${businessSlug}` : '#'
 
 
-
-  useEffect(() => {
-    trackDeal({
-      dealId: deal.id,
-      businessId: deal.businessId,
-      type: 'view',
-    })
-
-
-  }, [deal.id, deal.businessId])
-
-
-
-
-
   const cardStyle: React.CSSProperties = {
     width: '100%',
     maxWidth: '640px',
@@ -163,15 +150,8 @@ export default function DealCard({ deal }: DealCardProps) {
   }
 
   return (
-<Link
-  href={profileHref}
-  onClick={() =>
-    trackDeal({
-      dealId: deal.id,
-      businessId: deal.businessId,
-      type: 'promo_click',
-    })
-  }
+<a
+  href={`${profileHref}?promoDeal=${deal.id}&promoBusiness=${deal.businessId}`}
   style={{
     textDecoration: 'none',
     color: 'inherit',
@@ -310,6 +290,7 @@ export default function DealCard({ deal }: DealCardProps) {
               }}
             >
               {deal.business?.name}
+              
             </span>
           </div>
           <div
@@ -399,6 +380,6 @@ flexWrap: 'wrap',
 
 
     </article>
-  </Link>
+  </a>
   )
 }

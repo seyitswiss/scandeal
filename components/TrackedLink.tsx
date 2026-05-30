@@ -40,18 +40,17 @@ export default function TrackedLink({
       // Silently fail - don't block navigation
       console.error('Tracking failed:', error)
     }
-  }
+    }
 
-  return (
-    <a
-      href={href}
-      target={target}
-      rel={rel}
-      className={className}
-      style={style}
-      onClick={handleClick}
-    >
-      {children}
-    </a>
-  )
+    return (
+  <a
+    href={`/api/track-link?businessId=${businessId}&source=${source}&to=${encodeURIComponent(href)}`}
+    target={target}
+    rel={rel}
+    className={className}
+    style={style}
+  >
+    {children}
+  </a>
+)
 }

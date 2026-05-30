@@ -335,7 +335,7 @@ export const instantRelevanceMap: Record<JourneyType, Record<string, number>> = 
     Plattenleger: 3,
     Innendesign: 3,
     'Smart Home': 3,
-    Sicherheitssysteme: 5,
+    Sicherheitssysteme: 3,
     Solar: 3,
     'Klima & Lüftung': 3,
     Elektronik: 2,
